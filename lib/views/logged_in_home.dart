@@ -10,6 +10,13 @@ class LoggedInHomeScreen extends StatefulWidget {
 }
 
 class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
+  bool isAddEmployee = false,
+      isClockIn = false,
+      isSchedule = false,
+      isTotalHours = false,
+      isEmployeeHistory = false,
+      isAddAdmin = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,12 +44,12 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                   ),
                   Flexible(
                       child: Align(
-                        alignment: Alignment.center,
-                        child: SvgPicture.asset(
-                    "assets/images/Group.svg",
-                    height: 44,
-                  ),
-                      )),
+                    alignment: Alignment.center,
+                    child: SvgPicture.asset(
+                      "assets/images/Group.svg",
+                      height: 44,
+                    ),
+                  )),
                   Flexible(
                       flex: 1,
                       child: Align(
@@ -58,16 +65,411 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 24.0, 16, 0),
               child: Card(
+                elevation: 8,
+                shadowColor: const Color(0xffF6F6F6),
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(24))
-                ),
+                    borderRadius: BorderRadius.all(Radius.circular(24))),
                 color: const Color(0xffF6F6F6),
                 child: Container(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Row(
-
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RichText(
+                              text: const TextSpan(
+                                  text: "Announcements  ",
+                                  style: TextStyle(
+                                      color: Color(0xff525252),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                  children: [
+                                TextSpan(
+                                    text: "2/3",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400))
+                              ])),
+                          Row(
+                            children: [
+                              SvgPicture.asset("assets/images/Group 248.svg"),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              SvgPicture.asset("assets/images/Group 249.svg"),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      const Text(
+                        "Short service for Independence Day",
+                        style: TextStyle(
+                            color: Color(0xffF06767),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Text(
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s......",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xff858585),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "1st July,2021",
+                            style: TextStyle(
+                                color: Color(0xff787878), fontSize: 10),
+                          ),
+                          ButtonTheme(
+                              height: 22,
+                              minWidth: 72,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4)),
+                              child: FlatButton(
+                                  color: const Color(0xff59C69C),
+                                  onPressed: () {},
+                                  child: const Text(
+                                    "View",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 12),
+                                  )))
+                        ],
                       )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+              child: Card(
+                elevation: 0,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(24))),
+                color: const Color(0xffF6F6F6),
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  isAddEmployee = true;
+                                  isClockIn = false;
+                                  isSchedule = false;
+                                  isTotalHours = false;
+                                  isEmployeeHistory = false;
+                                  isAddAdmin = false;
+                                });
+                              },
+                              child: Card(
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                color: isAddEmployee
+                                    ? const Color(0xffF06767)
+                                    : const Color(0xffFEEBEB),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * .36,
+                                  // height: MediaQuery.of(context).size.height*.18,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 36, 0, 24),
+                                  child: Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                          "assets/images/Group 178.svg"),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        "Add Employee",
+                                        style: TextStyle(
+                                            color: isAddEmployee
+                                                ? Colors.white
+                                                : Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * .04,
+                          ),
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: (){
+                                {
+                                  setState(() {
+                                    isAddEmployee = false;
+                                    isClockIn = true;
+                                    isSchedule = false;
+                                    isTotalHours = false;
+                                    isEmployeeHistory = false;
+                                    isAddAdmin = false;
+                                  });
+                                }
+                              },
+                              child: Card(
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                color: Color(isClockIn?0xffF06767:0xffFEEBEB),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * .5,
+                                  // height: MediaQuery.of(context).size.height*.33,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 36, 0, 24),
+                                  child: Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                          "assets/images/Group 179.svg"),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        "Clock In",
+                                        style: TextStyle(
+                                            color: isClockIn?Colors.white:Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width * .04,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: (){
+                                {
+                                  setState(() {
+                                    isAddEmployee = false;
+                                    isClockIn = false;
+                                    isSchedule = false;
+                                    isTotalHours = false;
+                                    isEmployeeHistory = false;
+                                    isAddAdmin = true;
+                                  });
+                                }
+                              },
+                              child: Card(
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                color: Color(isAddAdmin?0xffF06767:0xffFEEBEB),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * .5,
+                                  //height: MediaQuery.of(context).size.height*.33,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 36, 0, 24),
+                                  child: Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                          "assets/images/Group 180.svg"),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        "Add Admin",
+                                        style: TextStyle(
+                                            color: isAddAdmin?Colors.white:Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * .04,
+                          ),
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: (){
+                                {
+                                  setState(() {
+                                    isAddEmployee = false;
+                                    isClockIn = false;
+                                    isSchedule = false;
+                                    isTotalHours = true;
+                                    isEmployeeHistory = false;
+                                    isAddAdmin = false;
+                                  });
+                                }
+                              },
+                              child: Card(
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                color: Color(isTotalHours?0xffF06767:0xffFEEBEB),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * .5,
+                                  //height: MediaQuery.of(context).size.height*.33,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 36, 0, 24),
+                                  child: Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                          "assets/images/Group 181.svg"),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        "Total hours",
+                                        style: TextStyle(
+                                            color: isTotalHours?Colors.white:Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width * .04,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  isAddEmployee = false;
+                                  isClockIn = false;
+                                  isSchedule = true;
+                                  isTotalHours = false;
+                                  isEmployeeHistory = false;
+                                  isAddAdmin = false;
+                                });
+                              },
+                              child: Card(
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                color: Color(isSchedule?0xffF06767:0xffFEEBEB),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * .5,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 36, 0, 24),
+                                  child: Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                          "assets/images/Group 182.svg"),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        "Schedule",
+                                        style: TextStyle(
+                                            color: isSchedule?Colors.white:Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * .04,
+                          ),
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  isAddEmployee = false;
+                                  isClockIn = false;
+                                  isSchedule = false;
+                                  isTotalHours = false;
+                                  isEmployeeHistory = true;
+                                  isAddAdmin = false;
+                                });
+                              },
+                              child: Card(
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24))),
+                                color: Color(isEmployeeHistory?0xffF06767:0xffFEEBEB),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * .5,
+                                  //height: MediaQuery.of(context).size.height*.33,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 36, 0, 24),
+                                  child: Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                          "assets/images/Group 185.svg"),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        "Employee history",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: isEmployeeHistory?Colors.white:Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
