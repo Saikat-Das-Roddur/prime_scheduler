@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:prime_scheduler/views/add_employees.dart';
 
 class LoggedInHomeScreen extends StatefulWidget {
   const LoggedInHomeScreen({Key? key}) : super(key: key);
@@ -171,13 +173,12 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Flexible(
                             fit: FlexFit.loose,
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 setState(() {
                                   isAddEmployee = true;
                                   isClockIn = false;
@@ -186,6 +187,10 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                   isEmployeeHistory = false;
                                   isAddAdmin = false;
                                 });
+                                Navigator.push(
+                                    context, CupertinoPageRoute(builder: (context) =>
+                                const AddEmployees()
+                                ));
                               },
                               child: Card(
                                 elevation: 0,
@@ -196,7 +201,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     ? const Color(0xffF06767)
                                     : const Color(0xffFEEBEB),
                                 child: Container(
-                                  width: MediaQuery.of(context).size.width * .36,
+                                  width: MediaQuery.of(context).size.width * .5,
                                   // height: MediaQuery.of(context).size.height*.18,
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 36, 0, 24),
@@ -227,7 +232,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                           ),
                           Flexible(
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 {
                                   setState(() {
                                     isAddEmployee = false;
@@ -244,7 +249,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(24))),
-                                color: Color(isClockIn?0xffF06767:0xffFEEBEB),
+                                color:
+                                    Color(isClockIn ? 0xffF06767 : 0xffFEEBEB),
                                 child: Container(
                                   width: MediaQuery.of(context).size.width * .5,
                                   // height: MediaQuery.of(context).size.height*.33,
@@ -260,7 +266,9 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                       Text(
                                         "Clock In",
                                         style: TextStyle(
-                                            color: isClockIn?Colors.white:Colors.black,
+                                            color: isClockIn
+                                                ? Colors.white
+                                                : Colors.black,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500),
                                       )
@@ -280,7 +288,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                         children: [
                           Flexible(
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 {
                                   setState(() {
                                     isAddEmployee = false;
@@ -297,7 +305,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(24))),
-                                color: Color(isAddAdmin?0xffF06767:0xffFEEBEB),
+                                color:
+                                    Color(isAddAdmin ? 0xffF06767 : 0xffFEEBEB),
                                 child: Container(
                                   width: MediaQuery.of(context).size.width * .5,
                                   //height: MediaQuery.of(context).size.height*.33,
@@ -313,7 +322,9 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                       Text(
                                         "Add Admin",
                                         style: TextStyle(
-                                            color: isAddAdmin?Colors.white:Colors.black,
+                                            color: isAddAdmin
+                                                ? Colors.white
+                                                : Colors.black,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500),
                                       )
@@ -328,7 +339,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                           ),
                           Flexible(
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 {
                                   setState(() {
                                     isAddEmployee = false;
@@ -345,7 +356,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(24))),
-                                color: Color(isTotalHours?0xffF06767:0xffFEEBEB),
+                                color: Color(
+                                    isTotalHours ? 0xffF06767 : 0xffFEEBEB),
                                 child: Container(
                                   width: MediaQuery.of(context).size.width * .5,
                                   //height: MediaQuery.of(context).size.height*.33,
@@ -361,7 +373,9 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                       Text(
                                         "Total hours",
                                         style: TextStyle(
-                                            color: isTotalHours?Colors.white:Colors.black,
+                                            color: isTotalHours
+                                                ? Colors.white
+                                                : Colors.black,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500),
                                       )
@@ -381,7 +395,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                         children: [
                           Flexible(
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 setState(() {
                                   isAddEmployee = false;
                                   isClockIn = false;
@@ -396,7 +410,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(24))),
-                                color: Color(isSchedule?0xffF06767:0xffFEEBEB),
+                                color:
+                                    Color(isSchedule ? 0xffF06767 : 0xffFEEBEB),
                                 child: Container(
                                   width: MediaQuery.of(context).size.width * .5,
                                   padding:
@@ -411,7 +426,9 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                       Text(
                                         "Schedule",
                                         style: TextStyle(
-                                            color: isSchedule?Colors.white:Colors.black,
+                                            color: isSchedule
+                                                ? Colors.white
+                                                : Colors.black,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500),
                                       )
@@ -426,7 +443,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                           ),
                           Flexible(
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 setState(() {
                                   isAddEmployee = false;
                                   isClockIn = false;
@@ -441,7 +458,9 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(24))),
-                                color: Color(isEmployeeHistory?0xffF06767:0xffFEEBEB),
+                                color: Color(isEmployeeHistory
+                                    ? 0xffF06767
+                                    : 0xffFEEBEB),
                                 child: Container(
                                   width: MediaQuery.of(context).size.width * .5,
                                   //height: MediaQuery.of(context).size.height*.33,
@@ -458,7 +477,9 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                         "Employee history",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                            color: isEmployeeHistory?Colors.white:Colors.black,
+                                            color: isEmployeeHistory
+                                                ? Colors.white
+                                                : Colors.black,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500),
                                       )
@@ -472,6 +493,37 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Card(
+                elevation: 0,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(24))),
+                color: const Color(0xffF5F5F5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                        height: 56,
+                        width: 84,
+                        child: SvgPicture.asset("assets/images/Vector 49.svg"),
+                        padding: const EdgeInsets.all(14),
+                        decoration: const BoxDecoration(
+                            color: Color(0xffF06767),
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(48.0),
+                                bottomRight: Radius.circular(48.0),
+                                topLeft: Radius.circular(48.0),
+                                bottomLeft: Radius.circular(48.0)),)),
+                    //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 24.0),
+                      child: SvgPicture.asset("assets/images/Group 186.svg",),
+                    )
+                  ],
                 ),
               ),
             )
