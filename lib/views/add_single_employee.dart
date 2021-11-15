@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 
 class AddSingleEmployee extends StatefulWidget {
@@ -79,7 +80,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                       color: const Color(0xffF3F3F3),
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(24,8,36,24),
-                        child: TextField(
+                        child: const TextField(
 
                         ),
                       ),
@@ -90,9 +91,9 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(36))),
                     color: Color(0xffE4DFDF),
-                    child: SizedBox(width: 72,height: 18,child: Padding(
-                      padding: EdgeInsets.only(left: 16.0),
-                      child: Text("data",),
+                    child: SizedBox(height: 20,child: Padding(
+                      padding: EdgeInsets.only(left: 16.0, top: 2, right: 28),
+                      child: Text("Name",),
                     )),
                   ),
 
@@ -126,9 +127,9 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(36))),
                     color: Color(0xffE4DFDF),
-                    child: SizedBox(width: 72,height: 18,child: Padding(
-                      padding: EdgeInsets.only(left: 16.0),
-                      child: Text("data",),
+                    child: SizedBox(height: 20,child: Padding(
+                      padding: EdgeInsets.only(left: 16.0, top: 2, right: 28),
+                      child: Text("Email",),
                     )),
                   ),
 
@@ -162,9 +163,9 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(36))),
                     color: Color(0xffE4DFDF),
-                    child: SizedBox(width: 72,height: 18,child: Padding(
-                      padding: EdgeInsets.only(left: 16.0),
-                      child: Text("data",),
+                    child: SizedBox(height: 20,child: Padding(
+                      padding: EdgeInsets.only(left: 16.0, top: 2, right: 28),
+                      child: Text("Mobile",),
                     )),
                   ),
 
@@ -198,9 +199,9 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(36))),
                     color: Color(0xffE4DFDF),
-                    child: SizedBox(width: 72,height: 18,child: Padding(
-                      padding: EdgeInsets.only(left: 16.0),
-                      child: Text("data",),
+                    child: SizedBox(height: 20,child: Padding(
+                      padding: EdgeInsets.only(left: 16.0, right: 28,top: 2),
+                      child: Text("Social insurance number",),
                     )),
                   ),
 
@@ -234,9 +235,9 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(36))),
                     color: Color(0xffE4DFDF),
-                    child: SizedBox(width: 72,height: 18,child: Padding(
-                      padding: EdgeInsets.only(left: 16.0),
-                      child: Text("data",),
+                    child: SizedBox(height: 20,child: Padding(
+                      padding: EdgeInsets.only(left: 16.0,top: 2, right: 28),
+                      child: Text("Date of birth",),
                     )),
                   ),
 
@@ -244,7 +245,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                 ],
               ),
             ),
-            const SizedBox(height: 24,),
+            const SizedBox(height: 36,),
             GestureDetector(
               onTap: () {
                 // Navigator.push(
@@ -273,6 +274,17 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                   ),
                 ),
               ),
+            ),
+            const SizedBox(height: 36,),
+            const Padding(
+              padding: EdgeInsets.only(right: 36.0),
+              child: Text("Skip this employee",textAlign: TextAlign.end, style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w300,
+                decoration: TextDecoration.underline,
+                decorationThickness: 2,
+                decorationColor: Color(0xffF06767)
+              ),),
             ),
             const SizedBox(height: 24,),
             Padding(

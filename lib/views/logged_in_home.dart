@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:prime_scheduler/views/add_admin.dart';
 import 'package:prime_scheduler/views/add_employees.dart';
 
 class LoggedInHomeScreen extends StatefulWidget {
@@ -188,9 +189,10 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                   isAddAdmin = false;
                                 });
                                 Navigator.push(
-                                    context, CupertinoPageRoute(builder: (context) =>
-                                const AddEmployees()
-                                ));
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                            const AddEmployees()));
                               },
                               child: Card(
                                 elevation: 0,
@@ -289,16 +291,18 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                           Flexible(
                             child: GestureDetector(
                               onTap: () {
-                                {
-                                  setState(() {
-                                    isAddEmployee = false;
-                                    isClockIn = false;
-                                    isSchedule = false;
-                                    isTotalHours = false;
-                                    isEmployeeHistory = false;
-                                    isAddAdmin = true;
-                                  });
-                                }
+                                setState(() {
+                                  isAddEmployee = false;
+                                  isClockIn = false;
+                                  isSchedule = false;
+                                  isTotalHours = false;
+                                  isEmployeeHistory = false;
+                                  isAddAdmin = true;
+                                });
+                                Navigator.push(
+                                    context, CupertinoPageRoute(builder: (context) =>
+                                const AddAdmin()
+                                ));
                               },
                               child: Card(
                                 elevation: 0,
@@ -512,16 +516,19 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                         child: SvgPicture.asset("assets/images/Vector 49.svg"),
                         padding: const EdgeInsets.all(14),
                         decoration: const BoxDecoration(
-                            color: Color(0xffF06767),
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(48.0),
-                                bottomRight: Radius.circular(48.0),
-                                topLeft: Radius.circular(48.0),
-                                bottomLeft: Radius.circular(48.0)),)),
+                          color: Color(0xffF06767),
+                          borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(48.0),
+                              bottomRight: Radius.circular(48.0),
+                              topLeft: Radius.circular(48.0),
+                              bottomLeft: Radius.circular(48.0)),
+                        )),
                     //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
                     Padding(
                       padding: const EdgeInsets.only(right: 24.0),
-                      child: SvgPicture.asset("assets/images/Group 186.svg",),
+                      child: SvgPicture.asset(
+                        "assets/images/Group 186.svg",
+                      ),
                     )
                   ],
                 ),
