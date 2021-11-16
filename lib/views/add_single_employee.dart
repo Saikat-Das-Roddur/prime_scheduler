@@ -19,7 +19,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(36, 48.0, 36, 0),
+              padding: const EdgeInsets.fromLTRB(24, 56.0, 24, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -268,7 +268,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                   child: const Align(
                     child: Text(
                       "Save",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),
                     ),
                     alignment: Alignment.center,
                   ),

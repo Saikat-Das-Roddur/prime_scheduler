@@ -4,6 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prime_scheduler/views/add_admin.dart';
 import 'package:prime_scheduler/views/add_employees.dart';
+import 'package:prime_scheduler/views/clock_in.dart';
+import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 
 class LoggedInHomeScreen extends StatefulWidget {
   const LoggedInHomeScreen({Key? key}) : super(key: key);
@@ -235,16 +237,18 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                           Flexible(
                             child: GestureDetector(
                               onTap: () {
-                                {
-                                  setState(() {
-                                    isAddEmployee = false;
-                                    isClockIn = true;
-                                    isSchedule = false;
-                                    isTotalHours = false;
-                                    isEmployeeHistory = false;
-                                    isAddAdmin = false;
-                                  });
-                                }
+                                setState(() {
+                                  isAddEmployee = false;
+                                  isClockIn = true;
+                                  isSchedule = false;
+                                  isTotalHours = false;
+                                  isEmployeeHistory = false;
+                                  isAddAdmin = false;
+                                });
+                                Navigator.push(
+                                    context, CupertinoPageRoute(builder: (context) =>
+                                const ClockIn()
+                                ));
                               },
                               child: Card(
                                 elevation: 0,
@@ -300,9 +304,10 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                   isAddAdmin = true;
                                 });
                                 Navigator.push(
-                                    context, CupertinoPageRoute(builder: (context) =>
-                                const AddAdmin()
-                                ));
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                            const AddAdmin()));
                               },
                               child: Card(
                                 elevation: 0,
@@ -408,6 +413,11 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                   isEmployeeHistory = false;
                                   isAddAdmin = false;
                                 });
+                                Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                        const ScheduleWelcomeScreen()));
                               },
                               child: Card(
                                 elevation: 0,
