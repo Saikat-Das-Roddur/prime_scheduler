@@ -47,6 +47,8 @@ class AddEmployees extends StatelessWidget {
 
             Container(
               //color: Color(0xff59C69C),
+              //height: MediaQuery.of(context).size.height*.5,
+              alignment: Alignment.bottomCenter,
               decoration: const BoxDecoration(
                   color: Color(0xff59C69C),
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(36), topRight: Radius.circular(36))

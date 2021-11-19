@@ -32,6 +32,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "cloud_firestore",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-0.12.11",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "collection",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0",
       "packageUri": "lib/",
@@ -56,6 +62,54 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "firebase",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase-7.3.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.7"
+    },
+    {
+      "name": "firebase_analytics",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_analytics-5.0.16",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_analytics_platform_interface",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_analytics_platform_interface-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "firebase_analytics_web",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_analytics_web-0.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.7"
+    },
+    {
+      "name": "firebase_auth",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth-0.14.0+9",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_core",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-0.4.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_core_platform_interface",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_platform_interface-1.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "firebase_core_web",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-0.1.1+2",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/packages/flutter",
       "packageUri": "lib/",
@@ -76,6 +130,30 @@
     {
       "name": "flutter_test",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/packages/flutter_test",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_web_plugins",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/packages/flutter_web_plugins",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "http",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.12.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.4"
+    },
+    {
+      "name": "http_parser",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.3"
+    },
+    {
+      "name": "js",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/js-0.6.3",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -116,10 +194,28 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "pedantic",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/pedantic-1.11.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "petitparser",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/petitparser-4.4.0",
       "packageUri": "lib/",
       "languageVersion": "2.14"
+    },
+    {
+      "name": "plugin_platform_interface",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/plugin_platform_interface-1.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "quiver",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/quiver-2.1.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
     },
     {
       "name": "sizer",
@@ -200,7 +296,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-11-12T07:09:00.908438Z",
+  "generated": "2021-11-19T07:54:44.274527Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }

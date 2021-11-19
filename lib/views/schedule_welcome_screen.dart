@@ -10,158 +10,147 @@ class ScheduleWelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffF06767),//Colors.white,
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              color: Color(0xffF06767),//const Color(0xffF1F1F1),
-              child: Column(
-                children: [
-                  // Padding(
-                  //   padding: const EdgeInsets.fromLTRB(24, 56.0, 24, 24),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //     crossAxisAlignment: CrossAxisAlignment.center,
-                  //     mainAxisSize: MainAxisSize.max,
-                  //     children: [
-                  //       Flexible(
-                  //         flex: 1,
-                  //         child: Align(
-                  //           alignment: Alignment.centerLeft,
-                  //           child: GestureDetector(
-                  //             onTap: () {
-                  //               Navigator.pop(context);
-                  //             },
-                  //             child: SvgPicture.asset(
-                  //               "assets/images/Vector 31.svg",
-                  //               color: Colors.white,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       const Flexible(
-                  //           flex: 3,
-                  //           child: Align(
-                  //             alignment: Alignment.center,
-                  //             child: Text(
-                  //               "Clock In & Out",
-                  //               style: TextStyle(
-                  //                   color: Colors.white,
-                  //                   fontWeight: FontWeight.w500,
-                  //                   fontSize: 19
-                  //               ),
-                  //             ),
-                  //           )),
-                  //       Flexible(
-                  //           flex: 1,
-                  //           child: Align(
-                  //             alignment: Alignment.centerRight,
-                  //             child: SvgPicture.asset(
-                  //               "assets/images/Group 176.svg",
-                  //               color: Colors.white,
-                  //             ),
-                  //           )),
-                  //     ],
-                  //   ),
-                  // ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 56.0,left: 24),
-                        child: SvgPicture.asset(
-                          "assets/images/Vector 31.svg",
-                          color: Colors.white,
+        child: SizedBox(
+          //height: MediaQuery.of(context).size.height,
+          child: Column(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                //height: MediaQuery.of(context).size.height*.5,
+                color: Color(0xffF06767),//const Color(0xffF1F1F1),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 56.0,left: 24),
+                          child: SvgPicture.asset(
+                            "assets/images/Vector 31.svg",
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 24.0,bottom: 36),
-                    child: SvgPicture.asset("assets/images/Group 216.svg", width: MediaQuery.of(context).size.width,),
-                  ),
-                ],
-              ),
-            ),
-
-
-            //const SizedBox(height: 24,),
-
-            Container(
-              //color: Color(0xff59C69C),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(36), topRight: Radius.circular(36))
-              ),
-              padding: const EdgeInsets.fromLTRB(36.0,0,36, 36),
-              //alignment: Alignment.bottomCenter,
-              child: Stack(
-                children: [
-
-                  const Text("Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w200
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24.0, top: 48),
+                      child: SvgPicture.asset("assets/images/Group 216.svg", width: MediaQuery.of(context).size.width,),
                     ),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height*.03,),
-                  RichText(text: const TextSpan(
-                      text: "Please enter your ",
+                  ],
+                ),
+              ),
+               //const Spacer(),
+
+              //const SizedBox(height: 24,),
+
+              Container(
+                //color: Color(0xff59C69C),
+                //height: MediaQuery.of(context).size.height*.5,
+
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(36), topRight: Radius.circular(36))
+                ),
+                padding: const EdgeInsets.fromLTRB(36,48,36, 36),
+                //alignment: Alignment.bottomCenter,
+                child: Column(
+
+                  children: [
+                    const Text(
+                      "Welcome to your team schedule",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: Color(0xffF06767),
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height*.03,),
+                    const Text("Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+                      textAlign: TextAlign.start,
                       style: TextStyle(
                           color: Colors.black,
-                          fontWeight: FontWeight.w300,
-                          fontSize: 18
-                      ),
-                      children: [
-                        TextSpan(
-                            text: "PIN",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18
-                            )
-                        )
-                      ]
-                  )),
-
-
-                  SizedBox(height: MediaQuery.of(context).size.height*.12,),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context, CupertinoPageRoute(builder: (c) => const AddSingleEmployee()));
-                    },
-                    child: Container(
-                      //color: ,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                          color: Color(0xff59C69C),
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(24),
-                              topRight: Radius.circular(24),
-                              bottomLeft: Radius.circular(14),
-                              bottomRight: Radius.circular(14))),
-                      child: const Align(
-                        child: Text(
-                          "Clock In",
-                          style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500, color: Colors.white),
-                        ),
-                        alignment: Alignment.center,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w200
                       ),
                     ),
-                  ),
+                    SizedBox(height: MediaQuery.of(context).size.height*.08,),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigator.push(
+                        //     context, CupertinoPageRoute(builder: (context) =>
+                        // const LogInScreen()
+                        // ));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 0, left: 0),
+                        child: Container(
+                          //color: ,
+                          height: 50,
+                          decoration: const BoxDecoration(
+                              color: Color(0xFFF06767),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                  bottomLeft: Radius.circular(14),
+                                  bottomRight: Radius.circular(14))),
+                          child: const Align(
+                            child: Text(
+                              "Add Schedule",
+                              style: TextStyle(fontSize:18, fontWeight: FontWeight.w500, color: Colors.white),
+                            ),
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * .03,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigator.push(
+                        //     context, CupertinoPageRoute(builder: (context) =>
+                        // const Step1()
+                        // ));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 0, left: 0),
+                        child: Container(
+                          //color: ,
+                          height: 50,
+                          decoration: const BoxDecoration(
+                              color: Color(0xFF59C69C),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(14),
+                                  topRight: Radius.circular(14),
+                                  bottomLeft: Radius.circular(24),
+                                  bottomRight: Radius.circular(24))),
+                          child: const Align(
+                            child: Text(
+                              "View Schedule",
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),
+                            ),
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                      ),
+                    ),
 
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              //const Spacer(),
+            ],
+          ),
         ),
       ),
     );

@@ -61,7 +61,7 @@ class AddAdmin extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Text("Add employees", style: TextStyle(
+                    const Text("Add admin", style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
                         fontSize: 25

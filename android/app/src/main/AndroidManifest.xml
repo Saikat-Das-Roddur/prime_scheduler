@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.prime_scheduler">
+    package="com.prime_scheduler">
    <application
         android:label="prime_scheduler"
         android:icon="@mipmap/ic_launcher">
