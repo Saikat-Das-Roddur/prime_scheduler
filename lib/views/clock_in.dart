@@ -61,8 +61,8 @@ class _ClockInState extends State<ClockIn> {
                                 "Clock In & Out",
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 19),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 22),
                               ),
                             )),
                         Flexible(

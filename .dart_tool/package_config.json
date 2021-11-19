@@ -200,6 +200,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "percent_indicator",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/percent_indicator-3.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "petitparser",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/petitparser-4.4.0",
       "packageUri": "lib/",
@@ -296,7 +302,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-11-19T07:54:44.274527Z",
+  "generated": "2021-11-19T14:42:50.831654Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }

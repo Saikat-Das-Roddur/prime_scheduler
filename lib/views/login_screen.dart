@@ -192,18 +192,25 @@ class _LogInScreenState extends State<LogInScreen> {
                     //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Flexible(
+                        flex: 2,
+                          fit: FlexFit.loose,
                           child: Padding(
                         padding: const EdgeInsets.fromLTRB(24.0, 4, 24, 4),
                         child: SvgPicture.asset("assets/images/Group 166.svg"),
                       )),
                       const Expanded(
-                        child: Text(
-                          "LogIn with google",
-                          textAlign: TextAlign.center,
-                          style:
-                              TextStyle(fontSize: 16, color: Color(0xFFF06767)),
+                        flex: 2,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 16.0),
+                          child: Text(
+                            "LogIn with google",
+                            textAlign: TextAlign.end,
+                            style:
+                                TextStyle(fontSize: 16, color: Color(0xFFF06767)),
+                          ),
                         ),
                       ),
+
                     ],
                   ),
                 ),

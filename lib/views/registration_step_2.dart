@@ -185,7 +185,10 @@ class _Step2State extends State<Step2> {
                   ),
                 ),
               ),
-            )
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.width*.02,
+            ),
 
           ],
         ),
