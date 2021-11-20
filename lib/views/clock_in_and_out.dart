@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:prime_scheduler/views/all_clock_in_out.dart';
+import 'package:prime_scheduler/views/clock_out.dart';
 
 class ClockInAndOut extends StatefulWidget {
   const ClockInAndOut({Key? key}) : super(key: key);
@@ -112,9 +114,10 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                                   height: 20,
                                   child: Padding(
                                     padding: EdgeInsets.only(
-                                        left: 16.0, top: 2, right: 28),
+                                        left: 16.0, top: 4,bottom: 4, right: 28),
                                     child: Text(
                                       "Your Remaining hours 6.00 HRS",
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500,
                                           fontSize: 12),
@@ -130,15 +133,21 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                               animationDuration: 1200,
                               lineWidth: 15.0,
                               percent: 0.4,
-                              center: const CircleAvatar(
-                                radius: 65,
-                                backgroundColor: Color(0xff59C69C),
-                                child: Text(
-                                  "Clock out",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 22.0),
+                              center: GestureDetector(
+                                onTap: (){
+                                  Navigator.push(
+                                      context, CupertinoPageRoute(builder: (c) => const ClockOut()));
+                                },
+                                child: const CircleAvatar(
+                                  radius: 65,
+                                  backgroundColor: Color(0xff59C69C),
+                                  child: Text(
+                                    "Clock out",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 22.0),
+                                  ),
                                 ),
                               ),
                               circularStrokeCap: CircularStrokeCap.butt,

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prime_scheduler/views/add_admin.dart';
 import 'package:prime_scheduler/views/add_employees.dart';
 import 'package:prime_scheduler/views/clock_in.dart';
+import 'package:prime_scheduler/views/employee_history.dart';
 import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 
 class LoggedInHomeScreen extends StatefulWidget {
@@ -466,6 +467,12 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                   isEmployeeHistory = true;
                                   isAddAdmin = false;
                                 });
+                                Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                        const EmployeeHistory(
+                                        )));
                               },
                               child: Card(
                                 elevation: 0,

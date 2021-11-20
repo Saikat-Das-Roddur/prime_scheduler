@@ -49,7 +49,6 @@ class _AllClockInOutState extends State<AllClockInOut> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 56.0, 24, 0),
               child: Row(
@@ -67,7 +66,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                         },
                         child: SvgPicture.asset(
                           "assets/images/Vector 31.svg",
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -79,7 +78,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                         child: Text(
                           "Clock In & Out",
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontWeight: FontWeight.w700,
                               fontSize: 22),
                         ),
@@ -90,7 +89,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                         alignment: Alignment.centerRight,
                         child: SvgPicture.asset(
                           "assets/images/Group 176.svg",
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       )),
                 ],
@@ -100,7 +99,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                 shrinkWrap: true,
                 physics: const ScrollPhysics(),
                 itemCount: 7,
-                padding: EdgeInsets.zero,
+                //padding: EdgeInsets.zero,
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(left: 16.0,right: 16, bottom: 16),
                   child: Card(
