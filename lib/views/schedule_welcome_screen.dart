@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:prime_scheduler/views/schedule_list.dart';
+import 'package:prime_scheduler/views/view_schedule.dart';
 
 import 'add_single_employee.dart';
 
@@ -117,10 +119,10 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Navigator.push(
-                        //     context, CupertinoPageRoute(builder: (context) =>
-                        // const Step1()
-                        // ));
+                        Navigator.push(
+                            context, CupertinoPageRoute(builder: (context) =>
+                        const ScheduleLists()
+                        ));
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(right: 0, left: 0),

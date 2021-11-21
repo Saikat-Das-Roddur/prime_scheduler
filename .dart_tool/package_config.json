@@ -290,6 +290,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "wheel_chooser",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/wheel_chooser-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "xml",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/xml-5.3.1",
       "packageUri": "lib/",
@@ -302,7 +308,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-11-19T14:42:50.831654Z",
+  "generated": "2021-11-21T15:47:02.772243Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }
