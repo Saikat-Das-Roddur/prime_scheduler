@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class AllClockInOut extends StatefulWidget {
   const AllClockInOut({Key? key}) : super(key: key);
@@ -9,8 +12,11 @@ class AllClockInOut extends StatefulWidget {
 }
 
 class _AllClockInOutState extends State<AllClockInOut> {
+  int _toHour = DateTime.now().hour;
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
@@ -95,11 +101,95 @@ class _AllClockInOutState extends State<AllClockInOut> {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24,36,24.0,36),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                       final newValue = _toHour-1;
+                        // if(_toHour<0){
+                        //   _toHour = 1;
+                        // }
+                        _toHour = newValue.clamp(1, 12);
+                      });
+
+                    },
+                    child: SvgPicture.asset(
+                      "assets/images/Group 201.svg",
+                      color: Colors.black,
+                    ),
+                  ),
+                  //SizedBox(width: 4,),
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        NumberPicker(
+                          value: _toHour,
+                          itemHeight: 32,
+                          itemWidth: 110,
+                          minValue: 1,
+                          maxValue: 12,
+                          //zeroPad: true,
+                          axis: Axis.horizontal,
+                          // decoration: BoxDecoration(
+                          //   border: Border(
+                          //     bottom: BorderSide(
+                          //       color: Colors.black,
+                          //       width: 4,
+                          //     )
+                          //   )
+                          // ),
+                          //step: 10,
+                          haptics: true,
+                          infiniteLoop: true,
+                          selectedTextStyle: const TextStyle(
+                              color: Color(0xff59C69C),
+                              fontSize: 22,
+                              // decoration: TextDecoration.underline,
+                              // decorationThickness: 4,
+                              // decorationColor: Color(0xffC8C8C8),
+                              fontWeight: FontWeight.w400
+                          ),
+                          textStyle: const TextStyle(
+                              color: Color(0xffB4B4B4),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400
+                          ),
+                          textMapper: (text) =>  DateFormat.MMMM().format(DateTime(DateTime.now().year,int.parse(text))),
+                          onChanged: (value) => setState(() => _toHour = value),
+                        ),
+                        SizedBox(height: 4, width: 36, child: Container( decoration: BoxDecoration(
+                            color: Color(0xffF06767),
+                            borderRadius: BorderRadius.circular(36)
+                        ),),),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 8,),
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        final newValue = _toHour +1;
+                        _toHour = newValue.clamp(1, 12);
+                      });
+
+                    },
+                    child: SvgPicture.asset(
+                      "assets/images/Group 202.svg",
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             ListView.builder(
                 shrinkWrap: true,
                 physics: const ScrollPhysics(),
                 itemCount: 7,
-                //padding: EdgeInsets.zero,
+                padding: EdgeInsets.zero,
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(left: 16.0,right: 16, bottom: 16),
                   child: Card(
