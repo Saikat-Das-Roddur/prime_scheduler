@@ -12,7 +12,7 @@ class AllClockInOut extends StatefulWidget {
 }
 
 class _AllClockInOutState extends State<AllClockInOut> {
-  int _toHour = DateTime.now().hour;
+  int _toHour = DateTime.now().month;
 
   @override
   Widget build(BuildContext context) {

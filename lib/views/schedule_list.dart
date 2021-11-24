@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:prime_scheduler/views/view_schedule.dart';
 
 import 'active_details.dart';
@@ -13,6 +15,8 @@ class ScheduleLists extends StatefulWidget {
 }
 
 class _ScheduleListsState extends State<ScheduleLists> {
+  int _day = DateTime.now().day;
+  int _month = DateTime.now().month;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,13 +27,161 @@ class _ScheduleListsState extends State<ScheduleLists> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              height: 150,
               margin: const EdgeInsets.only(top: 56, left: 12, right: 12),
+              padding: EdgeInsets.all(24),
               decoration: const BoxDecoration(
                 color: Color(0xffF0EFFF),
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(36),
                     topLeft: Radius.circular(36)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final newValue = _month - 1;
+                            // if(_toHour<0){
+                            //   _toHour = 1;
+                            // }
+                            // DateUtils.getDaysInMonth(
+                            //     DateTime.now().year, newValue);
+                            _month = newValue.clamp(1, 12);
+                            _day = 1;
+
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          "assets/images/Group 247.svg",
+                          // color: Colors.black,
+                        ),
+                      ),
+                      //SizedBox(width: 4,),
+                      Flexible(
+                        child: Column(
+                          children: [
+                            NumberPicker(
+                              value: _month,
+                              itemHeight: 32,
+                              itemWidth: 110,
+                              minValue: 1,
+                              maxValue: 12,
+                              itemCount: 1,
+                              //zeroPad: true,
+                              axis: Axis.horizontal,
+                              // decoration: BoxDecoration(
+                              //   border: Border(
+                              //     bottom: BorderSide(
+                              //       color: Colors.black,
+                              //       width: 4,
+                              //     )
+                              //   )
+                              // ),
+                              //step: 10,
+                              haptics: true,
+                              infiniteLoop: true,
+                              selectedTextStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  // decoration: TextDecoration.underline,
+                                  // decorationThickness: 4,
+                                  // decorationColor: Color(0xffC8C8C8),
+                                  fontWeight: FontWeight.w400),
+                              // textStyle: const TextStyle(
+                              //     color: Colors.transparent,
+                              //     fontSize: 0,
+                              // ),
+                              textMapper: (text) => DateFormat.MMMM().format(
+                                  DateTime(
+                                      DateTime.now().year, int.parse(text))),
+                              onChanged: (value) {
+                                setState(() {
+                                  _month = value;
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              height: 2,
+                              width: 24,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Color(0xff59C69C),
+                                    borderRadius: BorderRadius.circular(36)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final newValue = _month + 1;
+                            _month = newValue.clamp(1, 12);
+                            _day = 1;
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          "assets/images/Group 252.svg",
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Stack(
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 64,
+                          width: 56,
+                          decoration: BoxDecoration(
+                              color: Color(0xff59C69C),
+                              borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, right: 8),
+                        child: NumberPicker(
+                          value: _day,
+                          itemWidth: 64,
+                          minValue: 1,
+                          maxValue: DateUtils.getDaysInMonth(
+                              DateTime.now().year, _month),
+                          //DateTime(DateTime.now().year,_month).day,
+                          itemCount: 5,
+                          // step: 10,
+                          zeroPad: true,
+                          axis: Axis.horizontal,
+                          //step: 10,
+                          haptics: true,
+                          infiniteLoop: true,
+                          selectedTextStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              // decoration: TextDecoration.underline,
+                              // decorationThickness: 4,
+                              // decorationColor: Color(0xffC8C8C8),
+                              fontWeight: FontWeight.w500),
+                          textStyle: const TextStyle(
+                            color: Color(0xff7B7B7B),
+                            fontSize: 14,
+                          ),
+                          textMapper: (text) {
+                            return DateFormat("EEE").format(DateTime(
+                                DateTime.now().year,_month,int.parse(text))) +
+                                "\n\n" +text;
+                          },
+                          onChanged: (value) => setState(() => _day = value),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
             Container(
