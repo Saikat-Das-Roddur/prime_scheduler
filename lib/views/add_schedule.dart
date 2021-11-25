@@ -185,6 +185,7 @@ class _AddScheduleState extends State<AddSchedule> {
                     height: 16,
                   ),
                   Stack(
+                    alignment: Alignment.center,
                     children: [
                       Center(
                         child: Container(
@@ -195,39 +196,41 @@ class _AddScheduleState extends State<AddSchedule> {
                               borderRadius: BorderRadius.circular(8)),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, right: 8),
-                        child: NumberPicker(
-                          value: _day,
-                          itemWidth: 64,
-                          minValue: 1,
-                          maxValue: DateUtils.getDaysInMonth(
-                              DateTime.now().year, _month),
-                          //DateTime(DateTime.now().year,_month).day,
-                          itemCount: 5,
-                          // step: 10,
-                          zeroPad: true,
-                          axis: Axis.horizontal,
-                          //step: 10,
-                          haptics: true,
-                          infiniteLoop: true,
-                          selectedTextStyle: const TextStyle(
-                              color: Colors.white,
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0, right: 8),
+                          child: NumberPicker(
+                            value: _day,
+                            itemWidth: 64,
+                            minValue: 1,
+                            maxValue: DateUtils.getDaysInMonth(
+                                DateTime.now().year, _month),
+                            //DateTime(DateTime.now().year,_month).day,
+                            itemCount: 5,
+                            // step: 10,
+                            zeroPad: true,
+                            axis: Axis.horizontal,
+                            //step: 10,
+                            haptics: true,
+                            infiniteLoop: true,
+                            selectedTextStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                // decoration: TextDecoration.underline,
+                                // decorationThickness: 4,
+                                // decorationColor: Color(0xffC8C8C8),
+                                fontWeight: FontWeight.w500),
+                            textStyle: const TextStyle(
+                              color: Color(0xff7B7B7B),
                               fontSize: 14,
-                              // decoration: TextDecoration.underline,
-                              // decorationThickness: 4,
-                              // decorationColor: Color(0xffC8C8C8),
-                              fontWeight: FontWeight.w500),
-                          textStyle: const TextStyle(
-                            color: Color(0xff7B7B7B),
-                            fontSize: 14,
+                            ),
+                            textMapper: (text) {
+                              return DateFormat("EEE").format(DateTime(
+                                      DateTime.now().year,_month,int.parse(text))) +
+                                  "\n\n" +text;
+                            },
+                            onChanged: (value) => setState(() => _day = value),
                           ),
-                          textMapper: (text) {
-                            return DateFormat("EEE").format(DateTime(
-                                    DateTime.now().year,_month,int.parse(text))) +
-                                "\n\n" +text;
-                          },
-                          onChanged: (value) => setState(() => _day = value),
                         ),
                       ),
                     ],

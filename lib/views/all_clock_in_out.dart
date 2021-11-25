@@ -104,6 +104,8 @@ class _AllClockInOutState extends State<AllClockInOut> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24,36,24.0,36),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: (){
@@ -168,7 +170,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 8,),
+                 // SizedBox(width: 8,),
                   GestureDetector(
                     onTap: (){
                       setState(() {

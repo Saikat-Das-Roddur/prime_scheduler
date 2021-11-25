@@ -134,6 +134,7 @@ class _ScheduleListsState extends State<ScheduleLists> {
                     height: 16,
                   ),
                   Stack(
+                    alignment: Alignment.center,
                     children: [
                       Center(
                         child: Container(
