@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class Step3 extends StatefulWidget {
-  const Step3({Key? key}) : super(key: key);
+  Map map;
+  Step3({Key? key, required this.map}) : super(key: key);
 
   @override
   _Step3State createState() => _Step3State();

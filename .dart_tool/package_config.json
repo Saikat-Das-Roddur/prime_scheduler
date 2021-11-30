@@ -146,6 +146,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "fluttertoast",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-8.0.8",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "http",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.12.2",
       "packageUri": "lib/",
@@ -332,7 +338,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-11-24T19:37:07.453394Z",
+  "generated": "2021-11-30T16:41:40.524761Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }
