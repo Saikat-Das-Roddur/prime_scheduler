@@ -17,9 +17,9 @@ class _Step2State extends State<Step2> {
   TextEditingController _companyNameController = TextEditingController();
   TextEditingController _companyEmailController = TextEditingController();
   TextEditingController _companyPhoneController = TextEditingController();
-
-  Pattern p =
-      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
+  bool isValidEmail = false;
+  RegExp _emailExp = RegExp(
+          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +101,9 @@ class _Step2State extends State<Step2> {
                 controller: _companyEmailController,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.emailAddress,
+                onChanged: (v){
+                    isValidEmail = _emailExp.hasMatch(v);
+                },
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   enabledBorder: OutlineInputBorder(
@@ -205,17 +208,15 @@ class _Step2State extends State<Step2> {
                 } else if (_companyPhoneController.text.trim().length != 11) {
                   Fluttertoast.showToast(msg: "Contact no must be 11 letters");
                   return;
-                } else if (!_companyEmailController.text.contains("@") ||
-                    !_companyEmailController.text.contains(".")) {
+                } else if (!isValidEmail) {
                   Fluttertoast.showToast(msg: "Invalid email");
                   return;
                 } else {
-                  Map map = widget.map;
-                  map['company_name'] = _companyNameController.text;
-                  map['company_email'] = _companyEmailController.text;
-                  map['company_phone'] = _companyPhoneController.text;
+                  widget.map['company_name'] = _companyNameController.text;
+                  widget.map['company_email'] = _companyEmailController.text;
+                  widget.map['company_phone'] = _companyPhoneController.text;
                   Navigator.push(context,
-                      CupertinoPageRoute(builder: (c) => Step3(map: map)));
+                      CupertinoPageRoute(builder: (c) => Step3(map: widget.map)));
                 }
               },
               child: Padding(

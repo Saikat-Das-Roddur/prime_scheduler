@@ -2,7 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:prime_scheduler/bloc/log_in_bloc.dart';
+import 'package:prime_scheduler/views/clock_in.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 import 'registration_step_1.dart';
 
@@ -14,10 +18,26 @@ class LogInScreen extends StatefulWidget {
 }
 
 class _LogInScreenState extends State<LogInScreen> {
-  bool passwordVisible = false, value = false;
+  bool passwordVisible = false, value = false, isValidEmail = false, isValidPassword = false;
+
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  RegExp _regExp = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$'),
+      _emailExp = RegExp(
+          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+  ProgressDialog? progressDialog;
+  late LogInBloc _bloc;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _bloc = LogInBloc();
+  }
 
   @override
   Widget build(BuildContext context) {
+    progressDialog = ProgressDialog(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -64,7 +84,11 @@ class _LogInScreenState extends State<LogInScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
               child: TextField(
+                controller: _emailController,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.emailAddress,
                 cursorColor: Colors.grey,
+                onChanged: (v) => isValidEmail = _emailExp.hasMatch(v),
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   enabledBorder: OutlineInputBorder(
@@ -94,8 +118,12 @@ class _LogInScreenState extends State<LogInScreen> {
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
               child: TextField(
                 keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
                 obscureText: passwordVisible,
+                maxLength: 8,
+                controller: _passwordController,
                 cursorColor: Colors.grey,
+                onChanged: (v) => isValidPassword = _regExp.hasMatch(v),
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -142,8 +170,23 @@ class _LogInScreenState extends State<LogInScreen> {
 
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                    context, CupertinoPageRoute(builder: (c) => const LoggedInHomeScreen()));
+
+                if (!isValidEmail) {
+                  Fluttertoast.showToast(msg: "Enter valid email");
+                  return;
+                } else if (!isValidPassword) {
+                  Fluttertoast.showToast(
+                      msg: "Password not valid");
+                  return;
+                }else {
+                  Map map = Map();
+                  map['email'] = _emailController.text;
+                  map['password'] = _passwordController.text;
+                  //widget.map['is_admin'] = 0;
+                  print(map);
+                  signIn(map);
+
+                }
               },
               child: Padding(
                 padding: const EdgeInsets.only(right: 24, left: 24),
@@ -254,5 +297,31 @@ class _LogInScreenState extends State<LogInScreen> {
         ),
       ),
     );
+  }
+
+  void signIn(Map map) {
+    progressDialog?.show();
+    _bloc.signIn(body: map).then((value){
+      print(value?.user?.email);
+      if(value?.user?.statusCode==200){
+        progressDialog?.hide();
+        Fluttertoast.showToast(msg: "${value?.user?.message}");
+        if(value?.user?.isAdmin=="0"){
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (c) => const LoggedInHomeScreen()));
+        }else{
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (c) => const ClockIn()));
+        }
+
+      }else{
+        progressDialog?.hide();
+        Fluttertoast.showToast(msg: "${value?.user?.message}");
+      }
+    });
   }
 }

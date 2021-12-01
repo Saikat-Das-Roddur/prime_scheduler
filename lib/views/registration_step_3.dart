@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:prime_scheduler/bloc/step_3_bloc.dart';
+import 'package:prime_scheduler/views/logged_in_home.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class Step3 extends StatefulWidget {
   Map map;
+
   Step3({Key? key, required this.map}) : super(key: key);
 
   @override
@@ -11,10 +16,26 @@ class Step3 extends StatefulWidget {
 }
 
 class _Step3State extends State<Step3> {
-  bool passwordVisible = false, value = false;
+  late Step3Bloc _step3bloc;
+  bool passwordVisible = true, value = false, isValidEmail = false, isValidPassword = false;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  RegExp _regExp = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$'),
+      _emailExp = RegExp(
+          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+  ProgressDialog? progressDialog;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _step3bloc = Step3Bloc();
+
+  }
 
   @override
   Widget build(BuildContext context) {
+    progressDialog = ProgressDialog(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -57,7 +78,11 @@ class _Step3State extends State<Step3> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
               child: TextField(
+                controller: _emailController,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.emailAddress,
                 cursorColor: Colors.grey,
+                onChanged: (v) => isValidEmail = _emailExp.hasMatch(v),
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   enabledBorder: OutlineInputBorder(
@@ -87,8 +112,12 @@ class _Step3State extends State<Step3> {
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
               child: TextField(
                 keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
                 obscureText: passwordVisible,
+                maxLength: 8,
+                controller: _passwordController,
                 cursorColor: Colors.grey,
+                onChanged: (v) => isValidPassword = _regExp.hasMatch(v),
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -201,6 +230,25 @@ class _Step3State extends State<Step3> {
             ),
             GestureDetector(
               onTap: () {
+                if (!isValidEmail) {
+                  Fluttertoast.showToast(msg: "Enter valid email");
+                  return;
+                } else if (!isValidPassword) {
+                  Fluttertoast.showToast(
+                      msg: "Password not valid");
+                  return;
+                } else if (value == false) {
+                  Fluttertoast.showToast(
+                      msg: "Terms and conditions not accepted");
+                  return;
+                } else {
+                  widget.map['email'] = _emailController.text;
+                  widget.map['password'] = _passwordController.text;
+                  //widget.map['is_admin'] = 0;
+                  print(widget.map);
+                  signUp();
+
+                }
                 // Navigator.push(
                 //     context, CupertinoPageRoute(builder: (c) => const Step3()));
               },
@@ -227,11 +275,27 @@ class _Step3State extends State<Step3> {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.width*.02,
+              height: MediaQuery.of(context).size.width * .02,
             ),
           ],
         ),
       ),
     );
+  }
+
+  void signUp() {
+    progressDialog?.show();
+    _step3bloc.signUp(body: widget.map).then((value){
+      if(value?.status==200){
+        progressDialog?.hide();
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (c) => const LoggedInHomeScreen()));
+      }else{
+        progressDialog?.hide();
+        Fluttertoast.showToast(msg: "${value?.message}");
+      }
+    });
   }
 }

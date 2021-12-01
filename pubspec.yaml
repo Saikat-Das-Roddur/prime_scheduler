@@ -46,6 +46,12 @@ dependencies:
   date_picker_timeline: ^1.2.3
   intl: ^0.17.0
   fluttertoast: ^8.0.8
+  http_parser: ^3.1.4
+  async: ^2.8.1
+  html: ^0.15.0
+  http: ^0.12.2
+  shared_preferences: ^2.0.9
+  progress_dialog: ^1.2.4
 
 
 dev_dependencies:
