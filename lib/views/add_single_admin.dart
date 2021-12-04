@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:prime_scheduler/bloc/add_admin_bloc.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 import 'logged_in_home.dart';
@@ -22,6 +23,7 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _mobileController = TextEditingController();
   AddAdminBloc? _addAdminBloc;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool isValidEmail = false;
   ProgressDialog? progressDialog;
   RegExp _emailExp = RegExp(
@@ -37,6 +39,8 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: CustomEndDrawer(),
       body: SingleChildScrollView(
         child: Container(
           //height: MediaQuery.of(context).size.height,
@@ -81,9 +85,14 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
                         flex: 1,
                         child: Align(
                           alignment: Alignment.centerRight,
-                          child: SvgPicture.asset(
-                            "assets/images/Group 176.svg",
-                            color: const Color(0xff050505),
+                          child: GestureDetector(
+                            onTap: (){
+                              _scaffoldKey.currentState?.openEndDrawer();
+                            },
+                            child: SvgPicture.asset(
+                              "assets/images/Group 176.svg",
+                              color: const Color(0xff050505),
+                            ),
                           ),
                         )),
                   ],

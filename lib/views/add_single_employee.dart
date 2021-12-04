@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:prime_scheduler/bloc/add_employee_bloc.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -25,6 +26,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
   TextEditingController _mobileController = TextEditingController();
   TextEditingController _socialInsuranceNoController = TextEditingController();
   TextEditingController _dobController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   DateTime dateTime = DateTime.now();
   String dob = "";
   bool isValidEmail = false,
@@ -49,6 +51,8 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
   Widget build(BuildContext context) {
     progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: CustomEndDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -91,9 +95,14 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                       flex: 1,
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: SvgPicture.asset(
-                          "assets/images/Group 176.svg",
-                          color: const Color(0xff050505),
+                        child: GestureDetector(
+                          onTap: (){
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
+                          child: SvgPicture.asset(
+                            "assets/images/Group 176.svg",
+                            color: const Color(0xff050505),
+                          ),
                         ),
                       )),
                 ],

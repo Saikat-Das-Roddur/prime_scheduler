@@ -6,6 +6,7 @@ import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/add_admin.dart';
 import 'package:prime_scheduler/views/add_employees.dart';
 import 'package:prime_scheduler/views/clock_in.dart';
+import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:prime_scheduler/views/employee_history.dart';
 import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 
@@ -25,11 +26,14 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
       isTotalHours = false,
       isEmployeeHistory = false,
       isAddAdmin = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
+      endDrawer: const CustomEndDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -51,21 +55,25 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                       ),
                     ),
                   ),
-                  Flexible(
-                      child: Align(
+                  Align(
                     alignment: Alignment.center,
                     child: SvgPicture.asset(
-                      "assets/images/Group.svg",
-                      height: 44,
+                  "assets/images/Group.svg",
+                  height: 44,
                     ),
-                  )),
+                  ),
                   Flexible(
                       flex: 1,
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: SvgPicture.asset(
-                          "assets/images/Group 176.svg",
-                          color: const Color(0xff050505),
+                        child: GestureDetector(
+                          onTap: (){
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
+                          child: SvgPicture.asset(
+                            "assets/images/Group 176.svg",
+                            color: const Color(0xff050505),
+                          ),
                         ),
                       )),
                 ],
