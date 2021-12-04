@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/add_schedule.dart';
 import 'package:prime_scheduler/views/schedule_list.dart';
 import 'package:prime_scheduler/views/view_schedule.dart';
@@ -8,7 +9,8 @@ import 'package:prime_scheduler/views/view_schedule.dart';
 import 'add_single_employee.dart';
 
 class ScheduleWelcomeScreen extends StatelessWidget {
-  const ScheduleWelcomeScreen({Key? key}) : super(key: key);
+  User? user;
+  ScheduleWelcomeScreen({Key? key,this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

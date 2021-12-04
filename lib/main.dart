@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prime_scheduler/views/home.dart';
+import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:prime_scheduler/views/splash_screen.dart';
 import 'package:sizer/sizer.dart';
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         routes: {
           // '/splash': (context) => const SplashScreen(),
           '/home': (context) => const Home(),
-          // '/splash': (context) => const SplashScreen(),
+          '/loggedInHome': (context) => LoggedInHomeScreen(),
           // '/splash': (context) => const SplashScreen(),
           // '/splash': (context) => const SplashScreen(),
         },

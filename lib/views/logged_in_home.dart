@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/add_admin.dart';
 import 'package:prime_scheduler/views/add_employees.dart';
 import 'package:prime_scheduler/views/clock_in.dart';
@@ -9,7 +10,9 @@ import 'package:prime_scheduler/views/employee_history.dart';
 import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 
 class LoggedInHomeScreen extends StatefulWidget {
-  const LoggedInHomeScreen({Key? key}) : super(key: key);
+  User? user;
+
+  LoggedInHomeScreen({Key? key, this.user}) : super(key: key);
 
   @override
   _LoggedInHomeScreenState createState() => _LoggedInHomeScreenState();
@@ -195,7 +198,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) =>
-                                            const AddEmployees()));
+                                            AddEmployees(user: widget.user)));
                               },
                               child: Card(
                                 elevation: 0,
@@ -247,9 +250,10 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                   isAddAdmin = false;
                                 });
                                 Navigator.push(
-                                    context, CupertinoPageRoute(builder: (context) =>
-                                const ClockIn()
-                                ));
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                            ClockIn(user: widget.user)));
                               },
                               child: Card(
                                 elevation: 0,
@@ -308,7 +312,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) =>
-                                            const AddAdmin()));
+                                             AddAdmin(user: widget.user)));
                               },
                               child: Card(
                                 elevation: 0,
@@ -418,7 +422,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) =>
-                                        const ScheduleWelcomeScreen()));
+                                             ScheduleWelcomeScreen(
+                                                user: widget.user)));
                               },
                               child: Card(
                                 elevation: 0,
@@ -471,8 +476,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) =>
-                                        const EmployeeHistory(
-                                        )));
+                                             EmployeeHistory(
+                                                user: widget.user)));
                               },
                               child: Card(
                                 elevation: 0,

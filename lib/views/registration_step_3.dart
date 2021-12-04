@@ -35,7 +35,7 @@ class _Step3State extends State<Step3> {
 
   @override
   Widget build(BuildContext context) {
-    progressDialog = ProgressDialog(context);
+    progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -291,7 +291,7 @@ class _Step3State extends State<Step3> {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (c) => const LoggedInHomeScreen()));
+                builder: (c) =>  LoggedInHomeScreen()));
       }else{
         progressDialog?.hide();
         Fluttertoast.showToast(msg: "${value?.message}");

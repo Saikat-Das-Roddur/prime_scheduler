@@ -24,8 +24,10 @@ class LogInBloc{
     try{
       UserResponse user = await _repository.signIn(body: body);
       signInSink.add(Response.completed(user));
+      print(user.user?.statusCode);
       return user;
     }catch(e){
+      print(e.toString());
       signInSink.add(Response.error(e.toString()));
       return null;
     }

@@ -22,7 +22,6 @@ class LogInRepository{
       await SharedPreferences.getInstance();
       final response = await http
           .post(Uri.parse(CustomStrings.baseUrl + url), body: body,);
-      print(response.body);
       responseJson = _response(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');

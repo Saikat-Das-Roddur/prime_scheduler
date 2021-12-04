@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/active_details.dart';
 
 class EmployeeHistory extends StatefulWidget {
-  const EmployeeHistory({Key? key}) : super(key: key);
+  User? user;
+  EmployeeHistory({Key? key, this.user}) : super(key: key);
 
   @override
   _EmployeeHistoryState createState() => _EmployeeHistoryState();

@@ -33,6 +33,8 @@ class User {
   String? value;
   int? statusCode;
   String? message;
+  String? lineAdminId;
+  String? rootAdminId;
 
   User(
       {this.id,
@@ -46,6 +48,8 @@ class User {
         this.email,
         this.password,
         this.isAdmin,
+        this.lineAdminId,
+        this.rootAdminId,
         this.createdAt,
         this.updatedAt,
         this.value,
@@ -64,6 +68,8 @@ class User {
     email = json['email'];
     password = json['password'];
     isAdmin = json['is_admin'];
+    lineAdminId = json['line_admin_id'];
+    rootAdminId = json['root_admin_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     value = json['value'];
@@ -72,7 +78,7 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data =  Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
     data['phone'] = this.phone;
@@ -84,6 +90,8 @@ class User {
     data['email'] = this.email;
     data['password'] = this.password;
     data['is_admin'] = this.isAdmin;
+    data['line_admin_id'] = this.lineAdminId;
+    data['root_admin_id'] = this.rootAdminId;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['value'] = this.value;

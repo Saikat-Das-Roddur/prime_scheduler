@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/clock_in_and_out.dart';
 
 import 'add_single_employee.dart';
 
 class ClockIn extends StatefulWidget {
-  const ClockIn({Key? key}) : super(key: key);
+  User? user;
+  ClockIn({Key? key, this.user}) : super(key: key);
 
   @override
   _ClockInState createState() => _ClockInState();

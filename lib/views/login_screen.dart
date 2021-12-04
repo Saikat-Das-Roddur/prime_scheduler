@@ -37,7 +37,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    progressDialog = ProgressDialog(context);
+    progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -302,20 +302,22 @@ class _LogInScreenState extends State<LogInScreen> {
   void signIn(Map map) {
     progressDialog?.show();
     _bloc.signIn(body: map).then((value){
-      print(value?.user?.email);
       if(value?.user?.statusCode==200){
         progressDialog?.hide();
         Fluttertoast.showToast(msg: "${value?.user?.message}");
-        if(value?.user?.isAdmin=="0"){
+        if(value?.user?.isAdmin=="1"){
           Navigator.push(
               context,
               CupertinoPageRoute(
-                  builder: (c) => const LoggedInHomeScreen()));
+                  builder: (c) => LoggedInHomeScreen(
+                    user: value?.user
+                  )));
         }else{
+          progressDialog?.hide();
           Navigator.push(
               context,
               CupertinoPageRoute(
-                  builder: (c) => const ClockIn()));
+                  builder: (c) => ClockIn()));
         }
 
       }else{

@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/add_single_admin.dart';
 
 import 'add_single_employee.dart';
 
 class AddAdmin extends StatelessWidget {
-  const AddAdmin({Key? key}) : super(key: key);
+  User? user;
+  AddAdmin({Key? key, this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +81,7 @@ class AddAdmin extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
-                            context, CupertinoPageRoute(builder: (c) => const AddSingleAdmin()));
+                            context, CupertinoPageRoute(builder: (c) =>  AddSingleAdmin(user: user)));
                       },
                       child: Container(
                         //color: ,
