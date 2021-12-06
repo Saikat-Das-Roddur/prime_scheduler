@@ -52,7 +52,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
     progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: CustomEndDrawer(),
+      endDrawer: CustomEndDrawer(user:  widget.user,),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -384,8 +384,8 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                   map['social_insurance_number'] =
                       _socialInsuranceNoController.text;
                   map['birthday'] = _dobController.text;
-                  map['line_admin_id'] = widget.user?.lineAdminId;
-                  map['root_admin_id'] = widget.user?.rootAdminId ?? widget.user?.lineAdminId;
+                  map['line_admin_id'] = widget.user?.id;
+                  map['root_admin_id'] = widget.user?.rootAdminId ?? widget.user?.id;
                   //widget.map['is_admin'] = 0;
                   print(map);
                   addEmployee(map);

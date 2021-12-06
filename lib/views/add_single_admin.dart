@@ -40,7 +40,7 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: CustomEndDrawer(),
+      endDrawer: CustomEndDrawer(user: widget.user,),
       body: SingleChildScrollView(
         child: Container(
           //height: MediaQuery.of(context).size.height,
@@ -275,9 +275,9 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
                     map['company_name'] = widget.user?.companyName;
                     map['company_email'] = widget.user?.companyEmail;
                     map['company_phone'] = widget.user?.companyPhone;
-                    map['line_admin_id'] = widget.user?.lineAdminId;
+                    map['line_admin_id'] = widget.user?.id;
                     map['root_admin_id'] =
-                        widget.user?.rootAdminId ?? widget.user?.lineAdminId;
+                        widget.user?.rootAdminId ?? widget.user?.id;
                     //widget.map['is_admin'] = 0;
                     print(map);
                     addAdmin(map);

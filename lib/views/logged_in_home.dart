@@ -33,7 +33,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
-      endDrawer: const CustomEndDrawer(),
+      endDrawer: CustomEndDrawer(user: widget.user),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

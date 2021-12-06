@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 
 class CustomEndDrawer extends StatelessWidget {
-  const CustomEndDrawer({Key? key}) : super(key: key);
+  User? user;
+  CustomEndDrawer({Key? key, this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +25,15 @@ class CustomEndDrawer extends StatelessWidget {
         child: SizedBox(
           width: MediaQuery.of(context).size.width*.7,
           child: Drawer(
+            
             child:  ListView(
               children: <Widget>[
-                 const UserAccountsDrawerHeader(
-                  accountName: Text(
+                  UserAccountsDrawerHeader(
+
+                    decoration: BoxDecoration(
+                      color: Colors.transparent//Color(0xffF06767)
+                    ),
+                  accountName: const Text(
                     '',
                     style: TextStyle(
                       fontSize: 1,
@@ -33,8 +41,10 @@ class CustomEndDrawer extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
-                  accountEmail: Text(
-                    'Account Settings',
+                  currentAccountPicture: SvgPicture.asset("assets/images/Group.svg"),
+                  currentAccountPictureSize: Size(180, 80),
+                  accountEmail:  Text(
+                    '${user?.name}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -44,7 +54,7 @@ class CustomEndDrawer extends StatelessWidget {
                 ),
                 ListTile(
                   title: const Text(
-                    'Profile & Security',
+                    'Home',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
@@ -57,15 +67,15 @@ class CustomEndDrawer extends StatelessWidget {
                     // Then close the drawer
                     Navigator.pop(context);
                   },
-                  leading: const Icon(
-                    Icons.person,
-                    size: 26.0,
-                    color: Colors.black,
-                  ),
+                  // leading: const Icon(
+                  //   Icons.person,
+                  //   size: 26.0,
+                  //   color: Colors.black,
+                  // ),
                 ),
                 ListTile(
                   title: const Text(
-                    'Notifications',
+                    'Add Announcement',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
@@ -78,15 +88,15 @@ class CustomEndDrawer extends StatelessWidget {
                     // Then close the drawer
                     Navigator.pop(context);
                   },
-                  leading: const Icon(
-                    Icons.notifications,
-                    size: 26.0,
-                    color: Colors.black,
-                  ),
+                  // leading: const Icon(
+                  //   Icons.notifications,
+                  //   size: 26.0,
+                  //   color: Colors.black,
+                  // ),
                 ),
                 ListTile(
                   title: const Text(
-                    'Favorites',
+                    'Profile',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
@@ -99,18 +109,18 @@ class CustomEndDrawer extends StatelessWidget {
                     // Then close the drawer
                     Navigator.pop(context);
                   },
-                  leading: const Icon(
-                    Icons.favorite,
-                    size: 26.0,
-                    color: Colors.black,
-                  ),
+                  // leading: const Icon(
+                  //   Icons.favorite,
+                  //   size: 26.0,
+                  //   color: Colors.black,
+                  // ),
                 ),
                 const Divider(
                   color: Colors.black38,
                 ),
                 ListTile(
                   title: const Text(
-                    'About WelakaOne',
+                    'Update Profile',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
@@ -121,18 +131,18 @@ class CustomEndDrawer extends StatelessWidget {
                     //Navigator.pushReplacementNamed(context, Routes.about);
                     //Navigator.popAndPushNamed(context, Routes.app1);
                   },
-                  leading: const Icon(
-                    Icons.info_outline,
-                    size: 26.0,
-                    color: Colors.black,
-                  ),
+                  // leading: const Icon(
+                  //   Icons.info_outline,
+                  //   size: 26.0,
+                  //   color: Colors.black,
+                  // ),
                 ),
                 const Divider(
                   color: Colors.black38,
                 ),
                 ListTile(
                   title: const Text(
-                    'Close Menu',
+                    'Change Password',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
@@ -145,15 +155,15 @@ class CustomEndDrawer extends StatelessWidget {
                     // Then close the drawer
                     Navigator.pop(context);
                   },
-                  leading: const Icon(
-                    Icons.close,
-                    size: 26.0,
-                    color: Colors.black,
-                  ),
+                  // leading: const Icon(
+                  //   Icons.close,
+                  //   size: 26.0,
+                  //   color: Colors.black,
+                  // ),
                 ),
                 ListTile(
                   title: const Text(
-                    'Log Out & Exit',
+                    'Log Out',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
@@ -163,11 +173,11 @@ class CustomEndDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  leading: const Icon(
-                    Icons.exit_to_app,
-                    size: 26.0,
-                    color: Colors.black,
-                  ),
+                  // leading: const Icon(
+                  //   Icons.exit_to_app,
+                  //   size: 26.0,
+                  //   color: Colors.black,
+                  // ),
                 ),
               ],
             ),
