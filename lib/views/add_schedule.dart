@@ -1,13 +1,22 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:prime_scheduler/bloc/add_schedule_bloc.dart';
+import 'package:prime_scheduler/models/employee_response.dart';
+import 'package:prime_scheduler/models/employees.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 
 class AddSchedule extends StatefulWidget {
-  const AddSchedule({Key? key}) : super(key: key);
+  User? user;
+
+  AddSchedule({Key? key, this.user}) : super(key: key);
 
   @override
   _AddScheduleState createState() => _AddScheduleState();
@@ -22,6 +31,21 @@ class _AddScheduleState extends State<AddSchedule> {
   int _fromHour = ((DateTime.now().hour + 11) % 12) + 1;
   int _fromMinute = DateTime.now().minute;
   int _day = DateTime.now().day;
+  Map map = {};
+  List<Employee> employees = <Employee>[];
+  var _selectedValue;
+
+  AddScheduleBloc? _addScheduleBloc;
+  final TextEditingController _typeAheadController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _addScheduleBloc = AddScheduleBloc();
+    map['assigned_date'] =
+    "${DateTime.now().year}-$_month-$_day";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +127,6 @@ class _AddScheduleState extends State<AddSchedule> {
                             //     DateTime.now().year, newValue);
                             _month = newValue.clamp(1, 12);
                             _day = 1;
-
                           });
                         },
                         child: SvgPicture.asset(
@@ -210,8 +233,9 @@ class _AddScheduleState extends State<AddSchedule> {
                             // step: 10,
                             zeroPad: true,
                             axis: Axis.horizontal,
+
                             //step: 10,
-                            haptics: true,
+                            haptics: false,
                             infiniteLoop: true,
                             selectedTextStyle: const TextStyle(
                                 color: Colors.white,
@@ -226,10 +250,18 @@ class _AddScheduleState extends State<AddSchedule> {
                             ),
                             textMapper: (text) {
                               return DateFormat("EEE").format(DateTime(
-                                      DateTime.now().year,_month,int.parse(text))) +
-                                  "\n\n" +text;
+                                      DateTime.now().year,
+                                      _month,
+                                      int.parse(text))) +
+                                  "\n\n" +
+                                  text;
                             },
-                            onChanged: (value) => setState(() => _day = value),
+                            onChanged: (value) => setState(() {
+                              _day = value;
+                              map['assigned_date'] =
+                                  "${DateTime.now().year}-$_month-$_day";
+                              print("${DateTime.now().year}-$_month-$_day");
+                            }),
                           ),
                         ),
                       ),
@@ -263,10 +295,11 @@ class _AddScheduleState extends State<AddSchedule> {
                     Expanded(
                       child: Container(
                         color: Colors.white,
-                        child: const TextField(
+                        child: TextField(
+                          controller: _locationController,
                           cursorHeight: 24,
-                          cursorColor: Color(0xffC8C8C8),
-                          decoration: InputDecoration(
+                          cursorColor: const Color(0xffC8C8C8),
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
                             enabledBorder: InputBorder.none,
@@ -299,22 +332,90 @@ class _AddScheduleState extends State<AddSchedule> {
                 padding: const EdgeInsets.only(
                     top: 12, left: 12, right: 36, bottom: 12),
                 child: Container(
-                  color: const Color(0xffF0EFFF),
-                  margin: EdgeInsets.only(left: 36),
-                  child: const TextField(
-                    cursorHeight: 28,
-                    cursorColor: Color(0xffC8C8C8),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      constraints: BoxConstraints(maxHeight: 32),
-                      contentPadding: EdgeInsets.only(bottom: 20, left: 0),
+                    color: const Color(0xffF0EFFF),
+                    margin: EdgeInsets.only(left: 36),
+                    child: TypeAheadField(
+                      transitionBuilder: (context, suggestionsBox, controller) {
+                        return suggestionsBox;
+                      },
+                      textFieldConfiguration: TextFieldConfiguration(
+                        //autofocus: true,
+                        // cursorHeight: 28,
+                        controller: _typeAheadController,
+                        cursorColor: const Color(0xffC8C8C8),
+                        // style: DefaultTextStyle.of(context).style.copyWith(
+                        //     fontStyle: FontStyle.italic
+                        // ),
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          constraints: BoxConstraints(maxHeight: 32),
+                          contentPadding: EdgeInsets.only(bottom: 20, left: 0),
+                        ),
+                      ),
+                      suggestionsCallback: (pattern) async {
+                        Map map = Map();
+                        map['admin_id'] = "1"; //widget.user?.id;
+                        map['term'] = pattern;
+
+                        print(map);
+                        await _addScheduleBloc
+                            ?.searchEmployees(map)
+                            .then((value) {
+                          setState(() {
+                            print("ggg");
+                            employees = value!.employee!;
+                          });
+                        });
+
+                        return employees;
+                      },
+                      itemBuilder: (context, suggestion) {
+                        List list = [suggestion];
+                        Employee e = list.elementAt(0);
+
+                        return ListTile(
+                          title: Text("${e.name}"),
+                        );
+                      },
+                      errorBuilder: (_, __) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            'No Employee Found!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Theme.of(context).disabledColor,
+                                fontSize: 18.0),
+                          ),
+                        );
+                      },
+                      onSuggestionSelected: (suggestion) {
+                        List list = [suggestion];
+                        Employee e = list.elementAt(0);
+                        print(e.name);
+                        map['employee_id'] = e.id;
+                        this._typeAheadController.text = e.name!;
+                      },
+                    )
+
+                    //   const TextField(
+                    //   cursorHeight: 28,
+                    //   cursorColor: Color(0xffC8C8C8),
+                    //   decoration: InputDecoration(
+                    //     border: InputBorder.none,
+                    //     focusedBorder: InputBorder.none,
+                    //     enabledBorder: InputBorder.none,
+                    //     errorBorder: InputBorder.none,
+                    //     disabledBorder: InputBorder.none,
+                    //     constraints: BoxConstraints(maxHeight: 32),
+                    //     contentPadding: EdgeInsets.only(bottom: 20, left: 0),
+                    //   ),
+                    // ),
                     ),
-                  ),
-                ),
               ),
             ),
             const Padding(
@@ -341,9 +442,10 @@ class _AddScheduleState extends State<AddSchedule> {
                   ),
                   Expanded(
                     child: DropdownButton<String>(
-                      hint: Text("Wow"),
+                      //hint: Text("Wow"),
                       underline: const SizedBox.shrink(),
                       isExpanded: true,
+                      value: _selectedValue,
                       icon: Container(),
                       items: <String>['A', 'B', 'C', 'D'].map((String value) {
                         return DropdownMenuItem<String>(
@@ -356,6 +458,9 @@ class _AddScheduleState extends State<AddSchedule> {
                         );
                       }).toList(),
                       onChanged: (v) {
+                        setState(() {
+                          _selectedValue = v!;
+                        });
                         print(v);
                       },
                     ),
@@ -622,6 +727,33 @@ class _AddScheduleState extends State<AddSchedule> {
             ),
             GestureDetector(
               onTap: () {
+                if (_locationController.text.isEmpty) {
+                  Fluttertoast.showToast(msg: "Location can't be empty");
+                  return;
+                } else if (_typeAheadController.text.isEmpty) {
+                  Fluttertoast.showToast(msg: "Employee can't be empty");
+                  return;
+                } else if (_selectedValue == null) {
+                  Fluttertoast.showToast(msg: "Select terms");
+                  return;
+                } else {
+                  //   admin_id:1
+                  //   assigned_date:22/12/2021
+                  //   location:jkjkj
+                  //   employee_id:5
+                  //   terms:jj
+                  //   start_time:11:56:AM
+                  // end_time:11:50:PM
+                  map['admin_id'] = widget.user?.id;
+                  map['location'] = _locationController.text;
+                  map['terms'] = _selectedValue;
+                  map['start_time'] = "$_toHour:$_toMinute:${_toAmPm==0?"AM":"PM"}";
+                  map['end_time'] = "$_fromHour:$_fromMinute:${_fromAmPm==0?"AM":"PM"}";
+
+                  print(map);
+
+                  addSchedule();
+                }
                 // Navigator.push(
                 //     context, CupertinoPageRoute(builder: (context) =>
                 // const AddSchedule()
@@ -690,5 +822,15 @@ class _AddScheduleState extends State<AddSchedule> {
         ),
       ),
     );
+  }
+
+  void addSchedule() async {
+    await _addScheduleBloc?.addSchedule(map).then((value) {
+      if(value['status_code'] == 200){
+        Fluttertoast.showToast(msg: value['message']);
+      }else{
+        Fluttertoast.showToast(msg: value['message']);
+      }
+    });
   }
 }

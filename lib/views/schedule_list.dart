@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/view_schedule.dart';
 
 import 'active_details.dart';
 
 class ScheduleLists extends StatefulWidget {
-  const ScheduleLists({Key? key}) : super(key: key);
+  User? user;
+  ScheduleLists({Key? key, this.user}) : super(key: key);
 
   @override
   _ScheduleListsState createState() => _ScheduleListsState();

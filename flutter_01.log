@@ -1,0 +1,53 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run --no-sound-null-safety
+
+## exception
+
+SocketException: SocketException: OS Error: Success, errno = 0, port = 0
+
+```
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 2.5.3, on Ubuntu 20.04.3 LTS 5.11.0-41-generic, locale en_US.UTF-8)
+    • Flutter version 2.5.3 at /home/saikat/snap/flutter/common/flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision 18116933e7 (7 weeks ago), 2021-10-15 10:46:35 -0700
+    • Engine revision d3ea636dc5
+    • Dart version 2.14.4
+
+[!] Android toolchain - develop for Android devices (Android SDK version 31.0.0)
+    • Android SDK at /home/saikat/Android/Sdk
+    ✗ cmdline-tools component is missing
+      Run `path/to/sdkmanager --install "cmdline-tools;latest"`
+      See https://developer.android.com/studio/command-line for more details.
+    ✗ Android license status unknown.
+      Run `flutter doctor --android-licenses` to accept the SDK licenses.
+      See https://flutter.dev/docs/get-started/install/linux#android-setup for more details.
+
+[✗] Chrome - develop for the web (Cannot find Chrome executable at google-chrome)
+    ! Cannot find Chrome. Try setting CHROME_EXECUTABLE to a Chrome executable.
+
+[✓] Android Studio (version 2020.3)
+    • Android Studio at /home/saikat/Downloads/android-studio-2020.3.1.25-linux/android-studio
+    • Flutter plugin version 62.0.1
+    • Dart plugin version 203.8452
+    • Java version OpenJDK Runtime Environment (build 11.0.10+0-b96-7249189)
+
+[✓] VS Code
+    • VS Code at /snap/code/current
+    • Flutter extension can be installed from:
+      🔨 https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter
+
+[✓] Connected device (1 available)
+    • Android SDK built for x86 (mobile) • emulator-5554 • android-x86 • Android 10 (API 29)
+      (emulator)
+
+! Doctor found issues in 2 categories.
+```

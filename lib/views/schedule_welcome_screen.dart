@@ -89,7 +89,7 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                             context, CupertinoPageRoute(builder: (context) =>
-                        const AddSchedule()
+                         AddSchedule(user: user)
                         ));
                       },
                       child: Padding(
@@ -124,7 +124,7 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                             context, CupertinoPageRoute(builder: (context) =>
-                        const ScheduleLists()
+                         ScheduleLists(user: user)
                         ));
                       },
                       child: Padding(
