@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:prime_scheduler/bloc/schedules_bloc.dart';
+import 'package:prime_scheduler/models/response.dart';
+import 'package:prime_scheduler/models/schedules.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/view_schedule.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 import 'active_details.dart';
 
 class ScheduleLists extends StatefulWidget {
   User? user;
+
   ScheduleLists({Key? key, this.user}) : super(key: key);
 
   @override
@@ -19,14 +24,32 @@ class ScheduleLists extends StatefulWidget {
 class _ScheduleListsState extends State<ScheduleLists> {
   int _day = DateTime.now().day;
   int _month = DateTime.now().month;
+  Schedules? _schedules;
+
+  SchedulesBloc? _schedulesBloc;
+  ProgressDialog? _progressDialog;
+
+  @override
+  void initState() {
+    super.initState();
+    _schedulesBloc = SchedulesBloc();
+    _progressDialog = ProgressDialog(context, isDismissible: false);
+
+    _schedulesBloc?.getSchedules(
+        widget.user?.id, "${DateTime.now().year}-$_month-$_day");
+  }
+
   @override
   Widget build(BuildContext context) {
+    _progressDialog = ProgressDialog(context, isDismissible: false);
+    //_progressDialog?.show();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               margin: const EdgeInsets.only(top: 56, left: 12, right: 12),
@@ -54,7 +77,6 @@ class _ScheduleListsState extends State<ScheduleLists> {
                             //     DateTime.now().year, newValue);
                             _month = newValue.clamp(1, 12);
                             _day = 1;
-
                           });
                         },
                         child: SvgPicture.asset(
@@ -176,10 +198,17 @@ class _ScheduleListsState extends State<ScheduleLists> {
                           ),
                           textMapper: (text) {
                             return DateFormat("EEE").format(DateTime(
-                                DateTime.now().year,_month,int.parse(text))) +
-                                "\n\n" +text;
+                                    DateTime.now().year,
+                                    _month,
+                                    int.parse(text))) +
+                                "\n\n" +
+                                text;
                           },
-                          onChanged: (value) => setState(() => _day = value),
+                          onChanged: (value) => setState(() {
+                            _day = value;
+                            _schedulesBloc?.getSchedules(widget.user?.id,
+                                "${DateTime.now().year}-$_month-$_day");
+                          }),
                         ),
                       ),
                     ],
@@ -199,9 +228,9 @@ class _ScheduleListsState extends State<ScheduleLists> {
                     WidgetSpan(
                         child: SvgPicture.asset("assets/images/Group 218.svg"),
                         alignment: PlaceholderAlignment.middle),
-                    const TextSpan(
-                        text: "  Sarinda club",
-                        style: TextStyle(
+                    TextSpan(
+                        text: "  ${widget.user?.companyName}",
+                        style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w300,
                             fontSize: 14))
@@ -211,9 +240,9 @@ class _ScheduleListsState extends State<ScheduleLists> {
                     WidgetSpan(
                         child: SvgPicture.asset("assets/images/Group 217.svg"),
                         alignment: PlaceholderAlignment.middle),
-                    const TextSpan(
-                        text: "  05",
-                        style: TextStyle(
+                    TextSpan(
+                        text: "  00}",
+                        style: const TextStyle(
                             color: Color(0xffC2C2C2),
                             fontWeight: FontWeight.w300,
                             fontSize: 14))
@@ -225,174 +254,265 @@ class _ScheduleListsState extends State<ScheduleLists> {
               padding: EdgeInsets.all(12),
               child: Text("Today, Mon, 03 sep, 2021"),
             ),
-            ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const ScrollPhysics(),
-                itemCount: 2,
-                itemBuilder: (context, index) => GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                                builder: (context) => const ViewSchedule()));
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-                        margin: const EdgeInsets.fromLTRB(12, 0, 0, 4),
-                        decoration: const BoxDecoration(
-                            color: Color(0xffFFF8E4),
-                            border: Border(
-                                left: BorderSide(
-                                    width: 5, color: Color(0xffFFB966)))),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SvgPicture.asset("assets/images/Group 210.svg"),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * .08,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Chese Li",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 20),
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    const Text(
-                                      "8:00 am - 4:00 pm",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 17),
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    RichText(
-                                        text: const TextSpan(children: [
-                                      WidgetSpan(
-                                          alignment:
-                                              PlaceholderAlignment.middle,
-                                          child: CircleAvatar(
-                                            radius: 4,
-                                            backgroundColor: Color(0xff59C69C),
-                                          )),
-                                      TextSpan(
-                                          text: "  Manager",
-                                          style: TextStyle(
-                                              color: Color(0xffB1B1B1),
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w300))
-                                    ])),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SvgPicture.asset(
-                              "assets/images/Vector 51.svg",
-                              color: const Color(0xffADADAD),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
+            StreamBuilder<Response<Schedules>>(
+                stream: _schedulesBloc?.schedulesStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    switch (snapshot.data?.status) {
+                      case Status.LOADING:
+                        return Center(child: const CircularProgressIndicator());
+                      case Status.COMPLETED:
+                        print(snapshot.data?.data?.statusCode);
+
+                        return snapshot.data?.data?.statusCode == 400
+                            ? Center(
+                                child: Text(
+                                "No schedule assigned",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Theme.of(context).disabledColor,
+                                        fontSize: 18.0)
+                              ))
+                            : ListView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                physics: const ScrollPhysics(),
+                                itemCount:
+                                    snapshot.data?.data?.schedule?.length,
+                                itemBuilder: (context, index) =>
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (context) =>
+                                                    const ViewSchedule()));
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            24, 28, 24, 28),
+                                        margin: const EdgeInsets.fromLTRB(
+                                            12, 0, 0, 4),
+                                        decoration: const BoxDecoration(
+                                            color: Color(0xffFFF8E4),
+                                            border: Border(
+                                                left: BorderSide(
+                                                    width: 5,
+                                                    color: Color(0xffFFB966)))),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SvgPicture.asset(
+                                                    "assets/images/Group 210.svg"),
+                                                SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      .08,
+                                                ),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      "Chese Li",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                          fontSize: 20),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    const Text(
+                                                      "8:00 am - 4:00 pm",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                          fontSize: 17),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    RichText(
+                                                        text: const TextSpan(
+                                                            children: [
+                                                          WidgetSpan(
+                                                              alignment:
+                                                                  PlaceholderAlignment
+                                                                      .middle,
+                                                              child:
+                                                                  CircleAvatar(
+                                                                radius: 4,
+                                                                backgroundColor:
+                                                                    Color(
+                                                                        0xff59C69C),
+                                                              )),
+                                                          TextSpan(
+                                                              text: "  Manager",
+                                                              style: TextStyle(
+                                                                  color: Color(
+                                                                      0xffB1B1B1),
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300))
+                                                        ])),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            SvgPicture.asset(
+                                              "assets/images/Vector 51.svg",
+                                              color: const Color(0xffADADAD),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ));
+                      case Status.ERROR:
+                        return CircularProgressIndicator();
+                      default:
+                    }
+                  }
+                  return Center(child: CircularProgressIndicator());
+                }),
             const Padding(
               padding: EdgeInsets.all(12),
               child: Text("Tomorrow, Tue, 04 sep, 2021"),
             ),
-            ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const ScrollPhysics(),
-                itemCount: 2,
-                itemBuilder: (context, index) => GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                                builder: (context) => const ViewSchedule()));
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-                        margin: const EdgeInsets.fromLTRB(12, 0, 0, 4),
-                        decoration: const BoxDecoration(
-                            color: Color(0xffFFF8E4),
-                            border: Border(
-                                left: BorderSide(
-                                    width: 5, color: Color(0xffFFB966)))),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SvgPicture.asset("assets/images/Group 210.svg"),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * .08,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Chese Li",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 20),
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    const Text(
-                                      "8:00 am - 4:00 pm",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 17),
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    RichText(
-                                        text: const TextSpan(children: [
-                                      WidgetSpan(
-                                          alignment:
-                                              PlaceholderAlignment.middle,
-                                          child: CircleAvatar(
-                                            radius: 4,
-                                            backgroundColor: Color(0xff59C69C),
-                                          )),
-                                      TextSpan(
-                                          text: "  Manager",
-                                          style: TextStyle(
-                                              color: Color(0xffB1B1B1),
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w300))
-                                    ])),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SvgPicture.asset(
-                              "assets/images/Vector 51.svg",
-                              color: const Color(0xffADADAD),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
+            // StreamBuilder<Response<Schedules>>(
+            //   stream: _schedulesBloc?.schedulesStream,
+            //   builder: (context, snapshot) {
+            //     if(snapshot.hasData){
+            //       switch (snapshot.data?.status){
+            //         case Status.LOADING:
+            //           return CircularProgressIndicator();
+            //         case Status.COMPLETED:
+            //           return ListView.builder(
+            //               padding: EdgeInsets.zero,
+            //               shrinkWrap: true,
+            //               physics: const ScrollPhysics(),
+            //               itemCount: snapshot.data?.data?.schedule?.length,
+            //               itemBuilder: (context, index) => GestureDetector(
+            //                 onTap: () {
+            //                   Navigator.push(
+            //                       context,
+            //                       CupertinoPageRoute(
+            //                           builder: (context) =>
+            //                           const ViewSchedule()));
+            //                 },
+            //                 child: Container(
+            //                   padding: const EdgeInsets.fromLTRB(
+            //                       24, 28, 24, 28),
+            //                   margin:
+            //                   const EdgeInsets.fromLTRB(12, 0, 0, 4),
+            //                   decoration: const BoxDecoration(
+            //                       color: Color(0xffFFF8E4),
+            //                       border: Border(
+            //                           left: BorderSide(
+            //                               width: 5,
+            //                               color: Color(0xffFFB966)))),
+            //                   child: Row(
+            //                     mainAxisAlignment:
+            //                     MainAxisAlignment.spaceBetween,
+            //                     crossAxisAlignment:
+            //                     CrossAxisAlignment.center,
+            //                     children: [
+            //                       Row(
+            //                         mainAxisAlignment:
+            //                         MainAxisAlignment.spaceBetween,
+            //                         crossAxisAlignment:
+            //                         CrossAxisAlignment.start,
+            //                         children: [
+            //                           SvgPicture.asset(
+            //                               "assets/images/Group 210.svg"),
+            //                           SizedBox(
+            //                             width: MediaQuery.of(context)
+            //                                 .size
+            //                                 .width *
+            //                                 .08,
+            //                           ),
+            //                           Column(
+            //                             crossAxisAlignment:
+            //                             CrossAxisAlignment.start,
+            //                             children: [
+            //                               const Text(
+            //                                 "Chese Li",
+            //                                 style: TextStyle(
+            //                                     fontWeight:
+            //                                     FontWeight.w300,
+            //                                     fontSize: 20),
+            //                               ),
+            //                               const SizedBox(
+            //                                 height: 8,
+            //                               ),
+            //                               const Text(
+            //                                 "8:00 am - 4:00 pm",
+            //                                 style: TextStyle(
+            //                                     fontWeight:
+            //                                     FontWeight.w300,
+            //                                     fontSize: 17),
+            //                               ),
+            //                               const SizedBox(
+            //                                 height: 8,
+            //                               ),
+            //                               RichText(
+            //                                   text: const TextSpan(
+            //                                       children: [
+            //                                         WidgetSpan(
+            //                                             alignment:
+            //                                             PlaceholderAlignment
+            //                                                 .middle,
+            //                                             child: CircleAvatar(
+            //                                               radius: 4,
+            //                                               backgroundColor:
+            //                                               Color(
+            //                                                   0xff59C69C),
+            //                                             )),
+            //                                         TextSpan(
+            //                                             text: "  Manager",
+            //                                             style: TextStyle(
+            //                                                 color: Color(
+            //                                                     0xffB1B1B1),
+            //                                                 fontSize: 15,
+            //                                                 fontWeight:
+            //                                                 FontWeight
+            //                                                     .w300))
+            //                                       ])),
+            //                             ],
+            //                           ),
+            //                         ],
+            //                       ),
+            //                       SvgPicture.asset(
+            //                         "assets/images/Vector 51.svg",
+            //                         color: const Color(0xffADADAD),
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 ),
+            //               ));
+            //         case Status.ERROR:
+            //           return CircularProgressIndicator();
+            //         default:
+            //       }
+            //
+            //     }
+            //
+            //
+            //     return CircularProgressIndicator();
+            //   }
+            // ),
           ],
         ),
       ),

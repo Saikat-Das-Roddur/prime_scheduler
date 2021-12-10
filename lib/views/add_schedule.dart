@@ -358,7 +358,7 @@ class _AddScheduleState extends State<AddSchedule> {
                       ),
                       suggestionsCallback: (pattern) async {
                         Map map = Map();
-                        map['admin_id'] = "1"; //widget.user?.id;
+                        map['admin_id'] = widget.user?.id;
                         map['term'] = pattern;
 
                         print(map);
@@ -398,6 +398,7 @@ class _AddScheduleState extends State<AddSchedule> {
                         Employee e = list.elementAt(0);
                         print(e.name);
                         map['employee_id'] = e.id;
+                        map['employee_name'] = e.name;
                         this._typeAheadController.text = e.name!;
                       },
                     )
