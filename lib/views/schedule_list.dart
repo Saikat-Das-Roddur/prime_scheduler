@@ -24,6 +24,7 @@ class ScheduleLists extends StatefulWidget {
 class _ScheduleListsState extends State<ScheduleLists> {
   int _day = DateTime.now().day;
   int _month = DateTime.now().month;
+  String? employee = "0";
   Schedules? _schedules;
 
   SchedulesBloc? _schedulesBloc;
@@ -35,8 +36,17 @@ class _ScheduleListsState extends State<ScheduleLists> {
     _schedulesBloc = SchedulesBloc();
     _progressDialog = ProgressDialog(context, isDismissible: false);
 
-    _schedulesBloc?.getSchedules(
-        widget.user?.id, "${DateTime.now().year}-$_month-$_day");
+    _schedulesBloc
+        ?.getSchedules(widget.user?.id, "${DateTime.now().year}-$_month-$_day")
+        .then((value) {
+      setState(() {
+        employee = value?.totalEmployee.toString();
+      });
+    });
+    if (DateTime.now().month == _month && DateTime.now().day == _day) {
+      _schedulesBloc?.getNextSchedules(
+          widget.user?.id, "${DateTime.now().year}-$_month-${_day + 1}");
+    }
   }
 
   @override
@@ -125,6 +135,11 @@ class _ScheduleListsState extends State<ScheduleLists> {
                               onChanged: (value) {
                                 setState(() {
                                   _month = value;
+                                  if (DateUtils.getDaysInMonth(
+                                          DateTime.now().year, _month) <
+                                      _day) {
+                                    _day = 1;
+                                  }
                                 });
                               },
                             ),
@@ -206,8 +221,19 @@ class _ScheduleListsState extends State<ScheduleLists> {
                           },
                           onChanged: (value) => setState(() {
                             _day = value;
+                            if (DateUtils.getDaysInMonth(
+                                    DateTime.now().year, _month) <
+                                _day) {
+                              _day = DateUtils.getDaysInMonth(
+                                  DateTime.now().year, _month);
+                            }
                             _schedulesBloc?.getSchedules(widget.user?.id,
                                 "${DateTime.now().year}-$_month-$_day");
+                            if (DateTime.now().month == _month &&
+                                DateTime.now().day == _day) {
+                              _schedulesBloc?.getNextSchedules(widget.user?.id,
+                                  "${DateTime.now().year}-$_month-${_day + 1}");
+                            }
                           }),
                         ),
                       ),
@@ -241,7 +267,7 @@ class _ScheduleListsState extends State<ScheduleLists> {
                         child: SvgPicture.asset("assets/images/Group 217.svg"),
                         alignment: PlaceholderAlignment.middle),
                     TextSpan(
-                        text: "  00}",
+                        text: "  $employee",
                         style: const TextStyle(
                             color: Color(0xffC2C2C2),
                             fontWeight: FontWeight.w300,
@@ -250,9 +276,10 @@ class _ScheduleListsState extends State<ScheduleLists> {
                 ],
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(12),
-              child: Text("Today, Mon, 03 sep, 2021"),
+              child: Text(
+                  "${DateTime.now().month == _month && DateTime.now().day == _day ? "Today, " : ""}${DateFormat("E, dd MMM, yyyy").format(DateTime(DateTime.now().year, _month, _day))}"),
             ),
             StreamBuilder<Response<Schedules>>(
                 stream: _schedulesBloc?.schedulesStream,
@@ -263,16 +290,16 @@ class _ScheduleListsState extends State<ScheduleLists> {
                         return Center(child: const CircularProgressIndicator());
                       case Status.COMPLETED:
                         print(snapshot.data?.data?.statusCode);
+                        employee =
+                            snapshot.data?.data?.totalEmployee.toString();
 
                         return snapshot.data?.data?.statusCode == 400
                             ? Center(
-                                child: Text(
-                                "No schedule assigned",
+                                child: Text("No schedule assigned",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         color: Theme.of(context).disabledColor,
-                                        fontSize: 18.0)
-                              ))
+                                        fontSize: 18.0)))
                             : ListView.builder(
                                 padding: EdgeInsets.zero,
                                 shrinkWrap: true,
@@ -324,9 +351,9 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    const Text(
-                                                      "Chese Li",
-                                                      style: TextStyle(
+                                                    Text(
+                                                      "${snapshot.data?.data?.schedule?.elementAt(index).employeeName}",
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w300,
                                                           fontSize: 20),
@@ -334,9 +361,9 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                                     const SizedBox(
                                                       height: 8,
                                                     ),
-                                                    const Text(
-                                                      "8:00 am - 4:00 pm",
-                                                      style: TextStyle(
+                                                    Text(
+                                                      "${snapshot.data?.data?.schedule?.elementAt(index).startTime} - ${snapshot.data?.data?.schedule?.elementAt(index).endTime}",
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w300,
                                                           fontSize: 17),
@@ -345,29 +372,29 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                                       height: 8,
                                                     ),
                                                     RichText(
-                                                        text: const TextSpan(
-                                                            children: [
-                                                          WidgetSpan(
-                                                              alignment:
-                                                                  PlaceholderAlignment
-                                                                      .middle,
-                                                              child:
-                                                                  CircleAvatar(
-                                                                radius: 4,
-                                                                backgroundColor:
-                                                                    Color(
-                                                                        0xff59C69C),
-                                                              )),
-                                                          TextSpan(
-                                                              text: "  Manager",
-                                                              style: TextStyle(
-                                                                  color: Color(
-                                                                      0xffB1B1B1),
-                                                                  fontSize: 15,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300))
-                                                        ])),
+                                                        text:
+                                                            TextSpan(children: [
+                                                      const WidgetSpan(
+                                                          alignment:
+                                                              PlaceholderAlignment
+                                                                  .middle,
+                                                          child: CircleAvatar(
+                                                            radius: 4,
+                                                            backgroundColor:
+                                                                Color(
+                                                                    0xff59C69C),
+                                                          )),
+                                                      TextSpan(
+                                                          text:
+                                                              "  ${snapshot.data?.data?.schedule?.elementAt(index).terms}",
+                                                          style: const TextStyle(
+                                                              color: Color(
+                                                                  0xffB1B1B1),
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w300))
+                                                    ])),
                                                   ],
                                                 ),
                                               ],
@@ -387,132 +414,149 @@ class _ScheduleListsState extends State<ScheduleLists> {
                   }
                   return Center(child: CircularProgressIndicator());
                 }),
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: Text("Tomorrow, Tue, 04 sep, 2021"),
+            Visibility(
+              visible:
+                  DateTime.now().month == _month && DateTime.now().day == _day,
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: Text(
+                    "Tomorrow,  ${DateFormat("E, dd MMM, yyyy").format(DateTime.now().add(const Duration(days: 1)))}"),
+              ),
             ),
-            // StreamBuilder<Response<Schedules>>(
-            //   stream: _schedulesBloc?.schedulesStream,
-            //   builder: (context, snapshot) {
-            //     if(snapshot.hasData){
-            //       switch (snapshot.data?.status){
-            //         case Status.LOADING:
-            //           return CircularProgressIndicator();
-            //         case Status.COMPLETED:
-            //           return ListView.builder(
-            //               padding: EdgeInsets.zero,
-            //               shrinkWrap: true,
-            //               physics: const ScrollPhysics(),
-            //               itemCount: snapshot.data?.data?.schedule?.length,
-            //               itemBuilder: (context, index) => GestureDetector(
-            //                 onTap: () {
-            //                   Navigator.push(
-            //                       context,
-            //                       CupertinoPageRoute(
-            //                           builder: (context) =>
-            //                           const ViewSchedule()));
-            //                 },
-            //                 child: Container(
-            //                   padding: const EdgeInsets.fromLTRB(
-            //                       24, 28, 24, 28),
-            //                   margin:
-            //                   const EdgeInsets.fromLTRB(12, 0, 0, 4),
-            //                   decoration: const BoxDecoration(
-            //                       color: Color(0xffFFF8E4),
-            //                       border: Border(
-            //                           left: BorderSide(
-            //                               width: 5,
-            //                               color: Color(0xffFFB966)))),
-            //                   child: Row(
-            //                     mainAxisAlignment:
-            //                     MainAxisAlignment.spaceBetween,
-            //                     crossAxisAlignment:
-            //                     CrossAxisAlignment.center,
-            //                     children: [
-            //                       Row(
-            //                         mainAxisAlignment:
-            //                         MainAxisAlignment.spaceBetween,
-            //                         crossAxisAlignment:
-            //                         CrossAxisAlignment.start,
-            //                         children: [
-            //                           SvgPicture.asset(
-            //                               "assets/images/Group 210.svg"),
-            //                           SizedBox(
-            //                             width: MediaQuery.of(context)
-            //                                 .size
-            //                                 .width *
-            //                                 .08,
-            //                           ),
-            //                           Column(
-            //                             crossAxisAlignment:
-            //                             CrossAxisAlignment.start,
-            //                             children: [
-            //                               const Text(
-            //                                 "Chese Li",
-            //                                 style: TextStyle(
-            //                                     fontWeight:
-            //                                     FontWeight.w300,
-            //                                     fontSize: 20),
-            //                               ),
-            //                               const SizedBox(
-            //                                 height: 8,
-            //                               ),
-            //                               const Text(
-            //                                 "8:00 am - 4:00 pm",
-            //                                 style: TextStyle(
-            //                                     fontWeight:
-            //                                     FontWeight.w300,
-            //                                     fontSize: 17),
-            //                               ),
-            //                               const SizedBox(
-            //                                 height: 8,
-            //                               ),
-            //                               RichText(
-            //                                   text: const TextSpan(
-            //                                       children: [
-            //                                         WidgetSpan(
-            //                                             alignment:
-            //                                             PlaceholderAlignment
-            //                                                 .middle,
-            //                                             child: CircleAvatar(
-            //                                               radius: 4,
-            //                                               backgroundColor:
-            //                                               Color(
-            //                                                   0xff59C69C),
-            //                                             )),
-            //                                         TextSpan(
-            //                                             text: "  Manager",
-            //                                             style: TextStyle(
-            //                                                 color: Color(
-            //                                                     0xffB1B1B1),
-            //                                                 fontSize: 15,
-            //                                                 fontWeight:
-            //                                                 FontWeight
-            //                                                     .w300))
-            //                                       ])),
-            //                             ],
-            //                           ),
-            //                         ],
-            //                       ),
-            //                       SvgPicture.asset(
-            //                         "assets/images/Vector 51.svg",
-            //                         color: const Color(0xffADADAD),
-            //                       ),
-            //                     ],
-            //                   ),
-            //                 ),
-            //               ));
-            //         case Status.ERROR:
-            //           return CircularProgressIndicator();
-            //         default:
-            //       }
-            //
-            //     }
-            //
-            //
-            //     return CircularProgressIndicator();
-            //   }
-            // ),
+            Visibility(
+              visible:
+                  DateTime.now().month == _month && DateTime.now().day == _day,
+              child: StreamBuilder<Response<Schedules>>(
+                  stream: _schedulesBloc?.nextSchedulesStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      switch (snapshot.data?.status) {
+                        case Status.LOADING:
+                          return Center(child: CircularProgressIndicator());
+                        case Status.COMPLETED:
+                          return snapshot.data?.data?.statusCode == 400
+                              ? Center(
+                              child: Text("No schedule assigned",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Theme.of(context).disabledColor,
+                                      fontSize: 18.0)))
+                              : ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              itemCount:
+                              snapshot.data?.data?.schedule?.length,
+                              itemBuilder: (context, index) =>
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (context) =>
+                                              const ViewSchedule()));
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          24, 28, 24, 28),
+                                      margin: const EdgeInsets.fromLTRB(
+                                          12, 0, 0, 4),
+                                      decoration: const BoxDecoration(
+                                          color: Color(0xffFFF8E4),
+                                          border: Border(
+                                              left: BorderSide(
+                                                  width: 5,
+                                                  color: Color(0xffFFB966)))),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              SvgPicture.asset(
+                                                  "assets/images/Group 210.svg"),
+                                              SizedBox(
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                    .08,
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "${snapshot.data?.data?.schedule?.elementAt(index).employeeName}",
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                        FontWeight.w300,
+                                                        fontSize: 20),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Text(
+                                                    "${snapshot.data?.data?.schedule?.elementAt(index).startTime} - ${snapshot.data?.data?.schedule?.elementAt(index).endTime}",
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                        FontWeight.w300,
+                                                        fontSize: 17),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  RichText(
+                                                      text:
+                                                      TextSpan(children: [
+                                                        const WidgetSpan(
+                                                            alignment:
+                                                            PlaceholderAlignment
+                                                                .middle,
+                                                            child: CircleAvatar(
+                                                              radius: 4,
+                                                              backgroundColor:
+                                                              Color(
+                                                                  0xff59C69C),
+                                                            )),
+                                                        TextSpan(
+                                                            text:
+                                                            "  ${snapshot.data?.data?.schedule?.elementAt(index).terms}",
+                                                            style: const TextStyle(
+                                                                color: Color(
+                                                                    0xffB1B1B1),
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                FontWeight
+                                                                    .w300))
+                                                      ])),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SvgPicture.asset(
+                                            "assets/images/Vector 51.svg",
+                                            color: const Color(0xffADADAD),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ));
+                        case Status.ERROR:
+                          return Center(child: CircularProgressIndicator());
+                        default:
+                      }
+                    }
+
+                    return Center(child: CircularProgressIndicator());
+                  }),
+            ),
           ],
         ),
       ),

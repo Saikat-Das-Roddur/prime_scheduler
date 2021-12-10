@@ -9,6 +9,7 @@ class SchedulesBloc{
   late SchedulesRepository _repository;
   //late StreamController<Response<dynamic>> _addScheduleStreamController;
   late StreamController<Response<Schedules>> _schedulesStreamController;
+  late StreamController<Response<Schedules>> _nextSchedulesStreamController;
 
   // StreamSink<Response<dynamic>> get addScheduleSink =>
   //     _addScheduleStreamController.sink;
@@ -22,10 +23,18 @@ class SchedulesBloc{
   Stream<Response<Schedules>> get schedulesStream =>
       _schedulesStreamController.stream;
 
+
+  StreamSink<Response<Schedules>> get nextSchedulesSink =>
+      _nextSchedulesStreamController.sink;
+
+  Stream<Response<Schedules>> get nextSchedulesStream =>
+      _nextSchedulesStreamController.stream;
+
   SchedulesBloc() {
     _repository = SchedulesRepository();
     //_addScheduleStreamController = StreamController<Response<dynamic>>();
-    _schedulesStreamController = StreamController<Response<Schedules>>();
+    _schedulesStreamController = StreamController<Response<Schedules>>.broadcast();
+    _nextSchedulesStreamController = StreamController<Response<Schedules>>.broadcast();
   }
   //
   // Future<dynamic> addSchedule(Map body) async {
@@ -49,6 +58,19 @@ class SchedulesBloc{
     }catch(e){
       print(e.toString());
       schedulesSink.add(Response.error(e.toString()));
+      return null;
+    }
+  }
+
+  Future<Schedules?> getNextSchedules(String? adminId, String date) async {
+    nextSchedulesSink.add(Response.loading(''));
+    try{
+      dynamic response = await _repository.getSchedules(adminId, date);
+      nextSchedulesSink.add(Response.completed(response));
+      return response;
+    }catch(e){
+      print(e.toString());
+      nextSchedulesSink.add(Response.error(e.toString()));
       return null;
     }
   }

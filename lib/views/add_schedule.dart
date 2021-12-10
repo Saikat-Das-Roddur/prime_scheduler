@@ -12,6 +12,7 @@ import 'package:prime_scheduler/bloc/add_schedule_bloc.dart';
 import 'package:prime_scheduler/models/employee_response.dart';
 import 'package:prime_scheduler/models/employees.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class AddSchedule extends StatefulWidget {
   User? user;
@@ -36,6 +37,7 @@ class _AddScheduleState extends State<AddSchedule> {
   var _selectedValue;
 
   AddScheduleBloc? _addScheduleBloc;
+  ProgressDialog? _progressDialog;
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
@@ -49,6 +51,7 @@ class _AddScheduleState extends State<AddSchedule> {
 
   @override
   Widget build(BuildContext context) {
+    _progressDialog = ProgressDialog(context,isDismissible: false);
     return Scaffold(
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
@@ -296,7 +299,7 @@ class _AddScheduleState extends State<AddSchedule> {
                       child: Container(
                         color: Colors.white,
                         child: TextField(
-                          controller: _locationController,
+                          controller: _locationController..text = "${widget.user?.companyName}",
                           cursorHeight: 24,
                           cursorColor: const Color(0xffC8C8C8),
                           decoration: const InputDecoration(
@@ -748,8 +751,8 @@ class _AddScheduleState extends State<AddSchedule> {
                   map['admin_id'] = widget.user?.id;
                   map['location'] = _locationController.text;
                   map['terms'] = _selectedValue;
-                  map['start_time'] = "$_toHour:$_toMinute:${_toAmPm==0?"AM":"PM"}";
-                  map['end_time'] = "$_fromHour:$_fromMinute:${_fromAmPm==0?"AM":"PM"}";
+                  map['start_time'] = "$_toHour:$_toMinute ${_toAmPm==0?"am":"pm"}";
+                  map['end_time'] = "$_fromHour:$_fromMinute ${_fromAmPm==0?"am":"pm"}";
 
                   print(map);
 
@@ -826,9 +829,12 @@ class _AddScheduleState extends State<AddSchedule> {
   }
 
   void addSchedule() async {
+    _progressDialog?.show();
     await _addScheduleBloc?.addSchedule(map).then((value) {
+      _progressDialog?.hide();
       if(value['status_code'] == 200){
         Fluttertoast.showToast(msg: value['message']);
+        Navigator.pop(context);
       }else{
         Fluttertoast.showToast(msg: value['message']);
       }
