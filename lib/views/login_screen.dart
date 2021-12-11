@@ -120,7 +120,7 @@ class _LogInScreenState extends State<LogInScreen> {
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
                 obscureText: passwordVisible,
-                maxLength: 8,
+                //maxLength: 8,
                 controller: _passwordController,
                 cursorColor: Colors.grey,
                 onChanged: (v) => isValidPassword = _regExp.hasMatch(v),
@@ -174,7 +174,7 @@ class _LogInScreenState extends State<LogInScreen> {
                 if (!isValidEmail) {
                   Fluttertoast.showToast(msg: "Enter valid email");
                   return;
-                } else if (!isValidPassword) {
+                } else if (!isValidPassword&&_passwordController.text.length<8) {
                   Fluttertoast.showToast(
                       msg: "Password not valid");
                   return;

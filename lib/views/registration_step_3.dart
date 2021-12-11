@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:prime_scheduler/bloc/step_3_bloc.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
+import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class Step3 extends StatefulWidget {
@@ -114,7 +115,7 @@ class _Step3State extends State<Step3> {
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
                 obscureText: passwordVisible,
-                maxLength: 8,
+                //maxLength: 8,
                 controller: _passwordController,
                 cursorColor: Colors.grey,
                 onChanged: (v) => isValidPassword = _regExp.hasMatch(v),
@@ -233,7 +234,7 @@ class _Step3State extends State<Step3> {
                 if (!isValidEmail) {
                   Fluttertoast.showToast(msg: "Enter valid email");
                   return;
-                } else if (!isValidPassword) {
+                } else if (!isValidPassword&&_passwordController.text.length<8) {
                   Fluttertoast.showToast(
                       msg: "Password not valid");
                   return;
@@ -288,10 +289,11 @@ class _Step3State extends State<Step3> {
     _step3bloc.signUp(body: widget.map).then((value){
       if(value?.status==200){
         progressDialog?.hide();
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (c) =>  LoggedInHomeScreen()));
+        Fluttertoast.showToast(msg: "${value?.message}");
+        Navigator.pushAndRemoveUntil(
+            context, CupertinoPageRoute(
+            builder: (context) =>
+                LogInScreen()), ModalRoute.withName('/logIn'));
       }else{
         progressDialog?.hide();
         Fluttertoast.showToast(msg: "${value?.message}");

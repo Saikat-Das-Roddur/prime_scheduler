@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:prime_scheduler/bloc/add_schedule_bloc.dart';
@@ -32,13 +33,15 @@ class _AddScheduleState extends State<AddSchedule> {
   int _fromHour = ((DateTime.now().hour + 11) % 12) + 1;
   int _fromMinute = DateTime.now().minute;
   int _day = DateTime.now().day;
-  Map map = {};
+  Map<String,String> map = {};
+  File? imageFile;
   List<Employee> employees = <Employee>[];
   var _selectedValue;
   String? _termDuration;
 
   AddScheduleBloc? _addScheduleBloc;
   ProgressDialog? _progressDialog;
+  Offset? _tapPosition;
   List _termList = <String>['Week-1', 'Week-2', 'Week-3', 'Week-4'];
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -402,8 +405,8 @@ class _AddScheduleState extends State<AddSchedule> {
                         List list = [suggestion];
                         Employee e = list.elementAt(0);
                         print(e.name);
-                        map['employee_id'] = e.id;
-                        map['employee_name'] = e.name;
+                        map['employee_id'] = e.id.toString();
+                        map['employee_name'] = e.name.toString();
                         this._typeAheadController.text = e.name!;
                       },
                     )
@@ -466,18 +469,22 @@ class _AddScheduleState extends State<AddSchedule> {
                       }).toList(),
                       onChanged: (v) {
                         setState(() {
-                         // _selectedValue = v!;
+                          // _selectedValue = v!;
 
                           if (v == "Week-1") {
                             _termDuration = _getTimeDuration(DateTime.now(), 1);
-                          } else if (v == "Week-2"){
-                            _termDuration = _getTimeDuration(DateTime.now().add(Duration(days: 7)), 2);//"${DateTime.now().add(Duration(days: 7))} - ${DateTime.now().add(Duration(days: 7 * 2))}";
-                          }
-                        else if (v == "Week-3"){
-                            _termDuration = _getTimeDuration(DateTime.now().add(Duration(days: 7*2)), 3);//"${DateTime.now().add(Duration(days: 7*2))} - ${DateTime.now().add(Duration(days: 7 * 3))}";
-                          }
-                        else if (v == "Week-4"){
-                            _termDuration = _getTimeDuration(DateTime.now().add(Duration(days: 7*3)), 4); //"${DateTime.now().add(Duration(days: 7*3))} - ${DateTime.now().add(Duration(days: 7 * 4))}";
+                          } else if (v == "Week-2") {
+                            _termDuration = _getTimeDuration(
+                                DateTime.now().add(Duration(days: 7)),
+                                2); //"${DateTime.now().add(Duration(days: 7))} - ${DateTime.now().add(Duration(days: 7 * 2))}";
+                          } else if (v == "Week-3") {
+                            _termDuration = _getTimeDuration(
+                                DateTime.now().add(Duration(days: 7 * 2)),
+                                3); //"${DateTime.now().add(Duration(days: 7*2))} - ${DateTime.now().add(Duration(days: 7 * 3))}";
+                          } else if (v == "Week-4") {
+                            _termDuration = _getTimeDuration(
+                                DateTime.now().add(Duration(days: 7 * 3)),
+                                4); //"${DateTime.now().add(Duration(days: 7*3))} - ${DateTime.now().add(Duration(days: 7 * 4))}";
                           }
                         });
 
@@ -735,10 +742,23 @@ class _AddScheduleState extends State<AddSchedule> {
                         WidgetSpan(
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
-                              child: SvgPicture.asset(
-                                "assets/images/Group 210.svg",
-                                height: 80,
-                                width: 80,
+                              child: Listener(
+                                onPointerDown: (e) {
+                                  _tapPosition = e.position;
+                                  showPopMenu();
+                                },
+                                child: imageFile == null
+                                    ? SvgPicture.asset(
+                                        "assets/images/Group 210.svg",
+                                        height: 80,
+                                        width: 80,
+                                      )
+                                    : CircleAvatar(
+                                        radius: 48,
+                                        backgroundImage: FileImage(imageFile!),
+
+                                        //child: Image.file(imageFile!),
+                                      ),
                               ),
                             ),
                             alignment: PlaceholderAlignment.middle)
@@ -765,14 +785,13 @@ class _AddScheduleState extends State<AddSchedule> {
                   //   terms:jj
                   //   start_time:11:56:AM
                   // end_time:11:50:PM
-                  map['admin_id'] = widget.user?.id;
+                  map['admin_id'] = "${widget.user?.id}";
                   map['location'] = _locationController.text;
-                  map['terms'] = _selectedValue;
+                  map['terms'] = _termDuration!;
                   map['start_time'] =
                       "$_toHour:$_toMinute ${_toAmPm == 0 ? "am" : "pm"}";
                   map['end_time'] =
                       "$_fromHour:$_fromMinute ${_fromAmPm == 0 ? "am" : "pm"}";
-
                   print(map);
 
                   addSchedule();
@@ -849,7 +868,7 @@ class _AddScheduleState extends State<AddSchedule> {
 
   void addSchedule() async {
     _progressDialog?.show();
-    await _addScheduleBloc?.addSchedule(map).then((value) {
+    await _addScheduleBloc?.addSchedule(imageFile,map).then((value) {
       _progressDialog?.hide();
       if (value['status_code'] == 200) {
         Fluttertoast.showToast(msg: value['message']);
@@ -861,6 +880,50 @@ class _AddScheduleState extends State<AddSchedule> {
   }
 
   String? _getTimeDuration(DateTime startDate, int days) {
-    return "${DateFormat("yyyy-MM-dd").format(startDate)} - ${DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 7*days)))}";
+    return "${DateFormat("yyyy-MM-dd").format(startDate)} - ${DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 7 * days)))}";
+  }
+
+  _getFromGallery() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        imageFile = File(image.path);
+      });
+      print(imageFile);
+    }
+  }
+
+  _getFromCamera() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      setState(() {
+        imageFile = File(image.path);
+      });
+      print(imageFile);
+    }
+  }
+
+  void showPopMenu() {
+    final RenderBox? overlay =
+        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+
+    showMenu(
+        context: context,
+        position: RelativeRect.fromRect(
+            (_tapPosition! & Size(0, 0)), // smaller rect, the touch area
+            Offset.zero & overlay!.size // Bigger rect, the entire screen
+            ),
+        items: <String>['Camera', 'Gallery']
+            .map((e) => PopupMenuItem(
+                  child: Text(e),
+                  onTap: () {
+                    if(e=="Camera"){
+                      _getFromCamera();
+                    }else{
+                      _getFromGallery();
+                    }
+                  },
+                ))
+            .toList());
   }
 }

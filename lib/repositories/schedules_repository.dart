@@ -9,10 +9,17 @@ import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-class SchedulesRepository{
 
-  Future<Schedules> getSchedules(String? adminId, String date) async{
-    final response = await get("schedule/get_schedule.php?admin_id=$adminId&date=$date");
+class SchedulesRepository {
+  Future<Schedules> getSchedules(String? adminId, String date) async {
+    final response =
+        await get("schedule/get_schedule.php?admin_id=$adminId&date=$date");
+    return Schedules.fromJson(response);
+  }
+
+  Future<Schedules> upcomingShifts(String? employeeId, String? date) async {
+    final response =
+        await get("schedule/upcoming_shifts.php?employee_id=$employeeId&date=$date");
     return Schedules.fromJson(response);
   }
 
@@ -27,7 +34,6 @@ class SchedulesRepository{
     }
     return responseJson;
   }
-
 
   dynamic _response(http.Response response) {
     switch (response.statusCode) {
@@ -49,11 +55,11 @@ class SchedulesRepository{
         // }
         Fluttertoast.showToast(
             msg: formatedError.elementAt(1), toastLength: Toast.LENGTH_LONG);
-        throw  Exception("Error while fetching data");
+        throw Exception("Error while fetching data");
       case 403:
         throw UnauthorisedException(response.body.toString());
       case 500:
-        throw  Exception("Server error");
+        throw Exception("Server error");
       default:
         throw FetchDataException(
             'Error occurred while Communication with Server with StatusCode : ${response.statusCode}');

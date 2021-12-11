@@ -10,14 +10,34 @@ import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddScheduleRepository{
-  Future<dynamic> addSchedule({required Map body}) async {
-    final response = await post("schedule/add_schedule.php", body: body);
+  Future<dynamic> addSchedule(File? file, {required Map<String,String> body}) async {
+    final response = await postWithImage("schedule/add_schedule.php", file, body: body);
     return response;
   }
 
   Future<Employees> searchEmployees(Map body) async {
     final response = await post("search/search_employee.php",body: body);
     return Employees.fromJson(response);
+  }
+
+  Future<dynamic> postWithImage(String url,File? file, {required Map<String,String> body}) async{
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse(CustomStrings.baseUrl + url),
+    );
+
+    request.fields.addAll(body);
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        "image",
+        file?.readAsBytesSync(),
+        filename: file?.path,
+      ),
+    );
+    request.headers["Content-Type"] = 'multipart/form-data';
+    var response = await request.send();
+    var response2 = await http.Response.fromStream(response);
+    return _response(response2);
   }
 
   Future<dynamic> post(String url, {required Map body}) async {

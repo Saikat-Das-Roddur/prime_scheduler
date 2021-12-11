@@ -1,15 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:prime_scheduler/bloc/schedules_bloc.dart';
+import 'package:prime_scheduler/models/response.dart';
+import 'package:prime_scheduler/models/schedules.dart';
 
 class ViewSchedule extends StatefulWidget {
-  const ViewSchedule({Key? key}) : super(key: key);
+  String? employeeId;
+  String? assignedDate;
+
+  ViewSchedule({Key? key, this.employeeId, this.assignedDate})
+      : super(key: key);
 
   @override
   _ViewScheduleState createState() => _ViewScheduleState();
 }
 
 class _ViewScheduleState extends State<ViewSchedule> {
+  SchedulesBloc? _schedulesBloc;
+
+  int? totalShifts = 0, exTendedLength = 2;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _schedulesBloc = SchedulesBloc();
+    _schedulesBloc
+        ?.getUpComingShifts(widget.employeeId, widget.assignedDate)
+        .then((value) {
+      setState(() {
+        if (value?.schedule != null) {
+          totalShifts = value?.schedule?.length;
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,17 +66,17 @@ class _ViewScheduleState extends State<ViewSchedule> {
                     ),
                   ),
                   const Flexible(
-                    //flex: 3,
+                      //flex: 3,
                       child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "View Schedule",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 22),
-                        ),
-                      )),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "View Schedule",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22),
+                    ),
+                  )),
                   // Flexible(
                   //     flex: 1,
                   //     child: Align(
@@ -123,17 +151,17 @@ class _ViewScheduleState extends State<ViewSchedule> {
                 children: [
                   Flexible(
                       child: SvgPicture.asset(
-                        "assets/images/Group 210.svg",
-                        height: 60,
-                        width: 60,
-                      )),
+                    "assets/images/Group 210.svg",
+                    height: 60,
+                    width: 60,
+                  )),
                   const Expanded(
                     flex: 2,
                     child: Text(
                       "Robin alex",
                       textAlign: TextAlign.center,
                       style:
-                      TextStyle(fontWeight: FontWeight.w400, fontSize: 25),
+                          TextStyle(fontWeight: FontWeight.w400, fontSize: 25),
                     ),
                   )
                 ],
@@ -146,57 +174,104 @@ class _ViewScheduleState extends State<ViewSchedule> {
                 color: const Color(0xffE4E4E4),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(36, 16, 0, 0),
-              child: Text(
-                "Upcoming shifts",
-                style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w300,
-                    color: Color(0xff676767)),
+            Visibility(
+              visible: totalShifts! > 0,
+              child: const Padding(
+                padding: EdgeInsets.fromLTRB(36, 16, 0, 0),
+                child: Text(
+                  "Upcoming shifts",
+                  style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w300,
+                      color: Color(0xff676767)),
+                ),
               ),
             ),
-            ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const ScrollPhysics(),
-                itemCount: 3,
-                itemBuilder: (context, index) => Container(
-                  padding: const EdgeInsets.fromLTRB(28, 24, 24, 24),
-                  margin: const EdgeInsets.only(top: 16),
-                  decoration: const BoxDecoration(
-                      color: Color(0xffFFF8E4),
-                      border: Border(
-                          left: BorderSide(
-                              width: 5, color: Color(0xffFFB966)))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: const [
-                      Text(
-                        "Tue, 14 Sep, 9:00 am - 4:00 pm",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w300, fontSize: 20),
-                      ),
-                      SizedBox(height: 12,),
-                      Text(
-                        "Cook .  Sarinda Club",
-                        style: TextStyle(
-                            color: Color(0xff717171),
-                            fontWeight: FontWeight.w300,
-                            fontSize: 16),
-                      ),
-                    ],
+            StreamBuilder<Response<Schedules>>(
+                stream: _schedulesBloc?.upComingShiftsStream,
+                builder: (context, snapshot) {
+                  print(totalShifts);
+                  if (snapshot.hasData) {
+                    switch (snapshot.data?.status) {
+                      case Status.LOADING:
+                        return Center(child: CircularProgressIndicator());
+                      case Status.COMPLETED:
+                        return snapshot.data?.data?.statusCode == 400
+                            ? Center(
+                                child: Padding(
+                                padding: const EdgeInsets.all(28.0),
+                                child: Text("No schedule assigned",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Theme.of(context).disabledColor,
+                                        fontSize: 18.0)),
+                              ))
+                            : ListView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                physics: const ScrollPhysics(),
+                                itemCount: exTendedLength,
+                                //snapshot.data?.data?.schedule?.length,
+                                itemBuilder: (context, index) => Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          28, 24, 24, 24),
+                                      margin: const EdgeInsets.only(top: 16),
+                                      decoration: const BoxDecoration(
+                                          color: Color(0xffFFF8E4),
+                                          border: Border(
+                                              left: BorderSide(
+                                                  width: 5,
+                                                  color: Color(0xffFFB966)))),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Text(
+                                            "${DateFormat("E, dd MMM").format(DateTime.parse("${snapshot.data?.data?.schedule?.elementAt(index).assignedDate}"))}, ${snapshot.data?.data?.schedule?.elementAt(index).startTime} - ${snapshot.data?.data?.schedule?.elementAt(index).endTime}",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 20),
+                                          ),
+                                          SizedBox(
+                                            height: 12,
+                                          ),
+                                          Text(
+                                            "Cook .  Sarinda Club",
+                                            style: TextStyle(
+                                                color: Color(0xff717171),
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                    ));
+                      case Status.ERROR:
+                        return Center(child: CircularProgressIndicator());
+                      default:
+                    }
+                  }
+                  return Center(child: CircularProgressIndicator());
+                }),
+            Visibility(
+              visible: totalShifts! > 0,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 24.0, bottom: 24),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      exTendedLength = totalShifts;
+                      totalShifts = 0;
+                    });
+                  },
+                  child: const Text(
+                    "Show more",
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.black),
                   ),
-                )),
-            const Padding(
-              padding: EdgeInsets.only(right: 24.0,bottom: 24),
-              child: Text(
-                "Show more",
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black),
+                ),
               ),
             ),
           ],

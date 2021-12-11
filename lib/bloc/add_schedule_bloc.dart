@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:prime_scheduler/models/employees.dart';
 import 'package:prime_scheduler/models/response.dart';
@@ -27,10 +28,10 @@ class AddScheduleBloc{
     _getEmployeesStreamController = StreamController<Response<Employees>>();
   }
 
-  Future<dynamic> addSchedule(Map body) async {
+  Future<dynamic> addSchedule(File? file,Map<String,String> body) async {
     addScheduleSink.add(Response.loading(''));
     try{
-      dynamic response = await _repository.addSchedule(body: body);
+      dynamic response = await _repository.addSchedule(file,body: body);
       addScheduleSink.add(Response.completed(response));
       return response;
     }catch(e){

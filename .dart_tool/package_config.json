@@ -164,6 +164,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_plugin_android_lifecycle",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-1.0.11",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
       "name": "flutter_svg",
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_svg-0.23.0+1",
       "packageUri": "lib/",
@@ -210,6 +216,12 @@
       "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.3"
+    },
+    {
+      "name": "image_picker",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/image_picker-0.6.5+3",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
     },
     {
       "name": "infinite_listview",
@@ -482,7 +494,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-12-08T18:42:46.158087Z",
+  "generated": "2021-12-11T12:51:46.906987Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }

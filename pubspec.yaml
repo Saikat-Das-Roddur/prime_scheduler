@@ -53,6 +53,7 @@ dependencies:
   shared_preferences: ^2.0.9
   progress_dialog: ^1.2.4
   flutter_typeahead: ^3.2.3
+  image_picker: ^0.6.5+3
 
 
 dev_dependencies:

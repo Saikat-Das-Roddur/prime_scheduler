@@ -313,7 +313,16 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                             context,
                                             CupertinoPageRoute(
                                                 builder: (context) =>
-                                                    const ViewSchedule()));
+                                                    ViewSchedule(
+                                                      employeeId: snapshot
+                                                          .data?.data?.schedule
+                                                          ?.elementAt(index)
+                                                          .employeeId,
+                                                      assignedDate: snapshot
+                                                          .data?.data?.schedule
+                                                          ?.elementAt(index)
+                                                          .assignedDate,
+                                                    )));
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.fromLTRB(
@@ -436,118 +445,137 @@ class _ScheduleListsState extends State<ScheduleLists> {
                         case Status.COMPLETED:
                           return snapshot.data?.data?.statusCode == 400
                               ? Center(
-                              child: Text("No schedule assigned",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Theme.of(context).disabledColor,
-                                      fontSize: 18.0)))
+                                  child: Text("No schedule assigned",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color:
+                                              Theme.of(context).disabledColor,
+                                          fontSize: 18.0)))
                               : ListView.builder(
-                              padding: EdgeInsets.zero,
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              itemCount:
-                              snapshot.data?.data?.schedule?.length,
-                              itemBuilder: (context, index) =>
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) =>
-                                              const ViewSchedule()));
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          24, 28, 24, 28),
-                                      margin: const EdgeInsets.fromLTRB(
-                                          12, 0, 0, 4),
-                                      decoration: const BoxDecoration(
-                                          color: Color(0xffFFF8E4),
-                                          border: Border(
-                                              left: BorderSide(
-                                                  width: 5,
-                                                  color: Color(0xffFFB966)))),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                        children: [
-                                          Row(
+                                  padding: EdgeInsets.zero,
+                                  shrinkWrap: true,
+                                  physics: const ScrollPhysics(),
+                                  itemCount:
+                                      snapshot.data?.data?.schedule?.length,
+                                  itemBuilder: (context, index) =>
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      ViewSchedule(
+                                                        employeeId: snapshot
+                                                            .data
+                                                            ?.data
+                                                            ?.schedule
+                                                            ?.elementAt(index)
+                                                            .employeeId,
+                                                        assignedDate: snapshot
+                                                            .data
+                                                            ?.data
+                                                            ?.schedule
+                                                            ?.elementAt(index)
+                                                            .assignedDate,
+                                                      )));
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              24, 28, 24, 28),
+                                          margin: const EdgeInsets.fromLTRB(
+                                              12, 0, 0, 4),
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xffFFF8E4),
+                                              border: Border(
+                                                  left: BorderSide(
+                                                      width: 5,
+                                                      color:
+                                                          Color(0xffFFB966)))),
+                                          child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                                CrossAxisAlignment.center,
                                             children: [
-                                              SvgPicture.asset(
-                                                  "assets/images/Group 210.svg"),
-                                              SizedBox(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                    .08,
-                                              ),
-                                              Column(
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    "${snapshot.data?.data?.schedule?.elementAt(index).employeeName}",
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                        FontWeight.w300,
-                                                        fontSize: 20),
+                                                  SvgPicture.asset(
+                                                      "assets/images/Group 210.svg"),
+                                                  SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            .08,
                                                   ),
-                                                  const SizedBox(
-                                                    height: 8,
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "${snapshot.data?.data?.schedule?.elementAt(index).employeeName}",
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w300,
+                                                            fontSize: 20),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      Text(
+                                                        "${snapshot.data?.data?.schedule?.elementAt(index).startTime} - ${snapshot.data?.data?.schedule?.elementAt(index).endTime}",
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w300,
+                                                            fontSize: 17),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      RichText(
+                                                          text: TextSpan(
+                                                              children: [
+                                                            const WidgetSpan(
+                                                                alignment:
+                                                                    PlaceholderAlignment
+                                                                        .middle,
+                                                                child:
+                                                                    CircleAvatar(
+                                                                  radius: 4,
+                                                                  backgroundColor:
+                                                                      Color(
+                                                                          0xff59C69C),
+                                                                )),
+                                                            TextSpan(
+                                                                text:
+                                                                    "  ${snapshot.data?.data?.schedule?.elementAt(index).terms}",
+                                                                style: const TextStyle(
+                                                                    color: Color(
+                                                                        0xffB1B1B1),
+                                                                    fontSize:
+                                                                        15,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300))
+                                                          ])),
+                                                    ],
                                                   ),
-                                                  Text(
-                                                    "${snapshot.data?.data?.schedule?.elementAt(index).startTime} - ${snapshot.data?.data?.schedule?.elementAt(index).endTime}",
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                        FontWeight.w300,
-                                                        fontSize: 17),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  RichText(
-                                                      text:
-                                                      TextSpan(children: [
-                                                        const WidgetSpan(
-                                                            alignment:
-                                                            PlaceholderAlignment
-                                                                .middle,
-                                                            child: CircleAvatar(
-                                                              radius: 4,
-                                                              backgroundColor:
-                                                              Color(
-                                                                  0xff59C69C),
-                                                            )),
-                                                        TextSpan(
-                                                            text:
-                                                            "  ${snapshot.data?.data?.schedule?.elementAt(index).terms}",
-                                                            style: const TextStyle(
-                                                                color: Color(
-                                                                    0xffB1B1B1),
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .w300))
-                                                      ])),
                                                 ],
+                                              ),
+                                              SvgPicture.asset(
+                                                "assets/images/Vector 51.svg",
+                                                color: const Color(0xffADADAD),
                                               ),
                                             ],
                                           ),
-                                          SvgPicture.asset(
-                                            "assets/images/Vector 51.svg",
-                                            color: const Color(0xffADADAD),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ));
+                                        ),
+                                      ));
                         case Status.ERROR:
                           return Center(child: CircularProgressIndicator());
                         default:

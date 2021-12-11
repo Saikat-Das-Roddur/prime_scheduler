@@ -136,7 +136,15 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                       return Center(child: CircularProgressIndicator());
                     case Status.COMPLETED:
 
-                      return ListView.builder(
+                      return snapshot.data?.data?.statusCode == 400
+                          ? Center(
+                          child: Text("No employee added yet",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color:
+                                  Theme.of(context).disabledColor,
+                                  fontSize: 18.0)))
+                          :  ListView.builder(
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: const ScrollPhysics(),
