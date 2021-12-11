@@ -35,9 +35,11 @@ class _AddScheduleState extends State<AddSchedule> {
   Map map = {};
   List<Employee> employees = <Employee>[];
   var _selectedValue;
+  String? _termDuration;
 
   AddScheduleBloc? _addScheduleBloc;
   ProgressDialog? _progressDialog;
+  List _termList = <String>['Week-1', 'Week-2', 'Week-3', 'Week-4'];
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
@@ -45,13 +47,12 @@ class _AddScheduleState extends State<AddSchedule> {
   void initState() {
     super.initState();
     _addScheduleBloc = AddScheduleBloc();
-    map['assigned_date'] =
-    "${DateTime.now().year}-$_month-$_day";
+    map['assigned_date'] = "${DateTime.now().year}-$_month-$_day";
   }
 
   @override
   Widget build(BuildContext context) {
-    _progressDialog = ProgressDialog(context,isDismissible: false);
+    _progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       body: SingleChildScrollView(
         physics: ScrollPhysics(),
@@ -299,7 +300,8 @@ class _AddScheduleState extends State<AddSchedule> {
                       child: Container(
                         color: Colors.white,
                         child: TextField(
-                          controller: _locationController..text = "${widget.user?.companyName}",
+                          controller: _locationController
+                            ..text = "${widget.user?.companyName}",
                           cursorHeight: 24,
                           cursorColor: const Color(0xffC8C8C8),
                           decoration: const InputDecoration(
@@ -446,12 +448,13 @@ class _AddScheduleState extends State<AddSchedule> {
                   ),
                   Expanded(
                     child: DropdownButton<String>(
-                      //hint: Text("Wow"),
+                      hint: Text("Select terms"),
                       underline: const SizedBox.shrink(),
                       isExpanded: true,
                       value: _selectedValue,
                       icon: Container(),
-                      items: <String>['A', 'B', 'C', 'D'].map((String value) {
+                      items: <String>['Week-1', 'Week-2', 'Week-3', 'Week-4']
+                          .map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(
@@ -463,9 +466,23 @@ class _AddScheduleState extends State<AddSchedule> {
                       }).toList(),
                       onChanged: (v) {
                         setState(() {
-                          _selectedValue = v!;
+                         // _selectedValue = v!;
+
+                          if (v == "Week-1") {
+                            _termDuration = _getTimeDuration(DateTime.now(), 1);
+                          } else if (v == "Week-2"){
+                            _termDuration = _getTimeDuration(DateTime.now().add(Duration(days: 7)), 2);//"${DateTime.now().add(Duration(days: 7))} - ${DateTime.now().add(Duration(days: 7 * 2))}";
+                          }
+                        else if (v == "Week-3"){
+                            _termDuration = _getTimeDuration(DateTime.now().add(Duration(days: 7*2)), 3);//"${DateTime.now().add(Duration(days: 7*2))} - ${DateTime.now().add(Duration(days: 7 * 3))}";
+                          }
+                        else if (v == "Week-4"){
+                            _termDuration = _getTimeDuration(DateTime.now().add(Duration(days: 7*3)), 4); //"${DateTime.now().add(Duration(days: 7*3))} - ${DateTime.now().add(Duration(days: 7 * 4))}";
+                          }
                         });
-                        print(v);
+
+                        _selectedValue = v!;
+                        print(_termDuration);
                       },
                     ),
                   ),
@@ -751,8 +768,10 @@ class _AddScheduleState extends State<AddSchedule> {
                   map['admin_id'] = widget.user?.id;
                   map['location'] = _locationController.text;
                   map['terms'] = _selectedValue;
-                  map['start_time'] = "$_toHour:$_toMinute ${_toAmPm==0?"am":"pm"}";
-                  map['end_time'] = "$_fromHour:$_fromMinute ${_fromAmPm==0?"am":"pm"}";
+                  map['start_time'] =
+                      "$_toHour:$_toMinute ${_toAmPm == 0 ? "am" : "pm"}";
+                  map['end_time'] =
+                      "$_fromHour:$_fromMinute ${_fromAmPm == 0 ? "am" : "pm"}";
 
                   print(map);
 
@@ -832,12 +851,16 @@ class _AddScheduleState extends State<AddSchedule> {
     _progressDialog?.show();
     await _addScheduleBloc?.addSchedule(map).then((value) {
       _progressDialog?.hide();
-      if(value['status_code'] == 200){
+      if (value['status_code'] == 200) {
         Fluttertoast.showToast(msg: value['message']);
         Navigator.pop(context);
-      }else{
+      } else {
         Fluttertoast.showToast(msg: value['message']);
       }
     });
+  }
+
+  String? _getTimeDuration(DateTime startDate, int days) {
+    return "${DateFormat("yyyy-MM-dd").format(startDate)} - ${DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 7*days)))}";
   }
 }

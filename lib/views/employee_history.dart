@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:prime_scheduler/bloc/employee_history_bloc.dart';
+import 'package:prime_scheduler/models/employees.dart';
+import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/active_details.dart';
 
@@ -14,6 +17,16 @@ class EmployeeHistory extends StatefulWidget {
 }
 
 class _EmployeeHistoryState extends State<EmployeeHistory> {
+
+  EmployeeHistoryBloc? _employeeHistoryBloc;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _employeeHistoryBloc = EmployeeHistoryBloc();
+    _employeeHistoryBloc?.getEmployees(widget.user?.id);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,242 +126,263 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                 ],
               ),
             ),
-            ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const ScrollPhysics(),
-                itemCount: 4,
-                itemBuilder: (context, index) => GestureDetector(
-                      onTap: () {
-                        showModalBottomSheet<void>(
-                            context: context,
-                            backgroundColor: Colors.white,
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(36),
-                                    topRight: Radius.circular(36))),
-                            builder: (BuildContext context) {
-                              return SingleChildScrollView(
-                                physics: const ScrollPhysics(),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Padding(
-                                      padding:  const EdgeInsets.fromLTRB(24.0,36,24,0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+            StreamBuilder<Response<Employees>>(
+              stream: _employeeHistoryBloc?.getEmployeesStream,
+              builder: (context, snapshot) {
+
+                if(snapshot.hasData){
+                  switch(snapshot.data?.status){
+                    case Status.LOADING:
+                      return Center(child: CircularProgressIndicator());
+                    case Status.COMPLETED:
+
+                      return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          physics: const ScrollPhysics(),
+                          itemCount: snapshot.data?.data?.employee?.length,
+                          itemBuilder: (context, index) => GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet<void>(
+                                  context: context,
+                                  backgroundColor: Colors.white,
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(36),
+                                          topRight: Radius.circular(36))),
+                                  builder: (BuildContext context) {
+                                    return SingleChildScrollView(
+                                      physics: const ScrollPhysics(),
+                                      child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.stretch,
                                         children: [
-                                          SvgPicture.asset(
-                                            "assets/images/Group 210.svg",
-                                            height: 60,
-                                            width: 60,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Align(
-                                              alignment: Alignment.centerRight,
-                                              child: SvgPicture.asset(
-                                                "assets/images/Group 165.svg",
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              .02,
-                                    ),
-                                    Padding(
-                                      padding:  const EdgeInsets.fromLTRB(24.0,0,24,0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: const [
-                                          Text(
-                                            "Chese Li alex",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w300,
-                                                fontSize: 20),
-                                          ),
-                                          Text(
-                                            "Manager",
-                                            style: TextStyle(
-                                                color: Color(0xffB1B1B1),
-                                                fontWeight: FontWeight.w300,
-                                                fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              .05,
-                                    ),
-                                    const Padding(
-                                      padding:  EdgeInsets.fromLTRB(24.0,0,24,0),
-                                      child: Text(
-                                        "Total active hours",
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                            color: Color(0xff979797),
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 15),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              .01,
-                                    ),
-                                    Padding(
-                                      padding:  const EdgeInsets.fromLTRB(24.0,0,24,0),
-                                      child: GestureDetector(
-                                        onTap: (){
-                                          Navigator.pop(context);
-                                          Navigator.push(
-                                              context,
-                                              CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                  const ActiveDetails(
-                                                  )));
-                                        },
-                                        child: Container(
-                                         // height: 48,
-                                          padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
-                                          decoration: const BoxDecoration(
-                                              color: Color(0xffF0EFFF),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(8))),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              const Flexible(
-                                                child: Align(
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    "02 : 40 : 10 s",
-                                                    style: TextStyle(
-                                                      fontSize: 29,
-                                                      fontWeight: FontWeight.w700,
-                                                      color: Color(0xffF23232)
+                                          Padding(
+                                            padding:  const EdgeInsets.fromLTRB(24.0,36,24,0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                SvgPicture.asset(
+                                                  "assets/images/Group 210.svg",
+                                                  height: 60,
+                                                  width: 60,
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: SvgPicture.asset(
+                                                      "assets/images/Group 165.svg",
+                                                      color: Colors.black,
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                              SvgPicture.asset(
-                                                  "assets/images/Vector 51.svg"),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              .03,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Card(
-                                        elevation: 8,
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(Radius.circular(36))),
-                                        color: const Color(0xffF5F5F5),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Container(
-                                                height: 56,
-                                                width: 84,
-                                                child: SvgPicture.asset("assets/images/Vector 49.svg"),
-                                                padding: const EdgeInsets.all(14),
+                                          SizedBox(
+                                            height:
+                                            MediaQuery.of(context).size.height *
+                                                .02,
+                                          ),
+                                          Padding(
+                                            padding:  const EdgeInsets.fromLTRB(24.0,0,24,0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                              children:  [
+                                                Text(
+                                                  "${snapshot.data?.data?.employee?.elementAt(index).name}",
+                                                  style: const TextStyle(
+                                                      fontWeight: FontWeight.w300,
+                                                      fontSize: 20),
+                                                ),
+                                                Text(
+                                                  "Manager",
+                                                  style: TextStyle(
+                                                      color: Color(0xffB1B1B1),
+                                                      fontWeight: FontWeight.w300,
+                                                      fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height:
+                                            MediaQuery.of(context).size.height *
+                                                .05,
+                                          ),
+                                          const Padding(
+                                            padding:  EdgeInsets.fromLTRB(24.0,0,24,0),
+                                            child: Text(
+                                              "Total active hours",
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  color: Color(0xff979797),
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 15),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height:
+                                            MediaQuery.of(context).size.height *
+                                                .01,
+                                          ),
+                                          Padding(
+                                            padding:  const EdgeInsets.fromLTRB(24.0,0,24,0),
+                                            child: GestureDetector(
+                                              onTap: (){
+                                                Navigator.pop(context);
+                                                Navigator.push(
+                                                    context,
+                                                    CupertinoPageRoute(
+                                                        builder: (context) =>
+                                                        const ActiveDetails(
+                                                        )));
+                                              },
+                                              child: Container(
+                                                // height: 48,
+                                                padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
                                                 decoration: const BoxDecoration(
-                                                  color: Color(0xffF06767),
-                                                  borderRadius: BorderRadius.only(
-                                                      topRight: Radius.circular(48.0),
-                                                      bottomRight: Radius.circular(48.0),
-                                                      topLeft: Radius.circular(48.0),
-                                                      bottomLeft: Radius.circular(48.0)),
-                                                )),
-                                            //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
-                                            Padding(
-                                              padding: const EdgeInsets.only(right: 24.0),
-                                              child: SvgPicture.asset(
-                                                "assets/images/Group 186.svg",
+                                                    color: Color(0xffF0EFFF),
+                                                    borderRadius: BorderRadius.all(
+                                                        Radius.circular(8))),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    const Flexible(
+                                                      child: Align(
+                                                        alignment: Alignment.center,
+                                                        child: Text(
+                                                          "02 : 40 : 10 s",
+                                                          style: TextStyle(
+                                                              fontSize: 29,
+                                                              fontWeight: FontWeight.w700,
+                                                              color: Color(0xffF23232)
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SvgPicture.asset(
+                                                        "assets/images/Vector 51.svg"),
+                                                  ],
+                                                ),
                                               ),
-                                            )
-                                          ],
-                                        ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height:
+                                            MediaQuery.of(context).size.height *
+                                                .03,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Card(
+                                              elevation: 8,
+                                              shape: const RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.all(Radius.circular(36))),
+                                              color: const Color(0xffF5F5F5),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Container(
+                                                      height: 56,
+                                                      width: 84,
+                                                      child: SvgPicture.asset("assets/images/Vector 49.svg"),
+                                                      padding: const EdgeInsets.all(14),
+                                                      decoration: const BoxDecoration(
+                                                        color: Color(0xffF06767),
+                                                        borderRadius: BorderRadius.only(
+                                                            topRight: Radius.circular(48.0),
+                                                            bottomRight: Radius.circular(48.0),
+                                                            topLeft: Radius.circular(48.0),
+                                                            bottomLeft: Radius.circular(48.0)),
+                                                      )),
+                                                  //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(right: 24.0),
+                                                    child: SvgPicture.asset(
+                                                      "assets/images/Group 186.svg",
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-                        margin: const EdgeInsets.fromLTRB(16, 0, 0, 16),
-                        decoration: const BoxDecoration(
-                            color: Color(0xffFFF8E4),
-                            border: Border(
-                                left: BorderSide(
-                                    width: 5, color: Color(0xffFFB966)))),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SvgPicture.asset("assets/images/Group 210.svg"),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Chese Li",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 20),
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                RichText(
-                                    text: const TextSpan(children: [
-                                  WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: CircleAvatar(
-                                        radius: 4,
-                                        backgroundColor: Color(0xff59C69C),
-                                      )),
-                                  TextSpan(
-                                      text: "  Manager",
-                                      style: TextStyle(
-                                          color: Color(0xffB1B1B1),
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w300))
-                                ])),
-                              ],
+                                    );
+                                  });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+                              margin: const EdgeInsets.fromLTRB(16, 0, 0, 16),
+                              decoration: const BoxDecoration(
+                                  color: Color(0xffFFF8E4),
+                                  border: Border(
+                                      left: BorderSide(
+                                          width: 5, color: Color(0xffFFB966)))),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SvgPicture.asset("assets/images/Group 210.svg"),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                       Text(
+                                        "${snapshot.data?.data?.employee?.elementAt(index).name}",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 20),
+                                      ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      RichText(
+                                          text: const TextSpan(children: [
+                                            WidgetSpan(
+                                                alignment: PlaceholderAlignment.middle,
+                                                child: CircleAvatar(
+                                                  radius: 4,
+                                                  backgroundColor: Color(0xff59C69C),
+                                                )),
+                                            TextSpan(
+                                                text: "  Manager",
+                                                style: TextStyle(
+                                                    color: Color(0xffB1B1B1),
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w300))
+                                          ])),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width * .2,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/images/Vector 32.svg",
+                                    color: const Color(0xffADADAD),
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .2,
-                            ),
-                            SvgPicture.asset(
-                              "assets/images/Vector 32.svg",
-                              color: const Color(0xffADADAD),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
+                          ));
+                    case Status.ERROR:
+                      return Center(child: CircularProgressIndicator());
+                    default:
+
+                  }
+
+                }
+
+                return Center(child: CircularProgressIndicator());
+              }
+            ),
             const Padding(
               padding: EdgeInsets.only(right: 24.0, bottom: 16),
               child: Text(
