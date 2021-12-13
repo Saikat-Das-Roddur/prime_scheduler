@@ -777,14 +777,10 @@ class _AddScheduleState extends State<AddSchedule> {
                 } else if (_selectedValue == null) {
                   Fluttertoast.showToast(msg: "Select terms");
                   return;
+                } else if ("$_toHour:$_toMinute ${_toAmPm == 0 ? "am" : "pm"}" == "$_fromHour:$_fromMinute ${_fromAmPm == 0 ? "am" : "pm"}") {
+                  Fluttertoast.showToast(msg: "Start and end time must be different");
+                  return;
                 } else {
-                  //   admin_id:1
-                  //   assigned_date:22/12/2021
-                  //   location:jkjkj
-                  //   employee_id:5
-                  //   terms:jj
-                  //   start_time:11:56:AM
-                  // end_time:11:50:PM
                   map['admin_id'] = "${widget.user?.id}";
                   map['location'] = _locationController.text;
                   map['terms'] = _termDuration!;

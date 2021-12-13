@@ -183,7 +183,7 @@
     },
     {
       "name": "flutter_typeahead",
-      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_typeahead-3.2.3",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_typeahead-3.2.4",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -285,7 +285,7 @@
     },
     {
       "name": "path_provider_linux",
-      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-2.1.2",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-2.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -321,7 +321,7 @@
     },
     {
       "name": "platform",
-      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/platform-3.0.2",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/platform-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -351,7 +351,7 @@
     },
     {
       "name": "shared_preferences",
-      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-2.0.9",
+      "rootUri": "file:///home/saikat/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-2.0.11",
       "packageUri": "lib/",
       "languageVersion": "2.14"
     },
@@ -494,7 +494,7 @@
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-12-11T12:51:46.906987Z",
+  "generated": "2021-12-13T19:20:27.481384Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }

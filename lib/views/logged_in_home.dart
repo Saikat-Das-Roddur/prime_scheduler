@@ -26,7 +26,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
       isTotalHours = false,
       isEmployeeHistory = false,
       isAddAdmin = false;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey =  GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {

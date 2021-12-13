@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:prime_scheduler/views/all_clock_in_out.dart';
 import 'package:prime_scheduler/views/clock_out.dart';
+import 'package:prime_scheduler/views/custom_end_drawer.dart';
 
 class ClockInAndOut extends StatefulWidget {
   const ClockInAndOut({Key? key}) : super(key: key);
@@ -14,9 +15,12 @@ class ClockInAndOut extends StatefulWidget {
 }
 
 class _ClockInAndOutState extends State<ClockInAndOut> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: CustomEndDrawer(),
       backgroundColor: Colors.white, //const Color(0xffE5E5E5),
       body: SingleChildScrollView(
         child: Column(
@@ -70,9 +74,14 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                             flex: 1,
                             child: Align(
                               alignment: Alignment.centerRight,
-                              child: SvgPicture.asset(
-                                "assets/images/Group 176.svg",
-                                color: Colors.white,
+                              child: GestureDetector(
+                                onTap: (){
+                                  _scaffoldKey.currentState?.openEndDrawer();
+                                },
+                                child: SvgPicture.asset(
+                                  "assets/images/Group 176.svg",
+                                  color: Colors.white,
+                                ),
                               ),
                             )),
                       ],
@@ -132,7 +141,7 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                               animation: true,
                               animationDuration: 1200,
                               lineWidth: 15.0,
-                              percent: 0.4,
+                              percent: 0.1,
                               center: GestureDetector(
                                 onTap: (){
                                   Navigator.push(
@@ -166,6 +175,8 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
               padding: const EdgeInsets.all(24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                textBaseline: TextBaseline.alphabetic,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
                     "Total Hours:",
@@ -175,12 +186,15 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                       fontSize: 22,
                     ),
                   ),
-                  Text(
-                    "14 HRS (2h 30m OT)",
-                    style: TextStyle(
-                      color: Color(0xffF06767),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 22,
+                  Flexible(
+                    child: Text(
+                      "14 HRS (2h 30m OT)",
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        color: Color(0xffF06767),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 22,
+                      ),
                     ),
                   )
                 ],
@@ -276,7 +290,7 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                               ),),
                               SizedBox(height: 16,),
                               Text(
-                                "",
+                                "hhh",
                                 style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400

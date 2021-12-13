@@ -1,0 +1,4 @@
+keyAlias=prime_scheduler
+keyPassword=primeScheduler123
+storeFile= /home/saikat/Downloads/Github Self Project/prime_scheduler/androidSignedKey/key.jks
+storePassword=primeScheduler123

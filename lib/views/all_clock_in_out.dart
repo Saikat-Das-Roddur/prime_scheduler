@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:prime_scheduler/views/custom_end_drawer.dart';
 
 class AllClockInOut extends StatefulWidget {
   const AllClockInOut({Key? key}) : super(key: key);
@@ -13,11 +14,14 @@ class AllClockInOut extends StatefulWidget {
 
 class _AllClockInOutState extends State<AllClockInOut> {
   int _toHour = DateTime.now().month;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: CustomEndDrawer(),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
         child: Card(
@@ -93,9 +97,14 @@ class _AllClockInOutState extends State<AllClockInOut> {
                       flex: 1,
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: SvgPicture.asset(
-                          "assets/images/Group 176.svg",
-                          color: Colors.black,
+                        child: GestureDetector(
+                          onTap: (){
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
+                          child: SvgPicture.asset(
+                            "assets/images/Group 176.svg",
+                            color: Colors.black,
+                          ),
                         ),
                       )),
                 ],

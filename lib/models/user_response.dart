@@ -28,6 +28,7 @@ class User {
   String? email;
   String? password;
   String? isAdmin;
+  String?  pinCode ;
   String? createdAt;
   String? updatedAt;
   String? value;
@@ -48,6 +49,7 @@ class User {
         this.email,
         this.password,
         this.isAdmin,
+        this.pinCode,
         this.lineAdminId,
         this.rootAdminId,
         this.createdAt,
@@ -68,6 +70,7 @@ class User {
     email = json['email'];
     password = json['password'];
     isAdmin = json['is_admin'];
+    pinCode = json['pin_code'];
     lineAdminId = json['line_admin_id'];
     rootAdminId = json['root_admin_id'];
     createdAt = json['created_at'];
@@ -90,6 +93,7 @@ class User {
     data['email'] = this.email;
     data['password'] = this.password;
     data['is_admin'] = this.isAdmin;
+    data['pin_code'] = this.pinCode;
     data['line_admin_id'] = this.lineAdminId;
     data['root_admin_id'] = this.rootAdminId;
     data['created_at'] = this.createdAt;

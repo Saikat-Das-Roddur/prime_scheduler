@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:prime_scheduler/views/home.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
@@ -5,9 +8,21 @@ import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:prime_scheduler/views/splash_screen.dart';
 import 'package:sizer/sizer.dart';
 
-void main() {
+ main()  {
+  // GestureBinding.instance?.resamplingEnabled = true;
+  // WidgetsFlutterBinding.ensureInitialized();
+  // HttpOverrides.global =  MyHttpOverrides();
   runApp(const MyApp());
 }
+
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

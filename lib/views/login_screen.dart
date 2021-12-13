@@ -37,7 +37,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    progressDialog = ProgressDialog(context, isDismissible: false);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -299,9 +299,11 @@ class _LogInScreenState extends State<LogInScreen> {
     );
   }
 
-  void signIn(Map map) {
+  void signIn(Map map) async{
+    progressDialog = ProgressDialog(context, isDismissible: false);
     progressDialog?.show();
-    _bloc.signIn(body: map).then((value){
+    await _bloc.signIn(body: map).then((value){
+
       if(value?.user?.statusCode==200){
         progressDialog?.hide();
         Fluttertoast.showToast(msg: "${value?.user?.message}");

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
+import 'package:prime_scheduler/views/custom_end_drawer.dart';
 
 import 'clock_in_and_out.dart';
 
@@ -19,10 +21,19 @@ class _ClockOutState extends State<ClockOut> {
   var _secondDigit;
   var _thirdDigit;
   var _fourthDigit;
+  var _fifthDigit;
+  var pinCode;
+  bool _isDigitSelected = false;
+  late Size _screenSize;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 
   @override
   Widget build(BuildContext context) {
+    _screenSize = MediaQuery.of(context).size;
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: CustomEndDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -64,9 +75,14 @@ class _ClockOutState extends State<ClockOut> {
                       flex: 1,
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: SvgPicture.asset(
-                          "assets/images/Group 176.svg",
-                          color: Colors.black,
+                        child: GestureDetector(
+                          onTap: (){
+                            _scaffoldKey.currentState?.openEndDrawer();
+                          },
+                          child: SvgPicture.asset(
+                            "assets/images/Group 176.svg",
+                            color: Colors.black,
+                          ),
                         ),
                       )),
                 ],
@@ -98,20 +114,20 @@ class _ClockOutState extends State<ClockOut> {
                       padding: const EdgeInsets.only(top: 12.0, left: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
+                        children:  [
+                          const Text(
                             "Robin Alex",
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 color: Colors.black,
                                 fontSize: 19),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Text(
-                            "Saturday, 17 sep, 2021",
-                            style: TextStyle(
+                            DateFormat("EEEE, dd MMM, yyyy").format(DateTime.now()),
+                            style: const TextStyle(
                                 color: Color(0xffABABAB),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w400),
@@ -216,7 +232,9 @@ class _ClockOutState extends State<ClockOut> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * .06,
                     ),
-                    GestureDetector(
+                    _isDigitSelected
+                        ? _getOtpKeyboard
+                        : GestureDetector(
                       onTap: () {
                         showClockOutDialog();
                         // Navigator.push(
@@ -300,50 +318,50 @@ class _ClockOutState extends State<ClockOut> {
         GestureDetector(
             onTap: () {
               setState(() {
-                //_isDigitSelected = true;
+                _isDigitSelected = true;
               });
             },
             child: _otpTextField(_firstDigit)),
-        const SizedBox(
+        SizedBox(
           width: 8,
         ),
         GestureDetector(
             onTap: () {
               setState(() {
-                //_isDigitSelected = true;
+                _isDigitSelected = true;
               });
             },
             child: _otpTextField(_secondDigit)),
-        const SizedBox(
+        SizedBox(
           width: 8,
         ),
         GestureDetector(
             onTap: () {
               setState(() {
-                //_isDigitSelected = true;
+                _isDigitSelected = true;
               });
             },
             child: _otpTextField(_thirdDigit)),
-        const SizedBox(
+        SizedBox(
           width: 8,
         ),
         GestureDetector(
             onTap: () {
               setState(() {
-                //_isDigitSelected = true;
+                _isDigitSelected = true;
               });
             },
             child: _otpTextField(_fourthDigit)),
-        const SizedBox(
+        SizedBox(
           width: 8,
         ),
         GestureDetector(
             onTap: () {
               setState(() {
-                //_isDigitSelected = true;
+                _isDigitSelected = true;
               });
             },
-            child: _otpTextField(_fourthDigit)),
+            child: _otpTextField(_fifthDigit)),
       ],
     );
   }
@@ -357,17 +375,203 @@ class _ClockOutState extends State<ClockOut> {
         digit != null ? digit.toString() : "*",
         style: digit != null
             ? const TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300)
+            fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300)
             : const TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300),
+            fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300),
       ),
       decoration: const BoxDecoration(
 //            color: Colors.grey.withOpacity(0.4),
           border: Border(
               bottom: BorderSide(
-        width: 1.5,
-        color: Colors.black,
-      ))),
+                width: 1.5,
+                color: Colors.black,
+              ))),
+    );
+  }
+
+  get _getOtpKeyboard {
+    return Container(
+      //color: Colors.white,
+        height: _screenSize.width - 80,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  _otpKeyboardInputButton(
+                      label: "1",
+                      onPressed: () {
+                        _setCurrentDigit(1);
+                      }),
+                  _otpKeyboardInputButton(
+                      label: "2",
+                      onPressed: () {
+                        _setCurrentDigit(2);
+                      }),
+                  _otpKeyboardInputButton(
+                      label: "3",
+                      onPressed: () {
+                        _setCurrentDigit(3);
+                      }),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  _otpKeyboardInputButton(
+                      label: "4",
+                      onPressed: () {
+                        _setCurrentDigit(4);
+                      }),
+                  _otpKeyboardInputButton(
+                      label: "5",
+                      onPressed: () {
+                        _setCurrentDigit(5);
+                      }),
+                  _otpKeyboardInputButton(
+                      label: "6",
+                      onPressed: () {
+                        _setCurrentDigit(6);
+                      }),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  _otpKeyboardInputButton(
+                      label: "7",
+                      onPressed: () {
+                        _setCurrentDigit(7);
+                      }),
+                  _otpKeyboardInputButton(
+                      label: "8",
+                      onPressed: () {
+                        _setCurrentDigit(8);
+                      }),
+                  _otpKeyboardInputButton(
+                      label: "9",
+                      onPressed: () {
+                        _setCurrentDigit(9);
+                      }),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  SizedBox(
+                    width: 80.0,
+                  ),
+                  _otpKeyboardInputButton(
+                      label: "0",
+                      onPressed: () {
+                        _setCurrentDigit(0);
+                      }),
+                  _otpKeyboardActionButton(
+                      label: Icon(
+                        Icons.backspace,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          if (_fifthDigit != null) {
+                            _fifthDigit = null;
+                          } else if (_fourthDigit != null) {
+                            _fourthDigit = null;
+                          } else if (_thirdDigit != null) {
+                            _thirdDigit = null;
+                          } else if (_secondDigit != null) {
+                            _secondDigit = null;
+                          } else if (_firstDigit != null) {
+                            _firstDigit = null;
+                          }
+                        });
+                      }),
+                ],
+              ),
+            ),
+          ],
+        ));
+  }
+
+  // Returns "Otp keyboard action Button"
+  _otpKeyboardActionButton(
+      {required Widget label, required VoidCallback onPressed}) {
+    return new InkWell(
+      onTap: onPressed,
+      borderRadius: new BorderRadius.circular(40.0),
+      child: new Container(
+        height: 80.0,
+        width: 80.0,
+        decoration: new BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        child: new Center(
+          child: label,
+        ),
+      ),
+    );
+  }
+
+  // Current digit
+  void _setCurrentDigit(int i) {
+    setState(() {
+      _currentDigit = i;
+      if (_firstDigit == null) {
+        _firstDigit = _currentDigit;
+      } else if (_secondDigit == null) {
+        _secondDigit = _currentDigit;
+      } else if (_thirdDigit == null) {
+        _thirdDigit = _currentDigit;
+      } else if (_fourthDigit == null) {
+        _fourthDigit = _currentDigit;
+      }
+      else if (_fifthDigit == null) {
+        _fifthDigit = _currentDigit;
+
+        pinCode = _firstDigit.toString() +
+            _secondDigit.toString() +
+            _thirdDigit.toString() +
+            _fourthDigit.toString()+_fifthDigit.toString();
+
+        _isDigitSelected = false;
+        // widget.otp = otp;
+
+        // Verify your otp by here. API call
+      }
+    });
+  }
+
+  Widget _otpKeyboardInputButton(
+      {required String label, required VoidCallback onPressed}) {
+    return new Material(
+      color: Colors.transparent,
+      child: new InkWell(
+        onTap: onPressed,
+        borderRadius: new BorderRadius.circular(40.0),
+        child: new Container(
+          height: 80.0,
+          width: 80.0,
+          decoration: new BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: new Center(
+            child: new Text(
+              label,
+              style: new TextStyle(
+                fontSize: 30.0,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
