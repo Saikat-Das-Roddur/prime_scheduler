@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:prime_scheduler/views/clock_in_and_out.dart';
 import 'package:prime_scheduler/views/home.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:prime_scheduler/views/login_screen.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const Home(),
           '/loggedInHome': (context) => LoggedInHomeScreen(),
           '/loggIn': (context) => LogInScreen(),
+          '/clockInAndOut': (context) => ClockInAndOut(),
           // '/splash': (context) => const SplashScreen(),
           // '/splash': (context) => const SplashScreen(),
         },

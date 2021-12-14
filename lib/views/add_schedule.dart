@@ -33,7 +33,7 @@ class _AddScheduleState extends State<AddSchedule> {
   int _fromHour = ((DateTime.now().hour + 11) % 12) + 1;
   int _fromMinute = DateTime.now().minute;
   int _day = DateTime.now().day;
-  Map<String,String> map = {};
+  Map<String, String> map = {};
   File? imageFile;
   List<Employee> employees = <Employee>[];
   var _selectedValue;
@@ -304,7 +304,10 @@ class _AddScheduleState extends State<AddSchedule> {
                         color: Colors.white,
                         child: TextField(
                           controller: _locationController
-                            ..text = "${widget.user?.companyName}",
+                            ..text = widget.user?.companyName != ""
+                                ? "${widget.user?.companyName}"
+                                : _locationController
+                            .text,
                           cursorHeight: 24,
                           cursorColor: const Color(0xffC8C8C8),
                           decoration: const InputDecoration(
@@ -777,8 +780,10 @@ class _AddScheduleState extends State<AddSchedule> {
                 } else if (_selectedValue == null) {
                   Fluttertoast.showToast(msg: "Select terms");
                   return;
-                } else if ("$_toHour:$_toMinute ${_toAmPm == 0 ? "am" : "pm"}" == "$_fromHour:$_fromMinute ${_fromAmPm == 0 ? "am" : "pm"}") {
-                  Fluttertoast.showToast(msg: "Start and end time must be different");
+                } else if ("$_toHour:$_toMinute ${_toAmPm == 0 ? "am" : "pm"}" ==
+                    "$_fromHour:$_fromMinute ${_fromAmPm == 0 ? "am" : "pm"}") {
+                  Fluttertoast.showToast(
+                      msg: "Start and end time must be different");
                   return;
                 } else {
                   map['admin_id'] = "${widget.user?.id}";
@@ -864,12 +869,14 @@ class _AddScheduleState extends State<AddSchedule> {
 
   void addSchedule() async {
     _progressDialog?.show();
-    await _addScheduleBloc?.addSchedule(imageFile,map).then((value) {
+    await _addScheduleBloc?.addSchedule(imageFile, map).then((value) {
       _progressDialog?.hide();
+      print(value.toString());
       if (value['status_code'] == 200) {
         Fluttertoast.showToast(msg: value['message']);
         Navigator.pop(context);
       } else {
+        _progressDialog?.hide();
         Fluttertoast.showToast(msg: value['message']);
       }
     });
@@ -913,9 +920,9 @@ class _AddScheduleState extends State<AddSchedule> {
             .map((e) => PopupMenuItem(
                   child: Text(e),
                   onTap: () {
-                    if(e=="Camera"){
+                    if (e == "Camera") {
                       _getFromCamera();
-                    }else{
+                    } else {
                       _getFromGallery();
                     }
                   },

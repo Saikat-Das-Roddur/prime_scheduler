@@ -465,21 +465,21 @@ class _ClockInState extends State<ClockIn> {
 
   Widget _otpKeyboardInputButton(
       {required String label, required VoidCallback onPressed}) {
-    return new Material(
+    return  Material(
       color: Colors.transparent,
-      child: new InkWell(
+      child:  InkWell(
         onTap: onPressed,
-        borderRadius: new BorderRadius.circular(40.0),
-        child: new Container(
+        borderRadius:  BorderRadius.circular(40.0),
+        child:  Container(
           height: 80.0,
           width: 80.0,
-          decoration: new BoxDecoration(
+          decoration:  BoxDecoration(
             shape: BoxShape.circle,
           ),
-          child: new Center(
-            child: new Text(
+          child:  Center(
+            child:  Text(
               label,
-              style: new TextStyle(
+              style:  TextStyle(
                 fontSize: 30.0,
                 color: Colors.black,
               ),
@@ -498,10 +498,16 @@ class _ClockInState extends State<ClockIn> {
       if(value['status_code']==403){
 
       }else if(value['status_code']==200){
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (c) => const ClockInAndOut()));
+        if(widget.user?.isAdmin=="1"){
+          Navigator.push(context, CupertinoPageRoute(
+              builder: (c) =>  ClockInAndOut(user: widget.user)));
+        }else{
+          Navigator.pushAndRemoveUntil(
+              context,
+              CupertinoPageRoute(
+                  builder: (c) =>  ClockInAndOut(user: widget.user)),ModalRoute.withName('/clockInAndOut'));
+        }
+
       }else{
 
       }
@@ -510,16 +516,28 @@ class _ClockInState extends State<ClockIn> {
   }
 
   void clockIn() {
+    progressDialog = ProgressDialog(context, isDismissible: false);
+    progressDialog?.show();
+
     Map map = Map();
     map['employee_id'] = widget.user?.id;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['in_time'] = "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour>11?"pm":"am"}";
     _clockInBloc?.clockIn(map).then((value){
+      progressDialog?.hide();
       if(value['status_code']==200){
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (c) => const ClockInAndOut()));
+        if(widget.user?.isAdmin=="1"){
+          Navigator.push(context, CupertinoPageRoute(
+              builder: (c) =>  ClockInAndOut(user: widget.user)));
+        }else{
+          Navigator.pushAndRemoveUntil(
+              context,
+              CupertinoPageRoute(
+                  builder: (c) =>  ClockInAndOut(user: widget.user)),ModalRoute.withName('/clockInAndOut'));
+        }
+
+      }else if(value['status_code'] == 403){
+        Fluttertoast.showToast(msg: "You have no schedule for today");
       }
     });
   }

@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/all_clock_in_out.dart';
 import 'package:prime_scheduler/views/clock_out.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
+import 'package:prime_scheduler/views/logged_in_home.dart';
 
 class ClockInAndOut extends StatefulWidget {
-  const ClockInAndOut({Key? key}) : super(key: key);
+  User? user;
+
+  ClockInAndOut({Key? key, this.user}) : super(key: key);
 
   @override
   _ClockInAndOutState createState() => _ClockInAndOutState();
@@ -16,6 +20,7 @@ class ClockInAndOut extends StatefulWidget {
 
 class _ClockInAndOutState extends State<ClockInAndOut> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +54,15 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                             alignment: Alignment.centerLeft,
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pop(context);
+                                if (widget.user?.isAdmin == "1") {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (c) => LoggedInHomeScreen(
+                                                user: widget.user,
+                                              )),
+                                      ModalRoute.withName('/loggedInHome'));
+                                }
                               },
                               child: SvgPicture.asset(
                                 "assets/images/Vector 31.svg",
@@ -75,7 +88,7 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: GestureDetector(
-                                onTap: (){
+                                onTap: () {
                                   _scaffoldKey.currentState?.openEndDrawer();
                                 },
                                 child: SvgPicture.asset(
@@ -123,7 +136,10 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                                   height: 20,
                                   child: Padding(
                                     padding: EdgeInsets.only(
-                                        left: 16.0, top: 4,bottom: 4, right: 28),
+                                        left: 16.0,
+                                        top: 4,
+                                        bottom: 4,
+                                        right: 28),
                                     child: Text(
                                       "Your Remaining hours 6.00 HRS",
                                       textAlign: TextAlign.center,
@@ -143,9 +159,11 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                               lineWidth: 15.0,
                               percent: 0.1,
                               center: GestureDetector(
-                                onTap: (){
+                                onTap: () {
                                   Navigator.push(
-                                      context, CupertinoPageRoute(builder: (c) => const ClockOut()));
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (c) =>  ClockOut( user: widget.user,)));
                                 },
                                 child: const CircleAvatar(
                                   radius: 65,
@@ -204,7 +222,7 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
             //   height: MediaQuery.of(context).size.height * .01,
             // ),
             const Padding(
-              padding: EdgeInsets.only(left: 24.0,bottom: 8),
+              padding: EdgeInsets.only(left: 24.0, bottom: 8),
               child: Text(
                 "Total Month",
                 style: TextStyle(
@@ -219,101 +237,116 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                 itemCount: 2,
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) => Padding(
-                  padding: const EdgeInsets.only(left: 16.0,right: 16, bottom: 4),
-                  child: Card(
-                    elevation: 0,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(24))),
-                    color: index==0?const Color(0xffFFCC00):const Color(0xffEFEEFF),
-                    child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12,8,12,8),
-                          child: Card(
-                            color: Colors.white,
-                            elevation: 0,
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(16))),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  12, 16, 12, 16),
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16, bottom: 4),
+                      child: Card(
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(24))),
+                        color: index == 0
+                            ? const Color(0xffFFCC00)
+                            : const Color(0xffEFEEFF),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(16))),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                                  child: Column(
+                                    children: const [
+                                      Text(
+                                        "Today",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      Text(
+                                        "MON",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 8, 24, 8),
                               child: Column(
-                                children: const [
-                                  Text("Today", style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400
-                                  ),),
-                                  SizedBox(height: 16,),
+                                children: [
+                                  const Text(
+                                    "Clock in",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
                                   Text(
                                     "MON",
                                     style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700
-                                    ),
+                                        fontSize: 12,
+                                        color: index == 0
+                                            ? Colors.white
+                                            : const Color(0xff9F9F9F),
+                                        fontWeight: FontWeight.w400),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12,8,24,8),
-                          child: Column(
-                            children: [
-                              const Text("Clock in", style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400
-                              ),),
-                              const SizedBox(height: 16,),
-                              Text(
-                                "MON",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: index==0?Colors.white:const Color(0xff9F9F9F),
-                                    fontWeight: FontWeight.w400
-                                ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(12, 8.0, 24, 8),
+                              child: Column(
+                                children: const [
+                                  Text(
+                                    "Clock out",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  Text(
+                                    "hhh",
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12,8.0,24,8),
-                          child: Column(
-                            children: const [
-                              Text("Clock out", style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400
-                              ),),
-                              SizedBox(height: 16,),
-                              Text(
-                                "hhh",
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
+                      ),
+                    )),
             GestureDetector(
-              onTap: (){
-                Navigator.push(
-                    context, CupertinoPageRoute(builder: (c) => const AllClockInOut()));
+              onTap: () {
+                Navigator.push(context,
+                    CupertinoPageRoute(builder: (c) => const AllClockInOut()));
               },
               child: const Padding(
                 padding: EdgeInsets.only(right: 24.0, top: 8, bottom: 16),
-                child: Text("See all",textAlign: TextAlign.end, style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xff59C59B)
-                ),),
+                child: Text(
+                  "See all",
+                  textAlign: TextAlign.end,
+                  style: TextStyle(fontSize: 14, color: Color(0xff59C59B)),
+                ),
               ),
             ),
             Padding(
@@ -350,7 +383,6 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                 ),
               ),
             ),
-
           ],
         ),
       ),

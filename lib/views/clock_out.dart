@@ -4,12 +4,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:prime_scheduler/bloc/clock_out_bloc.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 
 import 'clock_in_and_out.dart';
 
 class ClockOut extends StatefulWidget {
-  const ClockOut({Key? key}) : super(key: key);
+  User? user;
+  ClockOut({Key? key, this.user}) : super(key: key);
 
   @override
   _ClockOutState createState() => _ClockOutState();
@@ -25,7 +28,16 @@ class _ClockOutState extends State<ClockOut> {
   var pinCode;
   bool _isDigitSelected = false;
   late Size _screenSize;
+  ClockOutBloc? _clockOutBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _clockOutBloc = ClockOutBloc();
+
+  }
 
 
   @override
@@ -236,7 +248,8 @@ class _ClockOutState extends State<ClockOut> {
                         ? _getOtpKeyboard
                         : GestureDetector(
                       onTap: () {
-                        showClockOutDialog();
+
+                        clockOut();
                         // Navigator.push(
                         //     context,
                         //     CupertinoPageRoute(
@@ -722,5 +735,18 @@ class _ClockOutState extends State<ClockOut> {
             ),
           );
         });
+  }
+
+  void clockOut() {
+    Map map = Map();
+    map['employee_id'] = widget.user?.id;
+    map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
+    map['out_time'] = "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour>11?"pm":"am"}";
+
+    _clockOutBloc?.clockOut(map).then((value){
+      if(value['status_code'] == 200){
+        showClockOutDialog();
+      }
+    });
   }
 }
