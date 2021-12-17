@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -34,13 +35,19 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
     // TODO: implement initState
     super.initState();
     _addAdminBloc = AddAdminBloc();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      progressDialog?.hide();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: CustomEndDrawer(user: widget.user,),
+      endDrawer: CustomEndDrawer(
+        user: widget.user,
+      ),
       body: SingleChildScrollView(
         child: Container(
           //height: MediaQuery.of(context).size.height,
@@ -86,7 +93,7 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               _scaffoldKey.currentState?.openEndDrawer();
                             },
                             child: SvgPicture.asset(
@@ -358,21 +365,31 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
     );
   }
 
-  void addAdmin(Map map) {
+  void addAdmin(Map map) async {
     progressDialog?.show();
-    _addAdminBloc?.addAdmin(map).then((value) {
-      print(value);
+    var connectivityResult = await(Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      // I am connected to a mobile network.
       progressDialog?.hide();
-      if (value['status_code'] == 200) {
-        Fluttertoast.showToast(msg: "${value['message']}");
-      } else {
+      Fluttertoast.showToast(msg: "No Internet connection");
+    } else {
+      _addAdminBloc?.addAdmin(map).then((value) {
+        print(value);
         progressDialog?.hide();
-        Fluttertoast.showToast(msg: "${value['message']}");
-      }
-      Navigator.pushAndRemoveUntil(
-          context,
-          CupertinoPageRoute(builder: (context) => LoggedInHomeScreen(user: widget.user,)),
-          ModalRoute.withName('/loggedInHome'));
-    });
+        if (value['status_code'] == 200) {
+          Fluttertoast.showToast(msg: "${value['message']}");
+        } else {
+          progressDialog?.hide();
+          Fluttertoast.showToast(msg: "${value['message']}");
+        }
+        Navigator.pushAndRemoveUntil(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => LoggedInHomeScreen(
+                      user: widget.user,
+                    )),
+            ModalRoute.withName('/loggedInHome'));
+      });
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -40,10 +41,19 @@ class _ClockInState extends State<ClockIn> {
 
     super.initState();
 
+    // Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    //   // Got a new connectivity status!
+    //   progressDialog?.hide();
+    //
+    // });
+
     Future.delayed(Duration.zero, () {
       _clockInBloc = ClockInBloc();
       checkUserIn();
     });
+
+
+
 
   }
 
@@ -515,15 +525,17 @@ class _ClockInState extends State<ClockIn> {
 
   }
 
-  void clockIn() {
-    progressDialog = ProgressDialog(context, isDismissible: false);
+  void clockIn() async{
+    progressDialog = ProgressDialog(context, isDismissible: true);
     progressDialog?.show();
 
     Map map = Map();
     map['employee_id'] = widget.user?.id;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['in_time'] = "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour>11?"pm":"am"}";
-    _clockInBloc?.clockIn(map).then((value){
+    print(map);
+   await _clockInBloc?.clockIn(map).then((value){
+
       progressDialog?.hide();
       if(value['status_code']==200){
         if(widget.user?.isAdmin=="1"){
@@ -537,6 +549,8 @@ class _ClockInState extends State<ClockIn> {
         }
 
       }else if(value['status_code'] == 403){
+        Navigator.push(context, CupertinoPageRoute(
+            builder: (c) =>  ClockInAndOut(user: widget.user)));
         Fluttertoast.showToast(msg: "You have no schedule for today");
       }
     });

@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -45,6 +46,10 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
     // TODO: implement initState
     super.initState();
     _addEmployeeBloc = AddEmployeeBloc();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      progressDialog?.hide();
+    });
   }
 
   @override
@@ -513,22 +518,31 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
     }
   }
 
-  void addEmployee(Map map) {
+  void addEmployee(Map map) async {
     progressDialog?.show();
-    _addEmployeeBloc?.addEmployee(map).then((value) {
-      print(value);
+
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      // I am connected to a mobile network.
       progressDialog?.hide();
-      if (value['status_code'] == 200) {
-        Fluttertoast.showToast(msg: "${value['message']}");
-      } else {
+      Fluttertoast.showToast(msg: "No Internet connection");
+    } else {
+      _addEmployeeBloc?.addEmployee(map).then((value) {
+        print(value);
         progressDialog?.hide();
-        Fluttertoast.showToast(msg: "${value['message']}");
-      }
-      Navigator.pushAndRemoveUntil(
-          context, CupertinoPageRoute(
-          builder: (context) =>
-              LoggedInHomeScreen(user: widget.user,)), ModalRoute.withName('/loggedInHome'));
-    });
+        if (value['status_code'] == 200) {
+          Fluttertoast.showToast(msg: "${value['message']}");
+        } else {
+          progressDialog?.hide();
+          Fluttertoast.showToast(msg: "${value['message']}");
+        }
+        Navigator.pushAndRemoveUntil(
+            context, CupertinoPageRoute(
+            builder: (context) =>
+                LoggedInHomeScreen(user: widget.user,)),
+            ModalRoute.withName('/loggedInHome'));
+      });
+    }
   }
 }
 

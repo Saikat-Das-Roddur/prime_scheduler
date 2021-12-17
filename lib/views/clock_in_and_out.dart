@@ -2,7 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:prime_scheduler/bloc/clock_in_out_bloc.dart';
+import 'package:prime_scheduler/models/response.dart';
+import 'package:prime_scheduler/models/schedules.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/all_clock_in_out.dart';
 import 'package:prime_scheduler/views/clock_out.dart';
@@ -20,6 +24,16 @@ class ClockInAndOut extends StatefulWidget {
 
 class _ClockInAndOutState extends State<ClockInAndOut> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  ClockInOutBloc? _clockInOutBloc;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _clockInOutBloc = ClockInOutBloc();
+    _clockInOutBloc?.getSchedules(
+        widget.user?.id, DateFormat("yyyy-mm-dd").format(DateTime.now()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +177,9 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                                   Navigator.push(
                                       context,
                                       CupertinoPageRoute(
-                                          builder: (c) =>  ClockOut( user: widget.user,)));
+                                          builder: (c) => ClockOut(
+                                                user: widget.user,
+                                              )));
                                 },
                                 child: const CircleAvatar(
                                   radius: 65,
@@ -231,110 +247,151 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                     fontWeight: FontWeight.w400),
               ),
             ),
-            ListView.builder(
-                shrinkWrap: true,
-                physics: const ScrollPhysics(),
-                itemCount: 2,
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index) => Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 16, bottom: 4),
-                      child: Card(
-                        elevation: 0,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(24))),
-                        color: index == 0
-                            ? const Color(0xffFFCC00)
-                            : const Color(0xffEFEEFF),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                              child: Card(
-                                color: Colors.white,
-                                elevation: 0,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16))),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(12, 16, 12, 16),
-                                  child: Column(
-                                    children: const [
-                                      Text(
-                                        "Today",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
-                                      Text(
-                                        "MON",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 8, 24, 8),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Clock in",
+            StreamBuilder<Response<Schedules>>(
+                stream: _clockInOutBloc?.schedulesStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    switch (snapshot.data?.status) {
+                      case Status.LOADING:
+                        return Center(child: CircularProgressIndicator());
+                      case Status.COMPLETED:
+                        return snapshot.data?.data?.statusCode == 400
+                            ? Center(
+                                child: Text("No schedule assigned",
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Text(
-                                    "MON",
-                                    style: TextStyle(
-                                        fontSize: 12,
+                                        color: Theme.of(context).disabledColor,
+                                        fontSize: 18.0)))
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const ScrollPhysics(),
+                                itemCount: 2,
+                                padding: EdgeInsets.zero,
+                                itemBuilder: (context, index) => Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 16.0, right: 16, bottom: 4),
+                                      child: Card(
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(24))),
                                         color: index == 0
-                                            ? Colors.white
-                                            : const Color(0xff9F9F9F),
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(12, 8.0, 24, 8),
-                              child: Column(
-                                children: const [
-                                  Text(
-                                    "Clock out",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  SizedBox(
-                                    height: 16,
-                                  ),
-                                  Text(
-                                    "hhh",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
+                                            ? const Color(0xffFFCC00)
+                                            : const Color(0xffEFEEFF),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 8, 12, 8),
+                                              child: Card(
+                                                color: Colors.white,
+                                                elevation: 0,
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    16))),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          12, 16, 12, 16),
+                                                  child: Column(
+                                                    children: const [
+                                                      Text(
+                                                        "Today",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 16,
+                                                      ),
+                                                      Text(
+                                                        "MON",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 8, 24, 8),
+                                              child: Column(
+                                                children: [
+                                                  const Text(
+                                                    "Clock in",
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  Text(
+                                                    "MON",
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: index == 0
+                                                            ? Colors.white
+                                                            : const Color(
+                                                                0xff9F9F9F),
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 8.0, 24, 8),
+                                              child: Column(
+                                                children: const [
+                                                  Text(
+                                                    "Clock out",
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  Text(
+                                                    "hhh",
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ));
+                      case Status.ERROR:
+                        return Center(child: CircularProgressIndicator());
+                      default:
+                    }
+                  }
+                  return Center(child: CircularProgressIndicator());
+                }),
             GestureDetector(
               onTap: () {
                 Navigator.push(context,
@@ -349,41 +406,42 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-              child: Card(
-                elevation: 0,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(24))),
-                color: const Color(0xffF5F5F5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                        height: 56,
-                        width: 84,
-                        child: SvgPicture.asset("assets/images/Vector 49.svg"),
-                        padding: const EdgeInsets.all(14),
-                        decoration: const BoxDecoration(
-                          color: Color(0xffF06767),
-                          borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(48.0),
-                              bottomRight: Radius.circular(48.0),
-                              topLeft: Radius.circular(48.0),
-                              bottomLeft: Radius.circular(48.0)),
-                        )),
-                    //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 24.0),
-                      child: SvgPicture.asset(
-                        "assets/images/Group 186.svg",
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
+
           ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+        child: Card(
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(24))),
+          color: const Color(0xffF5F5F5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                  height: 56,
+                  width: 84,
+                  child: SvgPicture.asset("assets/images/Vector 49.svg"),
+                  padding: const EdgeInsets.all(14),
+                  decoration: const BoxDecoration(
+                    color: Color(0xffF06767),
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(48.0),
+                        bottomRight: Radius.circular(48.0),
+                        topLeft: Radius.circular(48.0),
+                        bottomLeft: Radius.circular(48.0)),
+                  )),
+              //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
+              Padding(
+                padding: const EdgeInsets.only(right: 24.0),
+                child: SvgPicture.asset(
+                  "assets/images/Group 186.svg",
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

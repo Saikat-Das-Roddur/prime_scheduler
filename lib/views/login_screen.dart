@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -33,6 +34,10 @@ class _LogInScreenState extends State<LogInScreen> {
     // TODO: implement initState
     super.initState();
     _bloc = LogInBloc();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      progressDialog?.hide();
+    });
   }
 
   @override
@@ -302,30 +307,37 @@ class _LogInScreenState extends State<LogInScreen> {
   void signIn(Map map) async{
     progressDialog = ProgressDialog(context, isDismissible: false);
     progressDialog?.show();
-    await _bloc.signIn(body: map).then((value){
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      // I am connected to a mobile network.
+      progressDialog?.hide();
+      Fluttertoast.showToast(msg: "No Internet connection");
+    } else {
+      await _bloc.signIn(body: map).then((value){
 
-      if(value?.user?.statusCode==200){
-        progressDialog?.hide();
-        Fluttertoast.showToast(msg: "${value?.user?.message}");
-        if(value?.user?.isAdmin=="1"){
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (c) => LoggedInHomeScreen(
-                    user: value?.user
-                  )));
+        if(value?.user?.statusCode==200){
+          progressDialog?.hide();
+          Fluttertoast.showToast(msg: "${value?.user?.message}");
+          if(value?.user?.isAdmin=="1"){
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (c) => LoggedInHomeScreen(
+                        user: value?.user
+                    )));
+          }else{
+            progressDialog?.hide();
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (c) => ClockIn()));
+          }
+
         }else{
           progressDialog?.hide();
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (c) => ClockIn()));
+          Fluttertoast.showToast(msg: "${value?.user?.message}");
         }
-
-      }else{
-        progressDialog?.hide();
-        Fluttertoast.showToast(msg: "${value?.user?.message}");
-      }
-    });
+      });
+    }
   }
 }
