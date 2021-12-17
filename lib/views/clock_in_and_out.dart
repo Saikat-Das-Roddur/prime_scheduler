@@ -15,8 +15,9 @@ import 'package:prime_scheduler/views/logged_in_home.dart';
 
 class ClockInAndOut extends StatefulWidget {
   User? user;
+  String? inTime;
 
-  ClockInAndOut({Key? key, this.user}) : super(key: key);
+  ClockInAndOut({Key? key, this.user, this.inTime}) : super(key: key);
 
   @override
   _ClockInAndOutState createState() => _ClockInAndOutState();
@@ -31,8 +32,9 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
     // TODO: implement initState
     super.initState();
     _clockInOutBloc = ClockInOutBloc();
+    print(widget.inTime);
     _clockInOutBloc?.getSchedules(
-        widget.user?.id, DateFormat("yyyy-mm-dd").format(DateTime.now()));
+        widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime.now()));
   }
 
   @override
@@ -40,7 +42,8 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: CustomEndDrawer(),
-      backgroundColor: Colors.white, //const Color(0xffE5E5E5),
+      backgroundColor: Colors.white,
+      //const Color(0xffE5E5E5),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,7 +75,8 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       CupertinoPageRoute(
-                                          builder: (c) => LoggedInHomeScreen(
+                                          builder: (c) =>
+                                              LoggedInHomeScreen(
                                                 user: widget.user,
                                               )),
                                       ModalRoute.withName('/loggedInHome'));
@@ -122,7 +126,10 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                       shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(24))),
                       child: Container(
-                        width: MediaQuery.of(context).size.width,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
                         padding: const EdgeInsets.all(24),
                         decoration: const BoxDecoration(
                             color: Color(0xffF5F5F5),
@@ -144,7 +151,7 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(36))),
+                                  BorderRadius.all(Radius.circular(36))),
                               color: Color(0xffE4DFDF),
                               child: SizedBox(
                                   height: 20,
@@ -177,8 +184,11 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                                   Navigator.push(
                                       context,
                                       CupertinoPageRoute(
-                                          builder: (c) => ClockOut(
-                                                user: widget.user,
+                                          builder: (c) =>
+                                              ClockOut(
+                                                  user: widget.user,
+                                                  inTime: widget.inTime,
+                                                  outTime: DateFormat("yyyy-MM-dd").format(DateTime.now()) + " "+"${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}"
                                               )));
                                 },
                                 child: const CircleAvatar(
@@ -257,134 +267,195 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                       case Status.COMPLETED:
                         return snapshot.data?.data?.statusCode == 400
                             ? Center(
-                                child: Text("No schedule assigned",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Theme.of(context).disabledColor,
-                                        fontSize: 18.0)))
+                            child: Text("No schedule assigned",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Theme
+                                        .of(context)
+                                        .disabledColor,
+                                    fontSize: 18.0)))
                             : ListView.builder(
-                                shrinkWrap: true,
-                                physics: const ScrollPhysics(),
-                                itemCount: 2,
-                                padding: EdgeInsets.zero,
-                                itemBuilder: (context, index) => Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 16.0, right: 16, bottom: 4),
-                                      child: Card(
-                                        elevation: 0,
-                                        shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(24))),
-                                        color: index == 0
-                                            ? const Color(0xffFFCC00)
-                                            : const Color(0xffEFEEFF),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Padding(
+                            shrinkWrap: true,
+                            physics: const ScrollPhysics(),
+                            itemCount: 2,
+                            padding: EdgeInsets.zero,
+                            itemBuilder: (context, index) =>
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16.0, right: 16, bottom: 4),
+                                  child: Card(
+                                    elevation: 0,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(24))),
+                                    color: index == 0
+                                        ? const Color(0xffFFCC00)
+                                        : const Color(0xffEFEEFF),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                          const EdgeInsets.fromLTRB(
+                                              12, 8, 12, 8),
+                                          child: Card(
+                                            color: Colors.white,
+                                            elevation: 0,
+                                            shape:
+                                            const RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.all(
+                                                    Radius.circular(
+                                                        16))),
+                                            child: Padding(
                                               padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      12, 8, 12, 8),
-                                              child: Card(
-                                                color: Colors.white,
-                                                elevation: 0,
-                                                shape:
-                                                    const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    16))),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          12, 16, 12, 16),
-                                                  child: Column(
-                                                    children: const [
-                                                      Text(
-                                                        "Today",
-                                                        style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 16,
-                                                      ),
-                                                      Text(
-                                                        "MON",
-                                                        style: TextStyle(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      12, 8, 24, 8),
+                                              const EdgeInsets.fromLTRB(
+                                                  12, 16, 12, 16),
                                               child: Column(
                                                 children: [
-                                                  const Text(
-                                                    "Clock in",
+                                                  Text(
+                                                    DateFormat("yyyy-MM-dd")
+                                                        .format(DateTime
+                                                        .now()) ==
+                                                        snapshot
+                                                            .data
+                                                            ?.data
+                                                            ?.schedule
+                                                            ?.elementAt(
+                                                            index)
+                                                            .assignedDate
+                                                        ? "Today"
+                                                        : DateFormat(
+                                                        "yyyy-MM-dd").format(
+                                                        DateTime.now().add(
+                                                            Duration(
+                                                                days: 1))) ==
+                                                        snapshot
+                                                            .data
+                                                            ?.data
+                                                            ?.schedule
+                                                            ?.elementAt(
+                                                            index)
+                                                            .assignedDate
+                                                        ? "Tomorrow"
+                                                        : DateFormat(
+                                                        "dd MMM")
+                                                        .format(DateTime.parse(
+                                                        "${snapshot.data?.data
+                                                            ?.schedule
+                                                            ?.elementAt(index)
+                                                            .assignedDate}")),
                                                     style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: DateFormat(
+                                                            "yyyy-MM-dd")
+                                                            .format(
+                                                            DateTime.now().add(
+                                                                Duration(
+                                                                    days:
+                                                                    1))) ==
+                                                            snapshot
+                                                                .data
+                                                                ?.data
+                                                                ?.schedule
+                                                                ?.elementAt(
+                                                                index)
+                                                                .assignedDate
+                                                            ? 9
+                                                            : 14,
                                                         fontWeight:
-                                                            FontWeight.w400),
+                                                        FontWeight
+                                                            .w400),
                                                   ),
                                                   const SizedBox(
                                                     height: 16,
                                                   ),
                                                   Text(
-                                                    "MON",
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: index == 0
-                                                            ? Colors.white
-                                                            : const Color(
-                                                                0xff9F9F9F),
-                                                        fontWeight:
-                                                            FontWeight.w400),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      12, 8.0, 24, 8),
-                                              child: Column(
-                                                children: const [
-                                                  Text(
-                                                    "Clock out",
-                                                    style: TextStyle(
+                                                    DateFormat("EEE").format(
+                                                        DateTime.parse(
+                                                            "${snapshot.data
+                                                                ?.data?.schedule
+                                                                ?.elementAt(
+                                                                index)
+                                                                .assignedDate}")),
+                                                    style: const TextStyle(
                                                         fontSize: 14,
                                                         fontWeight:
-                                                            FontWeight.w400),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 16,
-                                                  ),
-                                                  Text(
-                                                    "hhh",
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w400),
+                                                        FontWeight
+                                                            .w700),
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                    ));
+                                        Padding(
+                                          padding:
+                                          const EdgeInsets.fromLTRB(
+                                              12, 8, 24, 8),
+                                          child: Column(
+                                            children: [
+                                              const Text(
+                                                "Clock in",
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                    FontWeight.w400),
+                                              ),
+                                              const SizedBox(
+                                                height: 16,
+                                              ),
+                                              Text(
+                                                "${snapshot.data?.data?.schedule
+                                                    ?.elementAt(index)
+                                                    .startTime}",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: index == 0
+                                                        ? Colors.white
+                                                        : const Color(
+                                                        0xff9F9F9F),
+                                                    fontWeight:
+                                                    FontWeight.w400),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                          const EdgeInsets.fromLTRB(
+                                              12, 8.0, 24, 8),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                "Clock out",
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                    FontWeight.w400),
+                                              ),
+                                              SizedBox(
+                                                height: 16,
+                                              ),
+                                              Text(
+                                                index == 0
+                                                    ? ""
+                                                    : "${snapshot.data?.data
+                                                    ?.schedule
+                                                    ?.elementAt(index)
+                                                    .endTime}",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                    FontWeight.w400),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ));
                       case Status.ERROR:
                         return Center(child: CircularProgressIndicator());
                       default:
@@ -395,7 +466,8 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
             GestureDetector(
               onTap: () {
                 Navigator.push(context,
-                    CupertinoPageRoute(builder: (c) => const AllClockInOut()));
+                    CupertinoPageRoute(
+                        builder: (c) => AllClockInOut(user: widget.user)));
               },
               child: const Padding(
                 padding: EdgeInsets.only(right: 24.0, top: 8, bottom: 16),
@@ -406,7 +478,6 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                 ),
               ),
             ),
-
           ],
         ),
       ),

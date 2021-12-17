@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,15 +10,19 @@ import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ClockInOutRepository{
-
+class ClockInOutRepository {
   Future<Schedules> getSchedules(String? employeeId, String? date) async {
-    final response =
-    await get("schedule/get_employee_schedule.php?employee_id=$employeeId&date=$date");
+    final response = await get(
+        "schedule/get_employee_schedule.php?employee_id=$employeeId&date=$date");
     return Schedules.fromJson(response);
   }
 
-
+  Future<Schedules> getMonthlySchedules(
+      String? employeeId, String? startDate, String? endDate) async {
+    final response = await get(
+        "schedule/get_monthly_schedule.php?employee_id=$employeeId&start_date=$startDate&end_date=$endDate");
+    return Schedules.fromJson(response);
+  }
 
   Future<dynamic> get(String url) async {
     var responseJson;

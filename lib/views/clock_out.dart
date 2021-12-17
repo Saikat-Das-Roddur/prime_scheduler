@@ -12,7 +12,10 @@ import 'clock_in_and_out.dart';
 
 class ClockOut extends StatefulWidget {
   User? user;
-  ClockOut({Key? key, this.user}) : super(key: key);
+  String? inTime;
+  String? outTime;
+
+  ClockOut({Key? key, this.user, this.inTime, this.outTime}) : super(key: key);
 
   @override
   _ClockOutState createState() => _ClockOutState();
@@ -26,6 +29,7 @@ class _ClockOutState extends State<ClockOut> {
   var _fourthDigit;
   var _fifthDigit;
   var pinCode;
+  String? completedHours;
   bool _isDigitSelected = false;
   late Size _screenSize;
   ClockOutBloc? _clockOutBloc;
@@ -36,9 +40,19 @@ class _ClockOutState extends State<ClockOut> {
     // TODO: implement initState
     super.initState();
     _clockOutBloc = ClockOutBloc();
+    DateTime d1 = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${widget.inTime}");
+    DateTime d2 = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${widget.outTime}");
+    print(d1);
+    print(d2);
+
+    Duration dif = d2.difference(d1);
+    completedHours =
+        '${(dif.inSeconds / 3600).toInt()}:${((dif.inSeconds / 60) % 60).toInt()}:${(dif.inSeconds % 60)}';
+
+    completedHours = DateFormat("hh:mm:ss").format(DateFormat("hh:mm:ss").parse("$completedHours"));
+    print(completedHours);
 
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +102,7 @@ class _ClockOutState extends State<ClockOut> {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: (){
+                          onTap: () {
                             _scaffoldKey.currentState?.openEndDrawer();
                           },
                           child: SvgPicture.asset(
@@ -126,9 +140,9 @@ class _ClockOutState extends State<ClockOut> {
                       padding: const EdgeInsets.only(top: 12.0, left: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children:  [
-                          const Text(
-                            "Robin Alex",
+                        children: [
+                          Text(
+                            "${widget.user?.name}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 color: Colors.black,
@@ -138,7 +152,8 @@ class _ClockOutState extends State<ClockOut> {
                             height: 10,
                           ),
                           Text(
-                            DateFormat("EEEE, dd MMM, yyyy").format(DateTime.now()),
+                            DateFormat("EEEE, dd MMM, yyyy")
+                                .format(DateTime.now()),
                             style: const TextStyle(
                                 color: Color(0xffABABAB),
                                 fontSize: 13,
@@ -191,7 +206,7 @@ class _ClockOutState extends State<ClockOut> {
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children:  [
                             Text(
                               "Total active hours",
                               style: TextStyle(
@@ -203,7 +218,7 @@ class _ClockOutState extends State<ClockOut> {
                               height: 4,
                             ),
                             Text(
-                              "02:40:10 s",
+                              "$completedHours s",
                               style: TextStyle(
                                   color: Color(0xffF23232),
                                   fontSize: 33,
@@ -247,38 +262,37 @@ class _ClockOutState extends State<ClockOut> {
                     _isDigitSelected
                         ? _getOtpKeyboard
                         : GestureDetector(
-                      onTap: () {
-
-                        clockOut();
-                        // Navigator.push(
-                        //     context,
-                        //     CupertinoPageRoute(
-                        //         builder: (c) => const ClockInAndOut(
-                        //
-                        //         )));
-                      },
-                      child: Container(
-                        //color: ,
-                        height: 50,
-                        decoration: const BoxDecoration(
-                            color: Color(0xff59C69C),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(24),
-                                topRight: Radius.circular(24),
-                                bottomLeft: Radius.circular(14),
-                                bottomRight: Radius.circular(14))),
-                        child: const Align(
-                          child: Text(
-                            "Clock Out",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white),
+                            onTap: () {
+                              clockOut();
+                              // Navigator.push(
+                              //     context,
+                              //     CupertinoPageRoute(
+                              //         builder: (c) => const ClockInAndOut(
+                              //
+                              //         )));
+                            },
+                            child: Container(
+                              //color: ,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                  color: Color(0xff59C69C),
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(24),
+                                      topRight: Radius.circular(24),
+                                      bottomLeft: Radius.circular(14),
+                                      bottomRight: Radius.circular(14))),
+                              child: const Align(
+                                child: Text(
+                                  "Clock Out",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white),
+                                ),
+                                alignment: Alignment.center,
+                              ),
+                            ),
                           ),
-                          alignment: Alignment.center,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -388,23 +402,23 @@ class _ClockOutState extends State<ClockOut> {
         digit != null ? digit.toString() : "*",
         style: digit != null
             ? const TextStyle(
-            fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300)
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300)
             : const TextStyle(
-            fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300),
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.w300),
       ),
       decoration: const BoxDecoration(
 //            color: Colors.grey.withOpacity(0.4),
           border: Border(
               bottom: BorderSide(
-                width: 1.5,
-                color: Colors.black,
-              ))),
+        width: 1.5,
+        color: Colors.black,
+      ))),
     );
   }
 
   get _getOtpKeyboard {
     return Container(
-      //color: Colors.white,
+        //color: Colors.white,
         height: _screenSize.width - 80,
         child: Column(
           children: <Widget>[
@@ -544,14 +558,14 @@ class _ClockOutState extends State<ClockOut> {
         _thirdDigit = _currentDigit;
       } else if (_fourthDigit == null) {
         _fourthDigit = _currentDigit;
-      }
-      else if (_fifthDigit == null) {
+      } else if (_fifthDigit == null) {
         _fifthDigit = _currentDigit;
 
         pinCode = _firstDigit.toString() +
             _secondDigit.toString() +
             _thirdDigit.toString() +
-            _fourthDigit.toString()+_fifthDigit.toString();
+            _fourthDigit.toString() +
+            _fifthDigit.toString();
 
         _isDigitSelected = false;
         // widget.otp = otp;
@@ -605,7 +619,6 @@ class _ClockOutState extends State<ClockOut> {
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
                       children: [
-
                         Row(
                           children: [
                             const Flexible(
@@ -622,7 +635,7 @@ class _ClockOutState extends State<ClockOut> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.pop(context);
                               },
                               child: Align(
@@ -741,10 +754,12 @@ class _ClockOutState extends State<ClockOut> {
     Map map = Map();
     map['employee_id'] = widget.user?.id;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
-    map['out_time'] = "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour>11?"pm":"am"}";
+    map['completed_hours'] = completedHours;
+    map['out_time'] =
+        "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
 
-    _clockOutBloc?.clockOut(map).then((value){
-      if(value['status_code'] == 200){
+    _clockOutBloc?.clockOut(map).then((value) {
+      if (value['status_code'] == 200) {
         showClockOutDialog();
       }
     });

@@ -31,6 +31,7 @@ class _ClockInState extends State<ClockIn> {
   var pinCode;
   bool _isDigitSelected = false;
   late Size _screenSize;
+  String? inTime;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ClockInBloc? _clockInBloc;
   ProgressDialog? progressDialog;
@@ -51,10 +52,6 @@ class _ClockInState extends State<ClockIn> {
       _clockInBloc = ClockInBloc();
       checkUserIn();
     });
-
-
-
-
   }
 
   @override
@@ -193,13 +190,10 @@ class _ClockInState extends State<ClockIn> {
                       ? _getOtpKeyboard
                       : GestureDetector(
                           onTap: () {
-
-
                             if (widget.user?.pinCode.toString() == pinCode) {
-
                               clockIn();
                               print(
-                                  "${((DateTime.now().hour + 11) % 12) + 1} : ${DateTime.now().minute} :${DateTime.now().second} ${DateTime.now().hour>11?"pm":"am"}");
+                                  "${((DateTime.now().hour + 11) % 12) + 1} : ${DateTime.now().minute} :${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}");
                             } else {
                               Fluttertoast.showToast(msg: "Pin mismatched");
                             }
@@ -475,21 +469,21 @@ class _ClockInState extends State<ClockIn> {
 
   Widget _otpKeyboardInputButton(
       {required String label, required VoidCallback onPressed}) {
-    return  Material(
+    return Material(
       color: Colors.transparent,
-      child:  InkWell(
+      child: InkWell(
         onTap: onPressed,
-        borderRadius:  BorderRadius.circular(40.0),
-        child:  Container(
+        borderRadius: BorderRadius.circular(40.0),
+        child: Container(
           height: 80.0,
           width: 80.0,
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
           ),
-          child:  Center(
-            child:  Text(
+          child: Center(
+            child: Text(
               label,
-              style:  TextStyle(
+              style: TextStyle(
                 fontSize: 30.0,
                 color: Colors.black,
               ),
@@ -500,57 +494,71 @@ class _ClockInState extends State<ClockIn> {
     );
   }
 
-  void checkUserIn() async{
+  void checkUserIn() async {
     progressDialog = ProgressDialog(context, isDismissible: false);
     await progressDialog?.show();
-    await _clockInBloc?.checkUserIn(widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime.now())).then((value){
+    await _clockInBloc
+        ?.checkUserIn(
+            widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime.now()))
+        .then((value) {
       progressDialog?.hide();
-      if(value['status_code']==403){
-
-      }else if(value['status_code']==200){
-        if(widget.user?.isAdmin=="1"){
-          Navigator.push(context, CupertinoPageRoute(
-              builder: (c) =>  ClockInAndOut(user: widget.user)));
-        }else{
+      if (value['status_code'] == 403) {
+      } else if (value['status_code'] == 200) {
+        if (widget.user?.isAdmin == "1") {
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (c) => ClockInAndOut(
+                      user: widget.user,
+                      inTime: DateFormat("yyyy-MM-dd").format(DateTime.now()) + " "+value['attendance']['in_time'])));
+        } else {
           Navigator.pushAndRemoveUntil(
               context,
               CupertinoPageRoute(
-                  builder: (c) =>  ClockInAndOut(user: widget.user)),ModalRoute.withName('/clockInAndOut'));
+                  builder: (c) => ClockInAndOut(
+                      user: widget.user,
+                      inTime: DateFormat("yyyy-MM-dd").format(DateTime.now()) + " "+ value['attendance']['in_time'])),
+              ModalRoute.withName('/clockInAndOut'));
         }
-
-      }else{
-
-      }
+      } else {}
     });
-
   }
 
-  void clockIn() async{
+  void clockIn() async {
     progressDialog = ProgressDialog(context, isDismissible: true);
     progressDialog?.show();
 
     Map map = Map();
     map['employee_id'] = widget.user?.id;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
-    map['in_time'] = "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour>11?"pm":"am"}";
+    map['in_time'] =
+        "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
     print(map);
-   await _clockInBloc?.clockIn(map).then((value){
-
+    await _clockInBloc?.clockIn(map).then((value) {
       progressDialog?.hide();
-      if(value['status_code']==200){
-        if(widget.user?.isAdmin=="1"){
-          Navigator.push(context, CupertinoPageRoute(
-              builder: (c) =>  ClockInAndOut(user: widget.user)));
-        }else{
+      if (value['status_code'] == 200) {
+        if (widget.user?.isAdmin == "1") {
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (c) => ClockInAndOut(
+                      user: widget.user, inTime: map['assigned_date'] + " " + map['in_time'])));
+        } else {
           Navigator.pushAndRemoveUntil(
               context,
               CupertinoPageRoute(
-                  builder: (c) =>  ClockInAndOut(user: widget.user)),ModalRoute.withName('/clockInAndOut'));
+                  builder: (c) => ClockInAndOut(
+                      user: widget.user, inTime: map['assigned_date']+" "+
+                      map['in_time'])),
+              ModalRoute.withName('/clockInAndOut'));
         }
-
-      }else if(value['status_code'] == 403){
-        Navigator.push(context, CupertinoPageRoute(
-            builder: (c) =>  ClockInAndOut(user: widget.user)));
+      } else if (value['status_code'] == 403) {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (c) => ClockInAndOut(
+                    user: widget.user, inTime: map['assigned_date']+" "+
+                    map['in_time'])));
         Fluttertoast.showToast(msg: "You have no schedule for today");
       }
     });
