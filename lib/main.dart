@@ -37,13 +37,14 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: '/home',
+        initialRoute: '/clockInAndOut',
         routes: {
           // '/splash': (context) => const SplashScreen(),
           '/home': (context) => const Home(),
           '/loggedInHome': (context) => LoggedInHomeScreen(),
           '/loggIn': (context) => LogInScreen(),
           '/clockInAndOut': (context) => ClockInAndOut(),
+
           // '/splash': (context) => const SplashScreen(),
           // '/splash': (context) => const SplashScreen(),
         },

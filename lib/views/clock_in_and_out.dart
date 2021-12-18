@@ -16,6 +16,10 @@ import 'package:prime_scheduler/views/logged_in_home.dart';
 class ClockInAndOut extends StatefulWidget {
   User? user;
   String? inTime;
+  int? secondsRemaining;
+  Function? whenTimeExpires;
+  Function? countDownFormatter;
+  TextStyle? countDownTimerStyle;
 
   ClockInAndOut({Key? key, this.user, this.inTime}) : super(key: key);
 
@@ -23,18 +27,141 @@ class ClockInAndOut extends StatefulWidget {
   _ClockInAndOutState createState() => _ClockInAndOutState();
 }
 
-class _ClockInAndOutState extends State<ClockInAndOut> {
+class _ClockInAndOutState extends State<ClockInAndOut>
+    with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ClockInOutBloc? _clockInOutBloc;
+  late final AnimationController _controller;
+  late final Duration duration;
+  double? assignedHrs, remainingHrs, percent = 0;
+
+  String get timerDisplayString {
+    final duration = _controller.duration! * _controller.value;
+    if (widget.countDownFormatter != null) {
+      return widget.countDownFormatter!(duration.inSeconds) as String;
+    } else {
+      DateTime d1 = DateFormat("hh:mm:ss").parse("00:02:10");
+      assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
+
+      //setState(() {
+      remainingHrs = duration.inSeconds.toDouble();
+      //});
+      percent = (remainingHrs! - assignedHrs!).abs() / (assignedHrs!);
+      print((remainingHrs! - assignedHrs!).abs());
+      //print((assignedHrs!));
+      return formatHHMMSS(duration.inSeconds);
+    }
+  }
+
+  double get percentData {
+    final duration = _controller.duration! * _controller.value;
+    if (widget.countDownFormatter != null) {
+      print("Done");
+      return widget.countDownFormatter!(duration.inSeconds) as double;
+    } else {
+      DateTime d1 = DateFormat("hh:mm:ss").parse("00:02:10");
+      assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
+
+      //setState(() {
+      remainingHrs = duration.inSeconds.toDouble();
+      //});
+      percent = (remainingHrs! - assignedHrs!).abs() / (assignedHrs!);
+      print((remainingHrs! - assignedHrs!).abs());
+      //print((assignedHrs!));
+      return (remainingHrs! - assignedHrs!).abs() / assignedHrs!;
+    }
+  }
+
+  String formatHHMMSS(int seconds) {
+    final hours = (seconds / 3600).truncate();
+    seconds = (seconds % 3600).truncate();
+    final minutes = (seconds / 60).truncate();
+
+    final hoursStr = (hours).toString().padLeft(2, '0');
+    final minutesStr = (minutes).toString().padLeft(2, '0');
+    final secondsStr = (seconds % 60).toString().padLeft(2, '0');
+
+    if (hours == 0) {
+      return '$minutesStr:$secondsStr';
+    }
+
+    return '$hoursStr:$minutesStr:$secondsStr';
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _clockInOutBloc = ClockInOutBloc();
-    print(widget.inTime);
+    //print(widget.inTime);
+
+
+    DateTime d1 = DateFormat("hh:mm:ss").parse("00:02:10");
+    assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
+
+    print(d1.hour * 3600 + d1.minute * 60 + d1.second);
+    duration = Duration(seconds: d1.hour * 3600 + d1.minute * 60 + d1.second);
+    _controller = AnimationController(
+      vsync: this,
+      duration: duration,
+    );
+    _controller
+      ..reverse(from: (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble())
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed ||
+            status == AnimationStatus.dismissed) {
+          //widget.whenTimeExpires();
+          print("Done");
+        }
+      });
+
+    widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} 12:30:40 am";
+    String outTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} 11:30:40 pm";
+    //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
+
+    DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$outTime}");
+    DateTime currentTime = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
+
+    print(today);
+    print(currentTime);
+
+    Duration dif = today.difference(currentTime);
+    print(formatHHMMSS(dif.inSeconds));
+
+
+
+
     _clockInOutBloc?.getSchedules(
         widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime.now()));
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(ClockInAndOut oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // if (widget.secondsRemaining != oldWidget.secondsRemaining) {
+    //   setState(() {
+    //     duration = Duration(seconds: (d1.hour * 3600 + d1.minute * 60 + d1.second));
+    //     _controller.dispose();
+    //     _controller = AnimationController(
+    //       vsync: this,
+    //       duration: duration,
+    //     );
+    //     _controller
+    //       ..reverse(from: (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble())
+    //       ..addStatusListener((status) {
+    //         if (status == AnimationStatus.completed) {
+    //           //widget.whenTimeExpires();
+    //         }
+    //       });
+    //   });
+    // }
   }
 
   @override
@@ -75,8 +202,7 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       CupertinoPageRoute(
-                                          builder: (c) =>
-                                              LoggedInHomeScreen(
+                                          builder: (c) => LoggedInHomeScreen(
                                                 user: widget.user,
                                               )),
                                       ModalRoute.withName('/loggedInHome'));
@@ -126,10 +252,7 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                       shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(24))),
                       child: Container(
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width,
+                        width: MediaQuery.of(context).size.width,
                         padding: const EdgeInsets.all(24),
                         decoration: const BoxDecoration(
                             color: Color(0xffF5F5F5),
@@ -147,65 +270,81 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                             const SizedBox(
                               height: 16,
                             ),
-                            const Card(
+                            Card(
                               elevation: 0,
-                              shape: RoundedRectangleBorder(
+                              shape: const RoundedRectangleBorder(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(36))),
-                              color: Color(0xffE4DFDF),
+                                      BorderRadius.all(Radius.circular(36))),
+                              color: const Color(0xffE4DFDF),
                               child: SizedBox(
                                   height: 20,
                                   child: Padding(
-                                    padding: EdgeInsets.only(
+                                    padding: const EdgeInsets.only(
                                         left: 16.0,
                                         top: 4,
                                         bottom: 4,
                                         right: 28),
-                                    child: Text(
-                                      "Your Remaining hours 6.00 HRS",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12),
+                                    child: AnimatedBuilder(
+                                      animation: _controller,
+                                      builder: (_, Widget? child) {
+                                        return Text(
+                                          "Your Remaining hours $timerDisplayString HRS",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 12),
+                                        );
+                                      },
                                     ),
                                   )),
                             ),
                             const SizedBox(
                               height: 16,
                             ),
-                            CircularPercentIndicator(
-                              radius: 160.0,
-                              animation: true,
-                              animationDuration: 1200,
-                              lineWidth: 15.0,
-                              percent: 0.1,
-                              center: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                          builder: (c) =>
-                                              ClockOut(
+
+                            AnimatedBuilder(
+                              animation: _controller,
+                              builder: (_, Widget? child) {
+                                return CircularPercentIndicator(
+                                  radius: 160.0,
+                                  animation: true,
+                                  animationDuration: 1200,
+                                  animateFromLastPercent: true,
+                                  addAutomaticKeepAlive: true,
+                                  lineWidth: 15.0,
+                                  percent: percentData,
+                                  center: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (c) => ClockOut(
                                                   user: widget.user,
                                                   inTime: widget.inTime,
-                                                  outTime: DateFormat("yyyy-MM-dd").format(DateTime.now()) + " "+"${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}"
-                                              )));
-                                },
-                                child: const CircleAvatar(
-                                  radius: 65,
-                                  backgroundColor: Color(0xff59C69C),
-                                  child: Text(
-                                    "Clock out",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 22.0),
+                                                  outTime: DateFormat(
+                                                              "yyyy-MM-dd")
+                                                          .format(
+                                                              DateTime.now()) +
+                                                      " " +
+                                                      "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}")));
+                                    },
+                                    child: const CircleAvatar(
+                                      radius: 65,
+                                      backgroundColor: Color(0xff59C69C),
+                                      child: Text(
+                                        "Clock out",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 22.0),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              circularStrokeCap: CircularStrokeCap.butt,
-                              backgroundColor: const Color(0xffE4DFDF),
-                              progressColor: const Color(0xffF06767),
+                                  circularStrokeCap: CircularStrokeCap.butt,
+                                  backgroundColor: const Color(0xffE4DFDF),
+                                  progressColor: const Color(0xffF06767),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -267,195 +406,174 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                       case Status.COMPLETED:
                         return snapshot.data?.data?.statusCode == 400
                             ? Center(
-                            child: Text("No schedule assigned",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Theme
-                                        .of(context)
-                                        .disabledColor,
-                                    fontSize: 18.0)))
+                                child: Text("No schedule assigned",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Theme.of(context).disabledColor,
+                                        fontSize: 18.0)))
                             : ListView.builder(
-                            shrinkWrap: true,
-                            physics: const ScrollPhysics(),
-                            itemCount: 2,
-                            padding: EdgeInsets.zero,
-                            itemBuilder: (context, index) =>
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 16.0, right: 16, bottom: 4),
-                                  child: Card(
-                                    elevation: 0,
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(24))),
-                                    color: index == 0
-                                        ? const Color(0xffFFCC00)
-                                        : const Color(0xffEFEEFF),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                          const EdgeInsets.fromLTRB(
-                                              12, 8, 12, 8),
-                                          child: Card(
-                                            color: Colors.white,
-                                            elevation: 0,
-                                            shape:
-                                            const RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.all(
-                                                    Radius.circular(
-                                                        16))),
-                                            child: Padding(
+                                shrinkWrap: true,
+                                physics: const ScrollPhysics(),
+                                itemCount: 2,
+                                padding: EdgeInsets.zero,
+                                itemBuilder: (context, index) => Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 16.0, right: 16, bottom: 4),
+                                      child: Card(
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(24))),
+                                        color: index == 0
+                                            ? const Color(0xffFFCC00)
+                                            : const Color(0xffEFEEFF),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
                                               padding:
-                                              const EdgeInsets.fromLTRB(
-                                                  12, 16, 12, 16),
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 8, 12, 8),
+                                              child: Card(
+                                                color: Colors.white,
+                                                elevation: 0,
+                                                shape:
+                                                    const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    16))),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          12, 16, 12, 16),
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                        DateFormat("yyyy-MM-dd")
+                                                                    .format(DateTime
+                                                                        .now()) ==
+                                                                snapshot
+                                                                    .data
+                                                                    ?.data
+                                                                    ?.schedule
+                                                                    ?.elementAt(
+                                                                        index)
+                                                                    .assignedDate
+                                                            ? "Today"
+                                                            : DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))) ==
+                                                                    snapshot
+                                                                        .data
+                                                                        ?.data
+                                                                        ?.schedule
+                                                                        ?.elementAt(
+                                                                            index)
+                                                                        .assignedDate
+                                                                ? "Tomorrow"
+                                                                : DateFormat(
+                                                                        "dd MMM")
+                                                                    .format(DateTime.parse(
+                                                                        "${snapshot.data?.data?.schedule?.elementAt(index).assignedDate}")),
+                                                        style: TextStyle(
+                                                            fontSize: DateFormat(
+                                                                            "yyyy-MM-dd")
+                                                                        .format(DateTime.now().add(Duration(
+                                                                            days:
+                                                                                1))) ==
+                                                                    snapshot
+                                                                        .data
+                                                                        ?.data
+                                                                        ?.schedule
+                                                                        ?.elementAt(
+                                                                            index)
+                                                                        .assignedDate
+                                                                ? 9
+                                                                : 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 16,
+                                                      ),
+                                                      Text(
+                                                        DateFormat("EEE").format(
+                                                            DateTime.parse(
+                                                                "${snapshot.data?.data?.schedule?.elementAt(index).assignedDate}")),
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 8, 24, 8),
                                               child: Column(
                                                 children: [
-                                                  Text(
-                                                    DateFormat("yyyy-MM-dd")
-                                                        .format(DateTime
-                                                        .now()) ==
-                                                        snapshot
-                                                            .data
-                                                            ?.data
-                                                            ?.schedule
-                                                            ?.elementAt(
-                                                            index)
-                                                            .assignedDate
-                                                        ? "Today"
-                                                        : DateFormat(
-                                                        "yyyy-MM-dd").format(
-                                                        DateTime.now().add(
-                                                            Duration(
-                                                                days: 1))) ==
-                                                        snapshot
-                                                            .data
-                                                            ?.data
-                                                            ?.schedule
-                                                            ?.elementAt(
-                                                            index)
-                                                            .assignedDate
-                                                        ? "Tomorrow"
-                                                        : DateFormat(
-                                                        "dd MMM")
-                                                        .format(DateTime.parse(
-                                                        "${snapshot.data?.data
-                                                            ?.schedule
-                                                            ?.elementAt(index)
-                                                            .assignedDate}")),
+                                                  const Text(
+                                                    "Clock in",
                                                     style: TextStyle(
-                                                        fontSize: DateFormat(
-                                                            "yyyy-MM-dd")
-                                                            .format(
-                                                            DateTime.now().add(
-                                                                Duration(
-                                                                    days:
-                                                                    1))) ==
-                                                            snapshot
-                                                                .data
-                                                                ?.data
-                                                                ?.schedule
-                                                                ?.elementAt(
-                                                                index)
-                                                                .assignedDate
-                                                            ? 9
-                                                            : 14,
+                                                        fontSize: 14,
                                                         fontWeight:
-                                                        FontWeight
-                                                            .w400),
+                                                            FontWeight.w400),
                                                   ),
                                                   const SizedBox(
                                                     height: 16,
                                                   ),
                                                   Text(
-                                                    DateFormat("EEE").format(
-                                                        DateTime.parse(
-                                                            "${snapshot.data
-                                                                ?.data?.schedule
-                                                                ?.elementAt(
-                                                                index)
-                                                                .assignedDate}")),
-                                                    style: const TextStyle(
-                                                        fontSize: 14,
+                                                    "${snapshot.data?.data?.schedule?.elementAt(index).startTime}",
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: index == 0
+                                                            ? Colors.white
+                                                            : const Color(
+                                                                0xff9F9F9F),
                                                         fontWeight:
-                                                        FontWeight
-                                                            .w700),
+                                                            FontWeight.w400),
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                          ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 8.0, 24, 8),
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    "Clock out",
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  Text(
+                                                    index == 0
+                                                        ? ""
+                                                        : "${snapshot.data?.data?.schedule?.elementAt(index).endTime}",
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        Padding(
-                                          padding:
-                                          const EdgeInsets.fromLTRB(
-                                              12, 8, 24, 8),
-                                          child: Column(
-                                            children: [
-                                              const Text(
-                                                "Clock in",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                    FontWeight.w400),
-                                              ),
-                                              const SizedBox(
-                                                height: 16,
-                                              ),
-                                              Text(
-                                                "${snapshot.data?.data?.schedule
-                                                    ?.elementAt(index)
-                                                    .startTime}",
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: index == 0
-                                                        ? Colors.white
-                                                        : const Color(
-                                                        0xff9F9F9F),
-                                                    fontWeight:
-                                                    FontWeight.w400),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                          const EdgeInsets.fromLTRB(
-                                              12, 8.0, 24, 8),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "Clock out",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                    FontWeight.w400),
-                                              ),
-                                              SizedBox(
-                                                height: 16,
-                                              ),
-                                              Text(
-                                                index == 0
-                                                    ? ""
-                                                    : "${snapshot.data?.data
-                                                    ?.schedule
-                                                    ?.elementAt(index)
-                                                    .endTime}",
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                    FontWeight.w400),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ));
+                                      ),
+                                    ));
                       case Status.ERROR:
                         return Center(child: CircularProgressIndicator());
                       default:
@@ -465,7 +583,8 @@ class _ClockInAndOutState extends State<ClockInAndOut> {
                 }),
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
+                Navigator.push(
+                    context,
                     CupertinoPageRoute(
                         builder: (c) => AllClockInOut(user: widget.user)));
               },
