@@ -19,7 +19,10 @@ class LogInScreen extends StatefulWidget {
 }
 
 class _LogInScreenState extends State<LogInScreen> {
-  bool passwordVisible = false, value = false, isValidEmail = false, isValidPassword = false;
+  bool passwordVisible = false,
+      value = false,
+      isValidEmail = false,
+      isValidPassword = false;
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -42,7 +45,6 @@ class _LogInScreenState extends State<LogInScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -156,15 +158,40 @@ class _LogInScreenState extends State<LogInScreen> {
               ),
             ),
 
-            const Padding(
-              padding: EdgeInsets.only(right: 24.0, top: 0),
-              child: Text(
-                "Forget Password ?",
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12,
+            Padding(
+              padding: const EdgeInsets.only(right: 24.0, top: 0),
+              child: GestureDetector(
+                onTap: () {
+                  if (_emailController.text.isEmpty) {
+                    Fluttertoast.showToast(msg: "Please enter your email");
+                  } else if (!isValidEmail) {
+                    Fluttertoast.showToast(msg: "Please enter valid email");
+                  } else {
+                    progressDialog =
+                        ProgressDialog(context, isDismissible: false);
+                    progressDialog?.show();
+                    Map map = Map();
+                    map['email'] = _emailController.text;
+                    _bloc.forgetPassword(body: map).then((value) {
+                      progressDialog?.hide();
+                      if (value['status_code'] == 200) {
+                        Fluttertoast.showToast(msg: value['message']);
+                      } else if (value['status_code'] == 400) {
+                        Fluttertoast.showToast(msg: value['message']);
+                      } else if (value['status_code'] == 403) {
+                        Fluttertoast.showToast(msg: value['message']);
+                      }
+                    });
+                  }
+                },
+                child: const Text(
+                  "Forget Password ?",
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
@@ -175,22 +202,20 @@ class _LogInScreenState extends State<LogInScreen> {
 
             GestureDetector(
               onTap: () {
-
                 if (!isValidEmail) {
                   Fluttertoast.showToast(msg: "Enter valid email");
                   return;
-                } else if (!isValidPassword&&_passwordController.text.length<8) {
-                  Fluttertoast.showToast(
-                      msg: "Password not valid");
+                } else if (!isValidPassword &&
+                    _passwordController.text.length < 8) {
+                  Fluttertoast.showToast(msg: "Password not valid");
                   return;
-                }else {
+                } else {
                   Map map = Map();
                   map['email'] = _emailController.text;
                   map['password'] = _passwordController.text;
                   //widget.map['is_admin'] = 0;
                   print(map);
                   signIn(map);
-
                 }
               },
               child: Padding(
@@ -240,12 +265,13 @@ class _LogInScreenState extends State<LogInScreen> {
                     //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Flexible(
-                        flex: 2,
+                          flex: 2,
                           fit: FlexFit.loose,
                           child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24.0, 4, 24, 4),
-                        child: SvgPicture.asset("assets/images/Group 166.svg"),
-                      )),
+                            padding: const EdgeInsets.fromLTRB(24.0, 4, 24, 4),
+                            child:
+                                SvgPicture.asset("assets/images/Group 166.svg"),
+                          )),
                       const Expanded(
                         flex: 2,
                         child: Padding(
@@ -253,12 +279,11 @@ class _LogInScreenState extends State<LogInScreen> {
                           child: Text(
                             "LogIn with google",
                             textAlign: TextAlign.end,
-                            style:
-                                TextStyle(fontSize: 16, color: Color(0xFFF06767)),
+                            style: TextStyle(
+                                fontSize: 16, color: Color(0xFFF06767)),
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -304,7 +329,7 @@ class _LogInScreenState extends State<LogInScreen> {
     );
   }
 
-  void signIn(Map map) async{
+  void signIn(Map map) async {
     progressDialog = ProgressDialog(context, isDismissible: false);
     progressDialog?.show();
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -313,27 +338,21 @@ class _LogInScreenState extends State<LogInScreen> {
       progressDialog?.hide();
       Fluttertoast.showToast(msg: "No Internet connection");
     } else {
-      await _bloc.signIn(body: map).then((value){
-
-        if(value?.user?.statusCode==200){
+      await _bloc.signIn(body: map).then((value) {
+        if (value?.user?.statusCode == 200) {
           progressDialog?.hide();
           Fluttertoast.showToast(msg: "${value?.user?.message}");
-          if(value?.user?.isAdmin=="1"){
+          if (value?.user?.isAdmin == "1") {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (c) => LoggedInHomeScreen(
-                        user: value?.user
-                    )));
-          }else{
+                    builder: (c) => LoggedInHomeScreen(user: value?.user)));
+          } else {
             progressDialog?.hide();
             Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (c) => ClockIn()));
+                context, CupertinoPageRoute(builder: (c) => ClockIn()));
           }
-
-        }else{
+        } else {
           progressDialog?.hide();
           Fluttertoast.showToast(msg: "${value?.user?.message}");
         }

@@ -46,12 +46,26 @@ class _ClockOutState extends State<ClockOut> {
     print(d2);
 
     Duration dif = d2.difference(d1);
-    completedHours =
-        '${(dif.inSeconds / 3600).toInt()}:${((dif.inSeconds / 60) % 60).toInt()}:${(dif.inSeconds % 60)}';
 
-    completedHours = DateFormat("hh:mm:ss").format(DateFormat("hh:mm:ss").parse("$completedHours"));
-    print(completedHours);
+    completedHours = formatHHMMSS(dif.inSeconds);
+    print(formatHHMMSS(dif.inSeconds));
 
+  }
+
+  String formatHHMMSS(int seconds) {
+    final hours = (seconds / 3600).truncate();
+    seconds = (seconds % 3600).truncate();
+    final minutes = (seconds / 60).truncate();
+
+    final hoursStr = (hours).toString().padLeft(2, '0');
+    final minutesStr = (minutes).toString().padLeft(2, '0');
+    final secondsStr = (seconds % 60).toString().padLeft(2, '0');
+
+    // if (hours == 0) {
+    //   return '$hoursStr:$minutesStr:$secondsStr';
+    // }
+
+    return '$hoursStr:$minutesStr:$secondsStr';
   }
 
   @override

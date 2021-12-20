@@ -16,12 +16,16 @@ import 'package:prime_scheduler/views/logged_in_home.dart';
 class ClockInAndOut extends StatefulWidget {
   User? user;
   String? inTime;
+  String? assignedHours;
+  String? endTime;
   int? secondsRemaining;
   Function? whenTimeExpires;
   Function? countDownFormatter;
   TextStyle? countDownTimerStyle;
 
-  ClockInAndOut({Key? key, this.user, this.inTime}) : super(key: key);
+  ClockInAndOut(
+      {Key? key, this.user, this.inTime, this.endTime, this.assignedHours})
+      : super(key: key);
 
   @override
   _ClockInAndOutState createState() => _ClockInAndOutState();
@@ -40,14 +44,28 @@ class _ClockInAndOutState extends State<ClockInAndOut>
     if (widget.countDownFormatter != null) {
       return widget.countDownFormatter!(duration.inSeconds) as String;
     } else {
-      DateTime d1 = DateFormat("hh:mm:ss").parse("00:02:10");
-      assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
-
-      //setState(() {
-      remainingHrs = duration.inSeconds.toDouble();
-      //});
-      percent = (remainingHrs! - assignedHrs!).abs() / (assignedHrs!);
-      print((remainingHrs! - assignedHrs!).abs());
+      // String endTime =
+      //     "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
+      // //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
+      //
+      // //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
+      // //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
+      // DateTime todayEnd = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime");
+      // DateTime currentTime =
+      // DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
+      //
+      // Duration dif = todayEnd.difference(currentTime);
+      //
+      //
+      // DateTime d1 = DateFormat("hh:mm:ss").parse(formatHHMMSS(dif.inSeconds));
+      // assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
+      //
+      //
+      // //setState(() {
+      // remainingHrs = duration.inSeconds.toDouble();
+      // //});
+      // percent = (remainingHrs! - assignedHrs!).abs() / (assignedHrs!);
+      //print((remainingHrs! - assignedHrs!).abs());
       //print((assignedHrs!));
       return formatHHMMSS(duration.inSeconds);
     }
@@ -59,16 +77,30 @@ class _ClockInAndOutState extends State<ClockInAndOut>
       print("Done");
       return widget.countDownFormatter!(duration.inSeconds) as double;
     } else {
-      DateTime d1 = DateFormat("hh:mm:ss").parse("00:02:10");
+      String endTime =
+          "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.inTime}";
+      //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
+
+      //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
+      //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
+      DateTime todayEnd = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${widget.inTime}");
+      DateTime currentTime =
+      DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
+
+      Duration dif = currentTime.difference(todayEnd);
+
+
+      DateTime d1 = DateFormat("hh:mm:ss").parse("${widget.assignedHours}");
       assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
 
       //setState(() {
       remainingHrs = duration.inSeconds.toDouble();
+
       //});
-      percent = (remainingHrs! - assignedHrs!).abs() / (assignedHrs!);
-      print((remainingHrs! - assignedHrs!).abs());
-      //print((assignedHrs!));
-      return (remainingHrs! - assignedHrs!).abs() / assignedHrs!;
+      percent = 1- (remainingHrs!.abs() / (assignedHrs!));
+      print(percent!);
+
+      return percent!>1?0:percent!;//(remainingHrs! - assignedHrs!).abs() / (assignedHrs!);//(remainingHrs! - assignedHrs!).abs() / assignedHrs!;
     }
   }
 
@@ -81,9 +113,9 @@ class _ClockInAndOutState extends State<ClockInAndOut>
     final minutesStr = (minutes).toString().padLeft(2, '0');
     final secondsStr = (seconds % 60).toString().padLeft(2, '0');
 
-    if (hours == 0) {
-      return '$minutesStr:$secondsStr';
-    }
+    // if (hours == 0) {
+    //   return '$hoursStr:$minutesStr:$secondsStr';
+    // }
 
     return '$hoursStr:$minutesStr:$secondsStr';
   }
@@ -95,18 +127,44 @@ class _ClockInAndOutState extends State<ClockInAndOut>
     _clockInOutBloc = ClockInOutBloc();
     //print(widget.inTime);
 
+    String inTime =
+        "${widget.inTime}";
+    String endTime =
+        "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
+    //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
 
-    DateTime d1 = DateFormat("hh:mm:ss").parse("00:02:10");
-    assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
+    //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
+    //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
+    DateTime todayEnd = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime");
+    DateTime currentTime =
+    DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
+    print("object ${todayEnd.toString()}");
+    print("object ${currentTime.toString()}");
+    if(todayEnd.toString().compareTo(currentTime.toString())==-1){
+      print("object ${todayEnd.microsecond}");
+    }
+
+    Duration dif = todayEnd.difference(currentTime);
+
+
+    DateTime d1 = DateFormat("hh:mm:ss").parse(formatHHMMSS(dif.inSeconds));
+
+    print(widget.assignedHours);
+    DateTime assigned =
+    DateFormat("hh:mm:ss").parse(formatHHMMSS(dif.inSeconds));
+
+    print(assigned.toString());
+
+    assignedHrs = (assigned.hour * 3600 + assigned.minute * 60 + assigned.second).toDouble();
 
     print(d1.hour * 3600 + d1.minute * 60 + d1.second);
-    duration = Duration(seconds: d1.hour * 3600 + d1.minute * 60 + d1.second);
+    duration = Duration(seconds: assigned.hour * 3600 + assigned.minute * 60 + assigned.second);
     _controller = AnimationController(
       vsync: this,
       duration: duration,
     );
     _controller
-      ..reverse(from: (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble())
+      ..reverse(from: assignedHrs)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed ||
             status == AnimationStatus.dismissed) {
@@ -115,21 +173,11 @@ class _ClockInAndOutState extends State<ClockInAndOut>
         }
       });
 
-    widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} 12:30:40 am";
-    String outTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} 11:30:40 pm";
-    //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
-
-    DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$outTime}");
-    DateTime currentTime = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
-
-    print(today);
+    print(todayEnd);
     print(currentTime);
 
-    Duration dif = today.difference(currentTime);
+
     print(formatHHMMSS(dif.inSeconds));
-
-
-
 
     _clockInOutBloc?.getSchedules(
         widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime.now()));
@@ -301,7 +349,6 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                             const SizedBox(
                               height: 16,
                             ),
-
                             AnimatedBuilder(
                               animation: _controller,
                               builder: (_, Widget? child) {

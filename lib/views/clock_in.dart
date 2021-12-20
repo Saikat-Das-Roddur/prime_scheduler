@@ -508,16 +508,28 @@ class _ClockInState extends State<ClockIn> {
           Navigator.push(
               context,
               CupertinoPageRoute(
-                  builder: (c) => ClockInAndOut(
-                      user: widget.user,
-                      inTime: DateFormat("yyyy-MM-dd").format(DateTime.now()) + " "+value['attendance']['in_time'])));
+                builder: (c) => ClockInAndOut(
+                  user: widget.user,
+                  inTime: DateFormat("yyyy-MM-dd").format(DateTime.now()) +
+                      " " +
+                      value['attendance']['in_time'],
+                  assignedHours: value['attendance']['assigned_hours'],
+                  endTime: value['schedule']['end_time'],
+                ),
+              ));
         } else {
           Navigator.pushAndRemoveUntil(
               context,
               CupertinoPageRoute(
                   builder: (c) => ClockInAndOut(
-                      user: widget.user,
-                      inTime: DateFormat("yyyy-MM-dd").format(DateTime.now()) + " "+ value['attendance']['in_time'])),
+                        user: widget.user,
+                        inTime:
+                            DateFormat("yyyy-MM-dd").format(DateTime.now()) +
+                                " " +
+                                value['attendance']['in_time'],
+                        assignedHours: value['attendance']['assigned_hours'],
+                        endTime: value['schedule']['end_time'],
+                      )),
               ModalRoute.withName('/clockInAndOut'));
         }
       } else {}
@@ -542,23 +554,30 @@ class _ClockInState extends State<ClockIn> {
               context,
               CupertinoPageRoute(
                   builder: (c) => ClockInAndOut(
-                      user: widget.user, inTime: map['assigned_date'] + " " + map['in_time'])));
+                        user: widget.user,
+                        inTime: map['assigned_date'] + " " + map['in_time'],
+                        assignedHours: value['assigned_hours'],
+                        endTime: value['schedule']['end_time'],
+                      )));
         } else {
           Navigator.pushAndRemoveUntil(
               context,
               CupertinoPageRoute(
                   builder: (c) => ClockInAndOut(
-                      user: widget.user, inTime: map['assigned_date']+" "+
-                      map['in_time'])),
+                        user: widget.user,
+                        inTime: map['assigned_date'] + " " + map['in_time'],
+                        assignedHours: value['assigned_hours'],
+                        endTime: value['schedule']['end_time'],
+                      )),
               ModalRoute.withName('/clockInAndOut'));
         }
       } else if (value['status_code'] == 403) {
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (c) => ClockInAndOut(
-                    user: widget.user, inTime: map['assigned_date']+" "+
-                    map['in_time'])));
+        // Navigator.push(
+        //     context,
+        //     CupertinoPageRoute(
+        //         builder: (c) => ClockInAndOut(
+        //             user: widget.user, inTime: map['assigned_date']+" "+
+        //             map['in_time'])));
         Fluttertoast.showToast(msg: "You have no schedule for today");
       }
     });

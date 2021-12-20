@@ -14,6 +14,11 @@ class LogInRepository{
     return UserResponse.fromJson(response);
   }
 
+  Future<dynamic> forgotPassword({required Map body}) async {
+    final response = await post("user/forgot_password.php", body: body);
+    return response;
+  }
+
   Future<dynamic> post(String url, {required Map body}) async {
     var responseJson;
 
@@ -21,6 +26,7 @@ class LogInRepository{
       final response = await http
           .post(Uri.parse(CustomStrings.baseUrl + url), body: body,);
       responseJson = _response(response);
+      print(CustomStrings.baseUrl + url);
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }

@@ -790,9 +790,9 @@ class _AddScheduleState extends State<AddSchedule> {
                   map['location'] = _locationController.text;
                   map['terms'] = _termDuration!;
                   map['start_time'] =
-                      "$_toHour:$_toMinute ${_toAmPm == 0 ? "am" : "pm"}";
+                      "$_toHour:$_toMinute:${DateTime.now().second} ${_toAmPm == 0 ? "am" : "pm"}";
                   map['end_time'] =
-                      "$_fromHour:$_fromMinute ${_fromAmPm == 0 ? "am" : "pm"}";
+                      "$_fromHour:$_fromMinute:${DateTime.now().second} ${_fromAmPm == 0 ? "am" : "pm"}";
                   print(map);
 
                   addSchedule();
