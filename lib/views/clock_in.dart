@@ -11,6 +11,7 @@ import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 import 'add_single_employee.dart';
+import 'logged_in_home.dart';
 
 class ClockIn extends StatefulWidget {
   User? user;
@@ -532,8 +533,170 @@ class _ClockInState extends State<ClockIn> {
                       )),
               ModalRoute.withName('/clockInAndOut'));
         }
-      } else {}
+      } else if (value['status_code'] == 201) {
+        showClockOutDialog();
+      }
     });
+  }
+
+  showClockOutDialog() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Center(
+              child: SingleChildScrollView(
+                physics: const ScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Card(
+                    elevation: 0,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(36))),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: const [
+                              Flexible(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "Clocked Out",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Color(0xffF06767),
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     Navigator.pop(context);
+                              //   },
+                              //   child: Align(
+                              //     alignment: Alignment.centerRight,
+                              //     child: SvgPicture.asset(
+                              //       "assets/images/Group 165.svg",
+                              //       color: Colors.black,
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .03,
+                          ),
+                          RichText(
+                              text: const TextSpan(
+                                  text: "Time: ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 22,
+                                      color: Color(0xffC4C4C4)),
+                                  children: [
+                                WidgetSpan(
+                                    alignment: PlaceholderAlignment.middle,
+                                    child: Text(
+                                      "02 hours 40 min 10 sec",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700),
+                                    ))
+                              ])),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .04,
+                          ),
+                          RichText(
+                              text: const TextSpan(
+                                  text: "Location: ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 22,
+                                      color: Color(0xffC4C4C4)),
+                                  children: [
+                                WidgetSpan(
+                                    child: Text(
+                                  "Sarinda Club",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700),
+                                ))
+                              ])),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .01,
+                          ),
+                          const Text(
+                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w200),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .03,
+                          ),
+                          SvgPicture.asset(
+                            "assets/images/Group 205.svg",
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .03,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (widget.user?.isAdmin == "1") {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (c) => LoggedInHomeScreen(
+                                              user: widget.user,
+                                            )),
+                                    ModalRoute.withName('/loggedInHome'));
+                              } else {}
+                              //showClockOutDialog();
+                              // Navigator.push(
+                              //     context,
+                              //     CupertinoPageRoute(
+                              //         builder: (c) => const ClockInAndOut(
+                              //
+                              //         )));
+                            },
+                            child: Container(
+                              //color: ,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                  color: Color(0xff59C69C),
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(24),
+                                      topRight: Radius.circular(24),
+                                      bottomLeft: Radius.circular(14),
+                                      bottomRight: Radius.circular(14))),
+                              child: const Align(
+                                child: Text(
+                                  "OK!",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white),
+                                ),
+                                alignment: Alignment.center,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   void clockIn() async {

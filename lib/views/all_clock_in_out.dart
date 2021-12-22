@@ -20,6 +20,7 @@ class AllClockInOut extends StatefulWidget {
 
 class _AllClockInOutState extends State<AllClockInOut> {
   int _month = DateTime.now().month;
+  bool isArrowClicked = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   ClockInOutBloc? _clockInOutBloc;
@@ -139,24 +140,12 @@ class _AllClockInOutState extends State<AllClockInOut> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  GestureDetector(
+                  InkWell(
                     onTap: () {
+
                       setState(() {
-                        final newValue = _month - 1;
-                        // if(_month<0){
-                        //   _month = 1;
-                        // }
-                        _month = newValue.clamp(1, 12);
-                        print(_month);
-                        _clockInOutBloc?.getMonthlySchedules(
-                            widget.user?.id,
-                            DateFormat("yyyy-MM-dd")
-                                .format(DateTime(DateTime.now().year, _month, 1)),
-                            DateFormat("yyyy-MM-dd").format(DateTime(
-                                DateTime.now().year,
-                                _month,
-                                DateUtils.getDaysInMonth(
-                                    DateTime.now().year, _month))));
+                       final newValue = _month - 1;
+                       _month = newValue.clamp(1, 12);
                       });
                     },
                     child: SvgPicture.asset(
@@ -186,7 +175,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                           //   )
                           // ),
                           //step: 10,
-                          haptics: true,
+                          //haptics: true,
                           infiniteLoop: true,
                           selectedTextStyle: const TextStyle(
                               color: Color(0xff59C69C),
@@ -201,18 +190,22 @@ class _AllClockInOutState extends State<AllClockInOut> {
                               fontWeight: FontWeight.w400),
                           textMapper: (text) => DateFormat.MMMM().format(
                               DateTime(DateTime.now().year, int.parse(text))),
-                          onChanged: (value) => setState((){
-                            _month = value;
+                          onChanged: (value) {
+                            setState(() {
+                              _month = value;
+                              print(_month);
+                              print(value);
+                            });
                             _clockInOutBloc?.getMonthlySchedules(
                                 widget.user?.id,
-                                DateFormat("yyyy-MM-dd")
-                                    .format(DateTime(DateTime.now().year, _month, 1)),
+                                DateFormat("yyyy-MM-dd").format(
+                                    DateTime(DateTime.now().year, _month, 1)),
                                 DateFormat("yyyy-MM-dd").format(DateTime(
                                     DateTime.now().year,
                                     _month,
                                     DateUtils.getDaysInMonth(
                                         DateTime.now().year, _month))));
-                          }),
+                          },
                         ),
                         SizedBox(
                           height: 4,
@@ -227,21 +220,22 @@ class _AllClockInOutState extends State<AllClockInOut> {
                     ),
                   ),
                   // SizedBox(width: 8,),
-                  GestureDetector(
+                  InkWell(
                     onTap: () {
+
                       setState(() {
                         final newValue = _month + 1;
                         _month = newValue.clamp(1, 12);
-                        print(_month);
-                        _clockInOutBloc?.getMonthlySchedules(
-                            widget.user?.id,
-                            DateFormat("yyyy-MM-dd")
-                                .format(DateTime(DateTime.now().year, _month, 1)),
-                            DateFormat("yyyy-MM-dd").format(DateTime(
-                                DateTime.now().year,
-                                _month,
-                                DateUtils.getDaysInMonth(
-                                    DateTime.now().year, _month))));
+                        // print(_month);
+                        // _clockInOutBloc?.getMonthlySchedules(
+                        //     widget.user?.id,
+                        //     DateFormat("yyyy-MM-dd").format(
+                        //         DateTime(DateTime.now().year, _month, 1)),
+                        //     DateFormat("yyyy-MM-dd").format(DateTime(
+                        //         DateTime.now().year,
+                        //         _month,
+                        //         DateUtils.getDaysInMonth(
+                        //             DateTime.now().year, _month))));
                       });
                     },
                     child: SvgPicture.asset(
@@ -256,6 +250,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                 stream: _clockInOutBloc?.monthlySchedulesStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
+                    isArrowClicked = true;
                     switch (snapshot.data?.status) {
                       case Status.LOADING:
                         return Center(child: CircularProgressIndicator());
@@ -270,7 +265,8 @@ class _AllClockInOutState extends State<AllClockInOut> {
                             : ListView.builder(
                                 shrinkWrap: true,
                                 physics: const ScrollPhysics(),
-                                itemCount: snapshot.data?.data?.schedule?.length,
+                                itemCount:
+                                    snapshot.data?.data?.schedule?.length,
                                 padding: EdgeInsets.zero,
                                 itemBuilder: (context, index) => Padding(
                                       padding: const EdgeInsets.only(
@@ -305,50 +301,50 @@ class _AllClockInOutState extends State<AllClockInOut> {
                                                       const EdgeInsets.fromLTRB(
                                                           12, 16, 12, 16),
                                                   child: Column(
-                                                    children:  [
+                                                    children: [
                                                       Text(
                                                         DateFormat("yyyy-MM-dd")
-                                                            .format(DateTime
-                                                            .now()) ==
-                                                            snapshot
-                                                                .data
-                                                                ?.data
-                                                                ?.schedule
-                                                                ?.elementAt(
-                                                                index)
-                                                                .assignedDate
-                                                            ? "Today"
-                                                            : DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))) ==
-                                                            snapshot
-                                                                .data
-                                                                ?.data
-                                                                ?.schedule
-                                                                ?.elementAt(
-                                                                index)
-                                                                .assignedDate
-                                                            ? "Tomorrow"
-                                                            : DateFormat(
-                                                            "dd MMM")
-                                                            .format(DateTime.parse(
-                                                            "${snapshot.data?.data?.schedule?.elementAt(index).assignedDate}")),
-                                                        style: TextStyle(
-                                                            fontSize: DateFormat(
-                                                                "yyyy-MM-dd")
-                                                                .format(DateTime.now().add(Duration(
-                                                                days:
-                                                                1))) ==
+                                                                    .format(DateTime
+                                                                        .now()) ==
                                                                 snapshot
                                                                     .data
                                                                     ?.data
                                                                     ?.schedule
                                                                     ?.elementAt(
-                                                                    index)
+                                                                        index)
                                                                     .assignedDate
+                                                            ? "Today"
+                                                            : DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))) ==
+                                                                    snapshot
+                                                                        .data
+                                                                        ?.data
+                                                                        ?.schedule
+                                                                        ?.elementAt(
+                                                                            index)
+                                                                        .assignedDate
+                                                                ? "Tomorrow"
+                                                                : DateFormat(
+                                                                        "dd MMM")
+                                                                    .format(DateTime.parse(
+                                                                        "${snapshot.data?.data?.schedule?.elementAt(index).assignedDate}")),
+                                                        style: TextStyle(
+                                                            fontSize: DateFormat(
+                                                                            "yyyy-MM-dd")
+                                                                        .format(DateTime.now().add(Duration(
+                                                                            days:
+                                                                                1))) ==
+                                                                    snapshot
+                                                                        .data
+                                                                        ?.data
+                                                                        ?.schedule
+                                                                        ?.elementAt(
+                                                                            index)
+                                                                        .assignedDate
                                                                 ? 9
                                                                 : 14,
                                                             fontWeight:
-                                                            FontWeight
-                                                                .w400),
+                                                                FontWeight
+                                                                    .w400),
                                                       ),
                                                       SizedBox(
                                                         height: 16,
@@ -360,8 +356,8 @@ class _AllClockInOutState extends State<AllClockInOut> {
                                                         style: const TextStyle(
                                                             fontSize: 14,
                                                             fontWeight:
-                                                            FontWeight
-                                                                .w700),
+                                                                FontWeight
+                                                                    .w700),
                                                       ),
                                                     ],
                                                   ),
@@ -391,9 +387,9 @@ class _AllClockInOutState extends State<AllClockInOut> {
                                                         color: index == 0
                                                             ? Colors.white
                                                             : const Color(
-                                                            0xff9F9F9F),
+                                                                0xff9F9F9F),
                                                         fontWeight:
-                                                        FontWeight.w400),
+                                                            FontWeight.w400),
                                                   ),
                                                 ],
                                               ),
@@ -403,7 +399,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
                                                   const EdgeInsets.fromLTRB(
                                                       12, 8.0, 24, 8),
                                               child: Column(
-                                                children:  [
+                                                children: [
                                                   Text(
                                                     "Clock out",
                                                     style: TextStyle(
@@ -422,10 +418,10 @@ class _AllClockInOutState extends State<AllClockInOut> {
                                                         color: index == 0
                                                             ? Colors.white
                                                             : const Color(
-                                                            0xff9F9F9F),
+                                                                0xff9F9F9F),
                                                         fontSize: 12,
                                                         fontWeight:
-                                                        FontWeight.w400),
+                                                            FontWeight.w400),
                                                   ),
                                                 ],
                                               ),

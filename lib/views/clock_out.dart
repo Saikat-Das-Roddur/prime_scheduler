@@ -9,6 +9,7 @@ import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 
 import 'clock_in_and_out.dart';
+import 'logged_in_home.dart';
 
 class ClockOut extends StatefulWidget {
   User? user;
@@ -42,8 +43,16 @@ class _ClockOutState extends State<ClockOut> {
     _clockOutBloc = ClockOutBloc();
     DateTime d1 = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${widget.inTime}");
     DateTime d2 = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${widget.outTime}");
+
+    // widget.outTime = DateFormat(
+    //     "yyyy-MM-dd")
+    //     .format(DateTime
+    //     .now()) +
+    //     " " +
+    //     "${((d2.hour + 11) % 12) + 1}:${d2.minute}:${d2.second} ${d2.hour > 11 ? "pm" : "am"}";
     print(d1);
     print(d2);
+    print( widget.outTime );
 
     Duration dif = d2.difference(d1);
 
@@ -723,7 +732,17 @@ class _ClockOutState extends State<ClockOut> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
+                            if (widget.user?.isAdmin == "1") {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (c) => LoggedInHomeScreen(
+                                        user: widget.user,
+                                      )),
+                                  ModalRoute.withName('/loggedInHome'));
+                            }else{
+
+                            }
                             //showClockOutDialog();
                             // Navigator.push(
                             //     context,
@@ -769,7 +788,7 @@ class _ClockOutState extends State<ClockOut> {
     map['employee_id'] = widget.user?.id;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['completed_hours'] = completedHours;
-    map['out_time'] =
+    map['out_time'] = //widget.outTime;
         "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
 
     _clockOutBloc?.clockOut(map).then((value) {
