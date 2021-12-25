@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:prime_scheduler/bloc/log_in_bloc.dart';
 import 'package:prime_scheduler/views/clock_in.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
@@ -23,6 +24,11 @@ class _LogInScreenState extends State<LogInScreen> {
       value = false,
       isValidEmail = false,
       isValidPassword = false;
+
+  final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ]);
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -245,6 +251,7 @@ class _LogInScreenState extends State<LogInScreen> {
             ),
             GestureDetector(
               onTap: () {
+                signInWithGoogle();
                 // Navigator.push(context,
                 //     CupertinoPageRoute(builder: (context) => const Step1()));
               },
@@ -330,7 +337,7 @@ class _LogInScreenState extends State<LogInScreen> {
   }
 
   void signIn(Map map) async {
-    progressDialog = ProgressDialog(context, isDismissible: false);
+    progressDialog = ProgressDialog(context, isDismissible: true);
     progressDialog?.show();
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
@@ -338,25 +345,92 @@ class _LogInScreenState extends State<LogInScreen> {
       progressDialog?.hide();
       Fluttertoast.showToast(msg: "No Internet connection");
     } else {
-      await _bloc.signIn(body: map).then((value) {
-        if (value?.user?.statusCode == 200) {
-          progressDialog?.hide();
-          Fluttertoast.showToast(msg: "${value?.user?.message}");
-          if (value?.user?.isAdmin == "1") {
-            Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (c) => LoggedInHomeScreen(user: value?.user)));
+      _bloc.signIn(body: map).then((value) {
+        progressDialog?.hide();
+        if (value != null) {
+          if (value.user?.statusCode == 200) {
+            Fluttertoast.showToast(msg: "${value.user?.message}");
+            if (value.user?.isAdmin == "1") {
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (c) => LoggedInHomeScreen(user: value.user)));
+            } else {
+              progressDialog?.hide();
+              Navigator.push(
+                  context, CupertinoPageRoute(builder: (c) => ClockIn()));
+            }
           } else {
             progressDialog?.hide();
-            Navigator.push(
-                context, CupertinoPageRoute(builder: (c) => ClockIn()));
+            Fluttertoast.showToast(msg: "${value.user?.message}");
           }
-        } else {
-          progressDialog?.hide();
-          Fluttertoast.showToast(msg: "${value?.user?.message}");
         }
       });
     }
+  }
+
+  Future<String> signInWithGoogle() async {
+    progressDialog?.hide();
+    try {
+      await googleSignIn.signOut();
+
+      final GoogleSignInAccount googleSignInAccount =
+          await googleSignIn.signIn();
+
+      Map map = new Map();
+
+      //TEST USER
+      /*map['uid'] = "5616186165181616";
+      map['provider'] = "google";
+      map['email'] = "test50@gmail.com";
+      map['name'] = "test50";*/
+
+      map['uid'] = googleSignInAccount.id;
+      map['provider'] = "google";
+      if (googleSignInAccount.email != null) {
+        map['email'] = googleSignInAccount.email ?? "";
+        //BaseFunctions().setEmail(googleSignInAccount.email);
+      }
+      if (googleSignInAccount.displayName != null) {
+        map['name'] = googleSignInAccount.displayName ?? "";
+        //BaseFunctions().setEmail(googleSignInAccount.displayName);
+      }
+
+      map['image'] = googleSignInAccount.photoUrl ?? "";
+
+      print("GoogleUser::" + map.toString());
+
+      // _logInBloc.socialLogIn(body: map).then((value){
+      //   progressDialog.hide();
+      //   this.logInResponse = value;
+      //   if (logInResponse.status == 200) {
+      //     print("Token :" + logInResponse.status.toString());
+      //     BaseFunctions().setToken(logInResponse.token);
+      //     gotoHomePage(context);
+      //   }
+      // }, onError: (v){
+      //   print("Token : here");
+      // }).noSuchMethod(throw UnauthorisedException());
+
+      // this.logInResponse = await socialLogIn(
+      //     progressDialog, "api/v1/users/social_login",
+      //     body: map);
+      //
+      // if (logInResponse.status == 200) {
+      //   //print("Token :" + logInResponse.token);
+      //   BaseFunctions().setToken(logInResponse.token);
+      //   gotoHomePage(context);
+      // } else {
+      //   //print("ResponseCode::" + logInResponse.status.toString());
+      // }
+    } on Exception catch (e) {
+      print(e.toString());
+      if (progressDialog!.isShowing()) {
+        progressDialog?.hide();
+      }
+      //print('login failed :' + e.toString());
+      // Fluttertoast.showToast(msg: e.toString());
+    }
+    return 'signInWithGoogle succeeded:';
   }
 }

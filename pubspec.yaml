@@ -55,6 +55,7 @@ dependencies:
   flutter_typeahead: ^3.2.3
   image_picker: ^0.6.5+3
   connectivity: ^3.0.6
+  google_sign_in: ^4.5.9
 
 
 dev_dependencies:
