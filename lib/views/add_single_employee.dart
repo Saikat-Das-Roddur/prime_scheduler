@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +9,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:prime_scheduler/bloc/add_employee_bloc.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/utils/custom_exception.dart';
+import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddSingleEmployee extends StatefulWidget {
   User? user;
@@ -30,16 +37,15 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   DateTime dateTime = DateTime.now();
   String dob = "";
-  bool isValidEmail = false,
-      isValidSin = false;
+  bool isValidEmail = false, isValidSin = false;
   RegExp _regExp = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$'),
       _emailExp = RegExp(
           r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'),
       _sinExp = RegExp(r'^(\d{3}-\d{3}-\d{3})|(\d{9})$'),
       _phoneExp = RegExp(
           r'^(\+?1 ?)?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$');
-  ProgressDialog? progressDialog;
-  AddEmployeeBloc? _addEmployeeBloc;
+  late ProgressDialog progressDialog;
+  late AddEmployeeBloc _addEmployeeBloc;
 
   @override
   void initState() {
@@ -48,7 +54,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
     _addEmployeeBloc = AddEmployeeBloc();
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Got a new connectivity status!
-      progressDialog?.hide();
+      progressDialog.hide();
     });
   }
 
@@ -57,7 +63,9 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
     progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: CustomEndDrawer(user:  widget.user,),
+      endDrawer: CustomEndDrawer(
+        user: widget.user,
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -101,7 +109,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: (){
+                          onTap: () {
                             _scaffoldKey.currentState?.openEndDrawer();
                           },
                           child: SvgPicture.asset(
@@ -114,10 +122,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * .05,
+              height: MediaQuery.of(context).size.height * .05,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 24.0),
@@ -151,7 +156,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                         height: 20,
                         child: Padding(
                           padding:
-                          EdgeInsets.only(left: 16.0, top: 2, right: 28),
+                              EdgeInsets.only(left: 16.0, top: 2, right: 28),
                           child: Text(
                             "Name",
                           ),
@@ -161,10 +166,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * .01,
+              height: MediaQuery.of(context).size.height * .01,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 24.0),
@@ -187,7 +189,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                           keyboardType: TextInputType.emailAddress,
                           cursorColor: Colors.grey,
                           onChanged: (v) =>
-                          isValidEmail = _emailExp.hasMatch(v),
+                              isValidEmail = _emailExp.hasMatch(v),
                         ),
                       ),
                     ),
@@ -201,7 +203,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                         height: 20,
                         child: Padding(
                           padding:
-                          EdgeInsets.only(left: 16.0, top: 2, right: 28),
+                              EdgeInsets.only(left: 16.0, top: 2, right: 28),
                           child: Text(
                             "Email",
                           ),
@@ -211,10 +213,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * .01,
+              height: MediaQuery.of(context).size.height * .01,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 24.0),
@@ -251,7 +250,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                         height: 20,
                         child: Padding(
                           padding:
-                          EdgeInsets.only(left: 16.0, top: 2, right: 28),
+                              EdgeInsets.only(left: 16.0, top: 2, right: 28),
                           child: Text(
                             "Mobile",
                           ),
@@ -261,10 +260,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * .01,
+              height: MediaQuery.of(context).size.height * .01,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 24.0),
@@ -301,7 +297,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                         height: 20,
                         child: Padding(
                           padding:
-                          EdgeInsets.only(left: 16.0, right: 28, top: 2),
+                              EdgeInsets.only(left: 16.0, right: 28, top: 2),
                           child: Text(
                             "Social insurance number",
                           ),
@@ -311,10 +307,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * .01,
+              height: MediaQuery.of(context).size.height * .01,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 24.0),
@@ -351,7 +344,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                         height: 20,
                         child: Padding(
                           padding:
-                          EdgeInsets.only(left: 16.0, top: 2, right: 28),
+                              EdgeInsets.only(left: 16.0, top: 2, right: 28),
                           child: Text(
                             "Date of birth",
                           ),
@@ -368,7 +361,7 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                 if (_nameController.text.isEmpty) {
                   Fluttertoast.showToast(msg: "Name can't be empty");
                   return;
-                }else if (!isValidEmail) {
+                } else if (!isValidEmail) {
                   Fluttertoast.showToast(msg: "Enter valid email");
                   return;
                 } else if (_mobileController.text.isEmpty) {
@@ -390,7 +383,8 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                       _socialInsuranceNoController.text;
                   map['birthday'] = _dobController.text;
                   map['line_admin_id'] = widget.user?.id;
-                  map['root_admin_id'] = widget.user?.rootAdminId ?? widget.user?.id;
+                  map['root_admin_id'] =
+                      widget.user?.rootAdminId ?? widget.user?.id;
                   //widget.map['is_admin'] = 0;
                   print(map);
                   addEmployee(map);
@@ -519,30 +513,77 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
   }
 
   void addEmployee(Map map) async {
-    progressDialog?.show();
+    //ProgressDialog progressDialog = ProgressDialog(context, isDismissible: false);
+
+    progressDialog.show();
 
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       // I am connected to a mobile network.
-      progressDialog?.hide();
+      progressDialog.hide();
       Fluttertoast.showToast(msg: "No Internet connection");
     } else {
-      _addEmployeeBloc?.addEmployee(map).then((value) {
-        print(value);
-        progressDialog?.hide();
-        if (value['status_code'] == 200) {
-          Fluttertoast.showToast(msg: "${value['message']}");
-        } else {
-          progressDialog?.hide();
-          Fluttertoast.showToast(msg: "${value['message']}");
-        }
-        Navigator.pushAndRemoveUntil(
-            context, CupertinoPageRoute(
-            builder: (context) =>
-                LoggedInHomeScreen(user: widget.user,)),
-            ModalRoute.withName('/loggedInHome'));
-      });
+      post("employee/add_employee.php", map);
+      // _addEmployeeBloc.addEmployee(map).then((value) {
+      //   print(value);
+      //   //Fluttertoast.showToast(msg: value);
+      //   progressDialog.hide();
+      //
+      //   if(value!=null){
+      //     if (value['status_code'] == 200) {
+      //       Fluttertoast.showToast(msg: "${value['message']}");
+      //       Navigator.pushAndRemoveUntil(
+      //           context,
+      //           CupertinoPageRoute(
+      //               builder: (context) => LoggedInHomeScreen(
+      //                 user: widget.user,
+      //               )),
+      //           ModalRoute.withName('/loggedInHome'));
+      //     } else {
+      //       progressDialog.hide();
+      //       Fluttertoast.showToast(msg: "${value['message']}");
+      //     }
+      //   }
+      //
+      //
+      // });
     }
+  }
+
+  Future<dynamic> post(String url, Map body) async {
+    var responseJson;
+
+    try {
+      await http
+          .post(
+        Uri.parse(CustomStrings.baseUrl + url),
+        body: body,
+      )
+          .then((value) {
+        if (value != null) {
+          Map map = json.decode(value.body);
+          print(map);
+          //print(value.statusCode);
+          if (map['status_code'] == 200) {
+
+            Fluttertoast.showToast(msg: map['message']);
+            Navigator.pushAndRemoveUntil(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => LoggedInHomeScreen(
+                          user: widget.user,
+                        )),
+                ModalRoute.withName('/loggedInHome'));
+          } else {
+            progressDialog.hide();
+            Fluttertoast.showToast(msg: map['message']);
+          }
+        }
+      });
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
   }
 }
 

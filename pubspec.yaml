@@ -46,16 +46,16 @@ dependencies:
   date_picker_timeline: ^1.2.3
   intl: ^0.17.0
   fluttertoast: ^8.0.8
-  http_parser: ^3.1.4
+  http_parser: ^4.0.0
   async: ^2.8.1
   html: ^0.15.0
-  http: ^0.12.2
+  http: ^0.13.0
   shared_preferences: ^2.0.9
-  progress_dialog: ^1.2.4
   flutter_typeahead: ^3.2.3
-  image_picker: ^0.6.5+3
   connectivity: ^3.0.6
-  google_sign_in: ^4.5.9
+  google_sign_in: ^5.2.1
+  image_picker: ^0.8.4+4
+  progress_dialog: ^1.2.0
 
 
 dev_dependencies:

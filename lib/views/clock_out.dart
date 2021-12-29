@@ -1,11 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:prime_scheduler/bloc/clock_out_bloc.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/utils/custom_exception.dart';
+import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 
 import 'clock_in_and_out.dart';
@@ -791,10 +797,26 @@ class _ClockOutState extends State<ClockOut> {
     map['out_time'] = //widget.outTime;
         "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
 
-    _clockOutBloc?.clockOut(map).then((value) {
-      if (value['status_code'] == 200) {
-        showClockOutDialog();
-      }
-    });
+    // _clockOutBloc?.clockOut(map)
+    post("attendance/check_out.php", body: map);
+  }
+
+  Future<dynamic> post(String url, {required Map body}) async {
+    var responseJson;
+
+    try {
+      await http
+          .post(Uri.parse(CustomStrings.baseUrl + url), body: body,).then((value) {
+        Map map = json.decode(value.body);
+        print(map);
+        if (map['status_code'] == 200) {
+          showClockOutDialog();
+        }
+      });
+
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
   }
 }

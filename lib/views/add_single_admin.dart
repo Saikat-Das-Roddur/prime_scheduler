@@ -1,10 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:prime_scheduler/bloc/add_admin_bloc.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/utils/custom_exception.dart';
+import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -373,23 +379,36 @@ class _AddSingleAdminState extends State<AddSingleAdmin> {
       progressDialog?.hide();
       Fluttertoast.showToast(msg: "No Internet connection");
     } else {
-      _addAdminBloc?.addAdmin(map).then((value) {
-        print(value);
+      post("admin/add_admin.php", body: map);
+    }
+  }
+
+  Future<dynamic> post(String url, {required Map body}) async {
+    var responseJson;
+
+    try {
+      await http
+          .post(Uri.parse(CustomStrings.baseUrl + url), body: body,).then((value) {
+        Map map = json.decode(value.body);
         progressDialog?.hide();
-        if (value['status_code'] == 200) {
-          Fluttertoast.showToast(msg: "${value['message']}");
+        if (map['status_code'] == 200) {
+          Fluttertoast.showToast(msg: "${map['message']}");
         } else {
           progressDialog?.hide();
-          Fluttertoast.showToast(msg: "${value['message']}");
+          Fluttertoast.showToast(msg: "${map['message']}");
         }
         Navigator.pushAndRemoveUntil(
             context,
             CupertinoPageRoute(
                 builder: (context) => LoggedInHomeScreen(
-                      user: widget.user,
-                    )),
+                  user: widget.user,
+                )),
             ModalRoute.withName('/loggedInHome'));
       });
+
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
     }
+    return responseJson;
   }
 }

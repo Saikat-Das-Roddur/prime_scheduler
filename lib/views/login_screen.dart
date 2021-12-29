@@ -35,7 +35,7 @@ class _LogInScreenState extends State<LogInScreen> {
   RegExp _regExp = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$'),
       _emailExp = RegExp(
           r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
-  ProgressDialog? progressDialog;
+  late ProgressDialog progressDialog;
   late LogInBloc _bloc;
 
   @override
@@ -45,12 +45,13 @@ class _LogInScreenState extends State<LogInScreen> {
     _bloc = LogInBloc();
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Got a new connectivity status!
-      progressDialog?.hide();
+      progressDialog.hide();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    progressDialog = ProgressDialog(context, isDismissible: true);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -337,16 +338,15 @@ class _LogInScreenState extends State<LogInScreen> {
   }
 
   void signIn(Map map) async {
-    progressDialog = ProgressDialog(context, isDismissible: true);
-    progressDialog?.show();
+    progressDialog.show();
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       // I am connected to a mobile network.
-      progressDialog?.hide();
+      progressDialog.hide();
       Fluttertoast.showToast(msg: "No Internet connection");
     } else {
       _bloc.signIn(body: map).then((value) {
-        progressDialog?.hide();
+        progressDialog.hide();
         if (value != null) {
           if (value.user?.statusCode == 200) {
             Fluttertoast.showToast(msg: "${value.user?.message}");
@@ -356,12 +356,12 @@ class _LogInScreenState extends State<LogInScreen> {
                   CupertinoPageRoute(
                       builder: (c) => LoggedInHomeScreen(user: value.user)));
             } else {
-              progressDialog?.hide();
+              progressDialog.hide();
               Navigator.push(
                   context, CupertinoPageRoute(builder: (c) => ClockIn()));
             }
           } else {
-            progressDialog?.hide();
+            progressDialog.hide();
             Fluttertoast.showToast(msg: "${value.user?.message}");
           }
         }
@@ -370,7 +370,7 @@ class _LogInScreenState extends State<LogInScreen> {
   }
 
   Future<String> signInWithGoogle() async {
-    progressDialog?.hide();
+    progressDialog.hide();
     try {
       await googleSignIn.signOut();
 

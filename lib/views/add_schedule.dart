@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -8,11 +9,14 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:numberpicker/numberpicker.dart';
 import 'package:prime_scheduler/bloc/add_schedule_bloc.dart';
 import 'package:prime_scheduler/models/employee_response.dart';
 import 'package:prime_scheduler/models/employees.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/utils/custom_exception.dart';
+import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class AddSchedule extends StatefulWidget {
@@ -37,11 +41,11 @@ class _AddScheduleState extends State<AddSchedule> {
   File? imageFile;
   List<Employee> employees = <Employee>[];
   var _selectedValue;
-  String? _termDuration;
+  late String? _termDuration;
 
-  AddScheduleBloc? _addScheduleBloc;
-  ProgressDialog? _progressDialog;
-  Offset? _tapPosition;
+  late AddScheduleBloc _addScheduleBloc;
+  late ProgressDialog _progressDialog;
+  late Offset? _tapPosition;
   List _termList = <String>['Week-1', 'Week-2', 'Week-3', 'Week-4'];
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -306,8 +310,7 @@ class _AddScheduleState extends State<AddSchedule> {
                           controller: _locationController
                             ..text = widget.user?.companyName != ""
                                 ? "${widget.user?.companyName}"
-                                : _locationController
-                            .text,
+                                : _locationController.text,
                           cursorHeight: 24,
                           cursorColor: const Color(0xffC8C8C8),
                           decoration: const InputDecoration(
@@ -373,14 +376,14 @@ class _AddScheduleState extends State<AddSchedule> {
                         map['term'] = pattern;
 
                         print(map);
-                        await _addScheduleBloc
-                            ?.searchEmployees(map)
-                            .then((value) {
-                          setState(() {
-                            print("ggg");
-                            employees = value!.employee!;
-                          });
-                        });
+
+                        await post("search/search_employee.php", body: map);
+                        //await post(url, body: body);
+
+
+                        // _addScheduleBloc
+                        //     .searchEmployees(map)
+                        //     .
 
                         return employees;
                       },
@@ -475,19 +478,20 @@ class _AddScheduleState extends State<AddSchedule> {
                           // _selectedValue = v!;
 
                           if (v == "Week-1") {
-                            _termDuration = _getTimeDuration(DateTime.now(), 1);
+                            _termDuration =
+                                _getTimeDuration(DateTime.now(), 1)!;
                           } else if (v == "Week-2") {
                             _termDuration = _getTimeDuration(
                                 DateTime.now().add(Duration(days: 7)),
-                                2); //"${DateTime.now().add(Duration(days: 7))} - ${DateTime.now().add(Duration(days: 7 * 2))}";
+                                2)!; //"${DateTime.now().add(Duration(days: 7))} - ${DateTime.now().add(Duration(days: 7 * 2))}";
                           } else if (v == "Week-3") {
                             _termDuration = _getTimeDuration(
                                 DateTime.now().add(Duration(days: 7 * 2)),
-                                3); //"${DateTime.now().add(Duration(days: 7*2))} - ${DateTime.now().add(Duration(days: 7 * 3))}";
+                                3)!; //"${DateTime.now().add(Duration(days: 7*2))} - ${DateTime.now().add(Duration(days: 7 * 3))}";
                           } else if (v == "Week-4") {
                             _termDuration = _getTimeDuration(
                                 DateTime.now().add(Duration(days: 7 * 3)),
-                                4); //"${DateTime.now().add(Duration(days: 7*3))} - ${DateTime.now().add(Duration(days: 7 * 4))}";
+                                4)!; //"${DateTime.now().add(Duration(days: 7*3))} - ${DateTime.now().add(Duration(days: 7 * 4))}";
                           }
                         });
 
@@ -796,6 +800,7 @@ class _AddScheduleState extends State<AddSchedule> {
                   print(map);
 
                   addSchedule();
+                  //postWithImage(url, file, body: body)
                 }
                 // Navigator.push(
                 //     context, CupertinoPageRoute(builder: (context) =>
@@ -868,42 +873,107 @@ class _AddScheduleState extends State<AddSchedule> {
   }
 
   void addSchedule() async {
-    _progressDialog?.show();
-    await _addScheduleBloc?.addSchedule(imageFile, map).then((value) {
-      _progressDialog?.hide();
+    _progressDialog.show();
+    await _addScheduleBloc.addSchedule(imageFile, map).then((value) {
+      _progressDialog.hide();
       print(value.toString());
       if (value['status_code'] == 200) {
         Fluttertoast.showToast(msg: value['message']);
         Navigator.pop(context);
       } else {
-        _progressDialog?.hide();
+        _progressDialog.hide();
         Fluttertoast.showToast(msg: value['message']);
       }
     });
+  }
+
+  Future<dynamic> postWithImage(String url, File? file,
+      {required Map<String, String> body}) async {
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse(CustomStrings.baseUrl + url),
+    );
+
+    request.fields.addAll(body);
+    if (file != null) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          "image",
+          file.readAsBytesSync(),
+          filename: file.path,
+        ),
+      );
+    }
+
+    request.headers["Content-Type"] = 'multipart/form-data';
+    var response = await request.send();
+    await http.Response.fromStream(response).then((value) {
+      Map map = json.decode(value.body);
+      _progressDialog.hide();
+      print(value.toString());
+      if (map['status_code'] == 200) {
+        Fluttertoast.showToast(msg: map['message']);
+        Navigator.pop(context);
+      } else {
+        _progressDialog.hide();
+        Fluttertoast.showToast(msg: map['message']);
+      }
+    });
+    print("response2.body");
+    //return _response(response2);
+  }
+
+  Future<dynamic> post(String url, {required Map body}) async {
+    var responseJson;
+
+    try {
+      await http.post(
+        Uri.parse(CustomStrings.baseUrl + url),
+        body: body,
+      ).then((value) {
+        Employees e = Employees.fromJson(json.decode(value.body));
+        setState(() {
+          print("ggg");
+          employees = e.employee!;
+        });
+      });
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
   }
 
   String? _getTimeDuration(DateTime startDate, int days) {
     return "${DateFormat("yyyy-MM-dd").format(startDate)} - ${DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 7 * days)))}";
   }
 
-  _getFromGallery() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        imageFile = File(image.path);
-      });
-      print(imageFile);
-    }
+  void _getFromGallery() async {
+    await ImagePicker().pickImage(source: ImageSource.gallery).then((value){
+      if (value != null) {
+        setState(() {
+          imageFile = File(value.path);
+          Fluttertoast.showToast(msg: "Fuck");
+        });
+        print(imageFile);
+      }
+    }, onError: (e){
+      Fluttertoast.showToast(msg: "Error");
+    });
+
   }
 
-  _getFromCamera() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    if (image != null) {
-      setState(() {
-        imageFile = File(image.path);
-      });
-      print(imageFile);
-    }
+  void _getFromCamera() async {
+
+    await ImagePicker().pickImage(source: ImageSource.camera).then((value){
+      if (value != null) {
+        setState(() {
+          imageFile = File(value.path);
+          Fluttertoast.showToast(msg: "$imageFile");
+        });
+        print(imageFile);
+      }
+    });
+
   }
 
   void showPopMenu() {

@@ -9,21 +9,21 @@ import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:prime_scheduler/views/splash_screen.dart';
 import 'package:sizer/sizer.dart';
 
- main()  {
+main() {
   // GestureBinding.instance?.resamplingEnabled = true;
-  // WidgetsFlutterBinding.ensureInitialized();
-  // HttpOverrides.global =  MyHttpOverrides();
+  WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
-// class MyHttpOverrides extends HttpOverrides {
-//   @override
-//   HttpClient createHttpClient(SecurityContext context) {
-//     return super.createHttpClient(context)
-//       ..badCertificateCallback =
-//           (X509Certificate cert, String host, int port) => true;
-//   }
-// }
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -31,25 +31,44 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Sizer(
-      builder: (context, orientation, deviceType) => MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        initialRoute: '/home',
-        routes: {
-          // '/splash': (context) => const SplashScreen(),
-          '/home': (context) => const Home(),
-          '/loggedInHome': (context) => LoggedInHomeScreen(),
-          '/loggIn': (context) => LogInScreen(),
-          '/clockInAndOut': (context) => ClockInAndOut(),
-
-          // '/splash': (context) => const SplashScreen(),
-          // '/splash': (context) => const SplashScreen(),
-        },
-        //home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      initialRoute: '/home',
+      routes: {
+        // '/splash': (context) => const SplashScreen(),
+        '/home': (context) => const Home(),
+        '/loggedInHome': (context) => LoggedInHomeScreen(),
+        '/loggIn': (context) => LogInScreen(),
+        '/clockInAndOut': (context) => ClockInAndOut(),
+
+        // '/splash': (context) => const SplashScreen(),
+        // '/splash': (context) => const SplashScreen(),
+      },
+      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
+
+    //   Sizer(
+    //   builder: (context, orientation, deviceType) => MaterialApp(
+    //     title: 'Flutter Demo',
+    //     theme: ThemeData(
+    //       primarySwatch: Colors.blue,
+    //     ),
+    //     initialRoute: '/home',
+    //     routes: {
+    //       // '/splash': (context) => const SplashScreen(),
+    //       '/home': (context) => const Home(),
+    //       '/loggedInHome': (context) => LoggedInHomeScreen(),
+    //       '/loggIn': (context) => LogInScreen(),
+    //       '/clockInAndOut': (context) => ClockInAndOut(),
+    //
+    //       // '/splash': (context) => const SplashScreen(),
+    //       // '/splash': (context) => const SplashScreen(),
+    //     },
+    //     //home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    //   ),
+    // );
   }
 }

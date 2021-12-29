@@ -1,11 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:prime_scheduler/bloc/clock_in_bloc.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/utils/custom_exception.dart';
+import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/clock_in_and_out.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -709,40 +715,56 @@ class _ClockInState extends State<ClockIn> {
     map['in_time'] =
         "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
     print(map);
-    await _clockInBloc?.clockIn(map).then((value) {
-      progressDialog?.hide();
-      if (value['status_code'] == 200) {
-        if (widget.user?.isAdmin == "1") {
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (c) => ClockInAndOut(
-                        user: widget.user,
-                        inTime: map['assigned_date'] + " " + map['in_time'],
-                        assignedHours: value['assigned_hours'],
-                        endTime: value['schedule']['end_time'],
-                      )));
-        } else {
-          Navigator.pushAndRemoveUntil(
-              context,
-              CupertinoPageRoute(
-                  builder: (c) => ClockInAndOut(
-                        user: widget.user,
-                        inTime: map['assigned_date'] + " " + map['in_time'],
-                        assignedHours: value['assigned_hours'],
-                        endTime: value['schedule']['end_time'],
-                      )),
-              ModalRoute.withName('/clockInAndOut'));
+    //await _clockInBloc?.clockIn(map);
+    post("attendance/check_in.php", body: map);
+
+  }
+
+  Future<dynamic> post(String url, {required Map body}) async {
+    var responseJson;
+
+    try {
+      await http
+          .post(Uri.parse(CustomStrings.baseUrl + url), body: body,).then((value) {
+        progressDialog?.hide();
+        Map map = json.decode(value.body);
+        if (map['status_code'] == 200) {
+          if (widget.user?.isAdmin == "1") {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (c) => ClockInAndOut(
+                      user: widget.user,
+                      inTime: body['assigned_date'] + " " + body['in_time'],
+                      assignedHours: map['assigned_hours'],
+                      endTime: map['schedule']['end_time'],
+                    )));
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                CupertinoPageRoute(
+                    builder: (c) => ClockInAndOut(
+                      user: widget.user,
+                      inTime: body['assigned_date'] + " " + body['in_time'],
+                      assignedHours: map['assigned_hours'],
+                      endTime: map['schedule']['end_time'],
+                    )),
+                ModalRoute.withName('/clockInAndOut'));
+          }
+        } else if (map['status_code'] == 403) {
+          // Navigator.push(
+          //     context,
+          //     CupertinoPageRoute(
+          //         builder: (c) => ClockInAndOut(
+          //             user: widget.user, inTime: map['assigned_date']+" "+
+          //             map['in_time'])));
+          Fluttertoast.showToast(msg: "You have no schedule for today");
         }
-      } else if (value['status_code'] == 403) {
-        // Navigator.push(
-        //     context,
-        //     CupertinoPageRoute(
-        //         builder: (c) => ClockInAndOut(
-        //             user: widget.user, inTime: map['assigned_date']+" "+
-        //             map['in_time'])));
-        Fluttertoast.showToast(msg: "You have no schedule for today");
-      }
-    });
+      });
+      print(CustomStrings.baseUrl + url);
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
   }
 }

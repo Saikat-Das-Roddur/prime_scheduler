@@ -1,8 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:prime_scheduler/bloc/step_3_bloc.dart';
+import 'package:prime_scheduler/models/registration_response.dart';
+import 'package:prime_scheduler/utils/custom_exception.dart';
+import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -286,18 +293,31 @@ class _Step3State extends State<Step3> {
 
   void signUp() {
     progressDialog?.show();
-    _step3bloc.signUp(body: widget.map).then((value){
-      if(value?.status==200){
-        progressDialog?.hide();
-        Fluttertoast.showToast(msg: "${value?.message}");
-        Navigator.pushAndRemoveUntil(
-            context, CupertinoPageRoute(
-            builder: (context) =>
-                LogInScreen()), ModalRoute.withName('/logIn'));
-      }else{
-        progressDialog?.hide();
-        Fluttertoast.showToast(msg: "${value?.message}");
-      }
-    });
+    post("user/sign_up.php", body: widget.map);
+  }
+
+  Future<dynamic> post(String url, {required Map body}) async {
+    var responseJson;
+
+    try {
+      await http
+          .post(Uri.parse(CustomStrings.baseUrl + url), body: body,).then((value){
+            RegistrationResponse response = RegistrationResponse.fromJson(json.decode(value.body));
+        if(response.status==200){
+          progressDialog?.hide();
+          Fluttertoast.showToast(msg: "${response.message}");
+          Navigator.pushAndRemoveUntil(
+              context, CupertinoPageRoute(
+              builder: (context) =>
+                  LogInScreen()), ModalRoute.withName('/logIn'));
+        }else{
+          progressDialog?.hide();
+          Fluttertoast.showToast(msg: "${response.message}");
+        }
+      });
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
   }
 }
