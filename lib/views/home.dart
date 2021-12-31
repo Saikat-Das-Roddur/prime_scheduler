@@ -93,7 +93,7 @@ class Home extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                     context, CupertinoPageRoute(builder: (context) =>
-                    const Step1()
+                    Step1()
                 ));
               },
               child: Padding(

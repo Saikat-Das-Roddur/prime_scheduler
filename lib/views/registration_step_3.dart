@@ -25,7 +25,7 @@ class Step3 extends StatefulWidget {
 
 class _Step3State extends State<Step3> {
   late Step3Bloc _step3bloc;
-  bool passwordVisible = true, value = false, isValidEmail = false, isValidPassword = false;
+  bool passwordVisible = false, value = false, isValidEmail = false, isValidPassword = false;
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   RegExp _regExp = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$'),
@@ -121,7 +121,7 @@ class _Step3State extends State<Step3> {
               child: TextField(
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
-                obscureText: passwordVisible,
+                obscureText: !passwordVisible,
                 //maxLength: 8,
                 controller: _passwordController,
                 cursorColor: Colors.grey,

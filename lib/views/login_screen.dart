@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:prime_scheduler/bloc/log_in_bloc.dart';
+import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/views/clock_in.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -25,10 +26,7 @@ class _LogInScreenState extends State<LogInScreen> {
       isValidEmail = false,
       isValidPassword = false;
 
-  final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ]);
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -51,7 +49,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    progressDialog = ProgressDialog(context, isDismissible: true);
+    progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -133,7 +131,7 @@ class _LogInScreenState extends State<LogInScreen> {
               child: TextField(
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
-                obscureText: passwordVisible,
+                obscureText: !passwordVisible,
                 //maxLength: 8,
                 controller: _passwordController,
                 cursorColor: Colors.grey,
@@ -176,11 +174,11 @@ class _LogInScreenState extends State<LogInScreen> {
                   } else {
                     progressDialog =
                         ProgressDialog(context, isDismissible: false);
-                    progressDialog?.show();
+                    progressDialog.show();
                     Map map = Map();
                     map['email'] = _emailController.text;
                     _bloc.forgetPassword(body: map).then((value) {
-                      progressDialog?.hide();
+                      progressDialog.hide();
                       if (value['status_code'] == 200) {
                         Fluttertoast.showToast(msg: value['message']);
                       } else if (value['status_code'] == 400) {
@@ -306,7 +304,7 @@ class _LogInScreenState extends State<LogInScreen> {
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(context,
-                      CupertinoPageRoute(builder: (c) => const Step1()));
+                      CupertinoPageRoute(builder: (c) =>  Step1()));
                 },
                 child: RichText(
                   text: const TextSpan(
@@ -369,12 +367,12 @@ class _LogInScreenState extends State<LogInScreen> {
     }
   }
 
-  Future<String> signInWithGoogle() async {
-    progressDialog.hide();
+  Future signInWithGoogle() async {
+
     try {
       await googleSignIn.signOut();
 
-      final GoogleSignInAccount googleSignInAccount =
+      final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
 
       Map map = new Map();
@@ -384,6 +382,11 @@ class _LogInScreenState extends State<LogInScreen> {
       map['provider'] = "google";
       map['email'] = "test50@gmail.com";
       map['name'] = "test50";*/
+
+      if(googleSignInAccount==null){
+        progressDialog.hide();
+        return;
+      }
 
       map['uid'] = googleSignInAccount.id;
       map['provider'] = "google";
@@ -399,18 +402,38 @@ class _LogInScreenState extends State<LogInScreen> {
       map['image'] = googleSignInAccount.photoUrl ?? "";
 
       print("GoogleUser::" + map.toString());
+      progressDialog.show();
+      _bloc.socialSignIn(body: map).then((value){
+        progressDialog.hide();
+        if (value != null) {
+          if (value.user?.statusCode == 200) {
+            Fluttertoast.showToast(msg: "${value.user?.message}");
+            if (value.user?.isAdmin == "1") {
+              if(value.user?.phone==""){
+                Navigator.push(
+                    context, CupertinoPageRoute(builder: (context) =>
+                    Step1(provider: "google", user: value.user,)
+                ));
+              }else{
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (c) => LoggedInHomeScreen(user: value.user)));
 
-      // _logInBloc.socialLogIn(body: map).then((value){
-      //   progressDialog.hide();
-      //   this.logInResponse = value;
-      //   if (logInResponse.status == 200) {
-      //     print("Token :" + logInResponse.status.toString());
-      //     BaseFunctions().setToken(logInResponse.token);
-      //     gotoHomePage(context);
-      //   }
-      // }, onError: (v){
-      //   print("Token : here");
-      // }).noSuchMethod(throw UnauthorisedException());
+              }
+              } else {
+              //progressDialog.hide();
+              Navigator.push(
+                  context, CupertinoPageRoute(builder: (c) => ClockIn()));
+            }
+          } else {
+            progressDialog.hide();
+            Fluttertoast.showToast(msg: "Something went wrong");
+          }
+        }
+      }, onError: (v){
+        print("Token : here");
+      }).noSuchMethod(throw UnauthorisedException());
 
       // this.logInResponse = await socialLogIn(
       //     progressDialog, "api/v1/users/social_login",
@@ -425,8 +448,8 @@ class _LogInScreenState extends State<LogInScreen> {
       // }
     } on Exception catch (e) {
       print(e.toString());
-      if (progressDialog!.isShowing()) {
-        progressDialog?.hide();
+      if (progressDialog.isShowing()) {
+        progressDialog.hide();
       }
       //print('login failed :' + e.toString());
       // Fluttertoast.showToast(msg: e.toString());

@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:prime_scheduler/views/registration_step_2.dart';
 
 class Step1 extends StatefulWidget {
-  const Step1({Key? key}) : super(key: key);
+  String? provider;
+  User? user;
+
+  Step1({Key? key, this.provider, this.user}) : super(key: key);
 
   @override
   _Step1State createState() => _Step1State();
@@ -64,7 +68,7 @@ class _Step1State extends State<Step1> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
               child: TextField(
-                controller: _nameController,
+                controller: _nameController..text=widget.user!=null?"${widget.user?.name}":"",
                 textInputAction: TextInputAction.next,
                 // onSubmitted: (v) {
                 //   FocusScope.of(context).nextFocus();
@@ -222,10 +226,7 @@ class _Step1State extends State<Step1> {
             //   ),
             // ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .width * .15,
+              height: MediaQuery.of(context).size.width * .15,
             ),
             const Text(
               "Step 1 of 3",
@@ -235,10 +236,7 @@ class _Step1State extends State<Step1> {
             Padding(
               padding: const EdgeInsets.fromLTRB(96, 2, 96, 0),
               child: SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * .5,
+                width: MediaQuery.of(context).size.width * .5,
                 height: 1,
                 child: Container(
                   color: const Color(0xffC5C5C5),
@@ -246,10 +244,7 @@ class _Step1State extends State<Step1> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .width * .08,
+              height: MediaQuery.of(context).size.width * .08,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -274,27 +269,18 @@ class _Step1State extends State<Step1> {
               ],
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .width * .08,
+              height: MediaQuery.of(context).size.width * .08,
             ),
             GestureDetector(
               onTap: () {
-                if (_nameController.text
-                    .trim()
-                    .length < 3) {
+                if (_nameController.text.trim().length < 3) {
                   Fluttertoast.showToast(
                       msg: "Name must be more than 3 letters");
                   return;
-                } else if (_phoneController.text
-                    .trim()
-                    .length != 11) {
+                } else if (_phoneController.text.trim().length != 11) {
                   Fluttertoast.showToast(msg: "Contact no must be 11 letters");
                   return;
-                } else if (_locationController.text
-                    .trim()
-                    .isEmpty) {
+                } else if (_locationController.text.trim().isEmpty) {
                   Fluttertoast.showToast(msg: "Location can't be empty");
                   return;
                 } else if (_selectedValue == null) {
@@ -308,8 +294,13 @@ class _Step1State extends State<Step1> {
                   map['category'] = _selectedValue;
                   print(map);
                   Navigator.push(
-                      context, CupertinoPageRoute(
-                      builder: (c) =>  Step2(map: map)));
+                      context,
+                      CupertinoPageRoute(
+                          builder: (c) => Step2(
+                                map: map,
+                                provider: widget.provider,
+                                user: widget.user,
+                              )));
                 }
               },
               child: Padding(
@@ -319,9 +310,11 @@ class _Step1State extends State<Step1> {
                   height: 50,
                   decoration: BoxDecoration(
                       color: _nameController.text.isEmpty ||
-                          _phoneController.text.isEmpty ||
-                          _locationController.text.isEmpty ||
-                          _selectedValue == null ? const Color(0xFFFBBFBF) : const Color(0xFFF06767),
+                              _phoneController.text.isEmpty ||
+                              _locationController.text.isEmpty ||
+                              _selectedValue == null
+                          ? const Color(0xFFFBBFBF)
+                          : const Color(0xFFF06767),
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24),
                           topRight: Radius.circular(24),
@@ -338,10 +331,7 @@ class _Step1State extends State<Step1> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .width * .08,
+              height: MediaQuery.of(context).size.width * .08,
             ),
             Align(
               alignment: Alignment.center,
@@ -365,10 +355,7 @@ class _Step1State extends State<Step1> {
               ),
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .width * .08,
+              height: MediaQuery.of(context).size.width * .08,
             ),
           ],
         ),

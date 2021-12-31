@@ -14,6 +14,16 @@ class LogInRepository{
     return UserResponse.fromJson(response);
   }
 
+  Future<UserResponse> socialSignIn({required Map body}) async {
+    final response = await post("user/social_sign_in.php", body: body);
+    return UserResponse.fromJson(response);
+  }
+
+  Future<UserResponse> updateAdmin({required Map body}) async {
+    final response = await post("user/update_admin.php", body: body);
+    return UserResponse.fromJson(response);
+  }
+
   Future<dynamic> forgotPassword({required Map body}) async {
     final response = await post("user/forgot_password.php", body: body);
     return response;
@@ -26,7 +36,7 @@ class LogInRepository{
       final response = await http
           .post(Uri.parse(CustomStrings.baseUrl + url), body: body,);
       responseJson = _response(response);
-      print(CustomStrings.baseUrl + url);
+      print(json.decode(response.body));
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }

@@ -2,12 +2,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:prime_scheduler/bloc/log_in_bloc.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/registration_step_3.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+
+import 'logged_in_home.dart';
 
 class Step2 extends StatefulWidget {
   Map map;
+  String? provider;
+  User? user;
 
-  Step2({Key? key, required this.map}) : super(key: key);
+  Step2({Key? key, required this.map, this.provider, this.user})
+      : super(key: key);
 
   @override
   _Step2State createState() => _Step2State();
@@ -18,11 +26,21 @@ class _Step2State extends State<Step2> {
   TextEditingController _companyEmailController = TextEditingController();
   TextEditingController _companyPhoneController = TextEditingController();
   bool isValidEmail = false;
+  LogInBloc? _bloc;
   RegExp _emailExp = RegExp(
-          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+  late ProgressDialog progressDialog;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _bloc = LogInBloc();
+  }
 
   @override
   Widget build(BuildContext context) {
+    progressDialog = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -101,8 +119,8 @@ class _Step2State extends State<Step2> {
                 controller: _companyEmailController,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.emailAddress,
-                onChanged: (v){
-                    isValidEmail = _emailExp.hasMatch(v);
+                onChanged: (v) {
+                  isValidEmail = _emailExp.hasMatch(v);
                 },
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -215,8 +233,18 @@ class _Step2State extends State<Step2> {
                   widget.map['company_name'] = _companyNameController.text;
                   widget.map['company_email'] = _companyEmailController.text;
                   widget.map['company_phone'] = _companyPhoneController.text;
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (c) => Step3(map: widget.map)));
+                  if(widget.provider!=null){
+                    widget.map['email'] = widget.user?.email;
+                    updateProfile();
+                  }else{
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (c) => Step3(
+                              map: widget.map,
+                            )));
+                  }
+
                 }
               },
               child: Padding(
@@ -252,5 +280,21 @@ class _Step2State extends State<Step2> {
         ),
       ),
     );
+  }
+
+  void updateProfile() {
+    progressDialog.show();
+    _bloc?.updateAdmin(body: widget.map).then((value){
+      if(value!=null){
+        progressDialog.hide();
+        if (value.user?.isAdmin == "1") {
+          Fluttertoast.showToast(msg: "Profile updated");
+          Navigator.pushAndRemoveUntil(
+              context, CupertinoPageRoute(
+              builder: (context) =>
+                  LoggedInHomeScreen(user: value.user)), ModalRoute.withName('/loggedInHome'));
+        }
+      }
+    });
   }
 }
