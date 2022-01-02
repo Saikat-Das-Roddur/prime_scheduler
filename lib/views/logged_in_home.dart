@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:prime_scheduler/bloc/logged_in_home_bloc.dart';
+import 'package:prime_scheduler/models/announcement_response.dart';
+import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/add_admin.dart';
 import 'package:prime_scheduler/views/add_employees.dart';
@@ -26,7 +29,17 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
       isTotalHours = false,
       isEmployeeHistory = false,
       isAddAdmin = false;
-  final GlobalKey<ScaffoldState> _scaffoldKey =  GlobalKey<ScaffoldState>();
+  LoggedInHomeBloc? _bloc;
+  int index = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _bloc = LoggedInHomeBloc();
+    _bloc?.getAnnouncement("${widget.user?.id}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +71,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                   Align(
                     alignment: Alignment.center,
                     child: SvgPicture.asset(
-                  "assets/images/Group.svg",
-                  height: 44,
+                      "assets/images/Group.svg",
+                      height: 44,
                     ),
                   ),
                   Flexible(
@@ -67,7 +80,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: (){
+                          onTap: () {
                             _scaffoldKey.currentState?.openEndDrawer();
                           },
                           child: SvgPicture.asset(
@@ -89,89 +102,166 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                 color: const Color(0xffF6F6F6),
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RichText(
-                              text: const TextSpan(
-                                  text: "Announcements  ",
-                                  style: TextStyle(
-                                      color: Color(0xff525252),
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500),
-                                  children: [
-                                TextSpan(
-                                    text: "2/3",
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400))
-                              ])),
-                          Row(
-                            children: [
-                              SvgPicture.asset("assets/images/Group 248.svg"),
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              SvgPicture.asset("assets/images/Group 249.svg"),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      const Text(
-                        "Short service for Independence Day",
-                        style: TextStyle(
-                            color: Color(0xffF06767),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      const Text(
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s......",
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xff858585),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "1st July,2021",
-                            style: TextStyle(
-                                color: Color(0xff787878), fontSize: 10),
-                          ),
-                          ButtonTheme(
-                              height: 22,
-                              minWidth: 72,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4)),
-                              child: FlatButton(
-                                  color: const Color(0xff59C69C),
-                                  onPressed: () {},
-                                  child: const Text(
-                                    "View",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 12),
-                                  )))
-                        ],
-                      )
-                    ],
-                  ),
+                  child: StreamBuilder<Response<AnnouncementResponse>>(
+                      stream: _bloc?.getAnnouncementStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data?.status) {
+                            case Status.LOADING:
+                              return Center(child: CircularProgressIndicator());
+                            case Status.COMPLETED:
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      RichText(
+                                          text: TextSpan(
+                                              text: "Announcements  ",
+                                              style: const TextStyle(
+                                                  color: Color(0xff525252),
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w500),
+                                              children: [
+                                            TextSpan(
+                                                text: snapshot.data!.data!
+                                                                .announcement ==
+                                                            null ||
+                                                        snapshot
+                                                                .data!
+                                                                .data!
+                                                                .announcement!
+                                                                .length <
+                                                            0
+                                                    ? "0/0"
+                                                    : "${index + 1}/${snapshot.data!.data!.announcement!.length}",
+                                                style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w400))
+                                          ])),
+                                      Visibility(
+                                        visible:
+                                            snapshot.data!.data!.announcement !=
+                                                null,
+                                        child: Row(
+                                          children: [
+                                            GestureDetector(
+                                                onTap: () {
+                                                  index--;
+                                                  setState(() {
+                                                    if (index < 0) {
+                                                      index = 0;
+                                                      print(index);
+                                                    }
+                                                  });
+                                                },
+                                                child: SvgPicture.asset(
+                                                    "assets/images/Group 248.svg")),
+                                            const SizedBox(
+                                              width: 16,
+                                            ),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  index++;
+                                                  setState(() {
+                                                    if (index >=
+                                                        snapshot
+                                                            .data!
+                                                            .data!
+                                                            .announcement!
+                                                            .length) {
+                                                      index = snapshot
+                                                              .data!
+                                                              .data!
+                                                              .announcement!
+                                                              .length -
+                                                          1;
+                                                      print(index);
+                                                    }
+                                                  });
+                                                },
+                                                child: SvgPicture.asset(
+                                                    "assets/images/Group 249.svg")),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  snapshot.data!.data!.announcement == null
+                                      ? const Center(child: Text("No Announcement"))
+                                      : Text(
+                                          "${snapshot.data!.data!.announcement!.elementAt(index).title}",
+                                          style: const TextStyle(
+                                              color: Color(0xffF06767),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16),
+                                        ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  snapshot.data!.data!.announcement == null
+                                      ? const Text("")
+                                      : Text(
+                                    "${snapshot.data!.data!.announcement!.elementAt(index).description}",
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: const TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff858585),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 24,
+                                  ),
+                                  Visibility(
+                                    visible: snapshot.data!.data!.announcement != null,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        snapshot.data!.data!.announcement==null?Text("")
+                                            :
+                                        Text(
+                                          "${snapshot.data!.data!.announcement!.elementAt(index).date}",
+                                          style: TextStyle(
+                                              color: Color(0xff787878),
+                                              fontSize: 10),
+                                        ),
+                                        ButtonTheme(
+                                            height: 22,
+                                            minWidth: 72,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4)),
+                                            child: FlatButton(
+                                                color: const Color(0xff59C69C),
+                                                onPressed: () {},
+                                                child: const Text(
+                                                  "View",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12),
+                                                )))
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              );
+                            case Status.ERROR:
+                              return Center(child: CircularProgressIndicator());
+                            default:
+                          }
+                        }
+                        return Center(child: CircularProgressIndicator());
+                      }),
                 ),
               ),
             ),
@@ -320,7 +410,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) =>
-                                             AddAdmin(user: widget.user)));
+                                            AddAdmin(user: widget.user)));
                               },
                               child: Card(
                                 elevation: 0,
@@ -430,7 +520,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) =>
-                                             ScheduleWelcomeScreen(
+                                            ScheduleWelcomeScreen(
                                                 user: widget.user)));
                               },
                               child: Card(
@@ -483,9 +573,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                 Navigator.push(
                                     context,
                                     CupertinoPageRoute(
-                                        builder: (context) =>
-                                             EmployeeHistory(
-                                                user: widget.user)));
+                                        builder: (context) => EmployeeHistory(
+                                            user: widget.user)));
                               },
                               child: Card(
                                 elevation: 0,

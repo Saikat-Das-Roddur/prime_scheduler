@@ -606,21 +606,21 @@ class _ClockOutState extends State<ClockOut> {
 
   Widget _otpKeyboardInputButton(
       {required String label, required VoidCallback onPressed}) {
-    return new Material(
+    return  Material(
       color: Colors.transparent,
-      child: new InkWell(
+      child:  InkWell(
         onTap: onPressed,
         borderRadius: new BorderRadius.circular(40.0),
-        child: new Container(
+        child:  Container(
           height: 80.0,
           width: 80.0,
-          decoration: new BoxDecoration(
+          decoration:  BoxDecoration(
             shape: BoxShape.circle,
           ),
-          child: new Center(
-            child: new Text(
+          child:  Center(
+            child:  Text(
               label,
-              style: new TextStyle(
+              style:  TextStyle(
                 fontSize: 30.0,
                 color: Colors.black,
               ),
