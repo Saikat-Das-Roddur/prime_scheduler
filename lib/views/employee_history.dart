@@ -23,17 +23,19 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
   EmployeeHistoryBloc? _employeeHistoryBloc;
   int _day = DateTime.now().day;
   int _month = DateTime.now().month;
-  String startDate = "";
+  String startDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
   int _endDay = DateTime.now().day;
   int _endMonth = DateTime.now().month;
-  String endDate = "";
+  String endDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _employeeHistoryBloc = EmployeeHistoryBloc();
+    _employeeHistoryBloc
+        ?.getEmployees(widget.user?.id);
   }
 
   @override
