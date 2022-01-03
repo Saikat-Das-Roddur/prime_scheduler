@@ -9,8 +9,17 @@ import 'package:prime_scheduler/models/schedules.dart';
 class ViewSchedule extends StatefulWidget {
   String? employeeId;
   String? assignedDate;
+  String? employeeName;
+  String? startTime;
+  String? endTime;
 
-  ViewSchedule({Key? key, this.employeeId, this.assignedDate})
+  ViewSchedule(
+      {Key? key,
+      this.employeeId,
+      this.endTime,
+      this.startTime,
+      this.employeeName,
+      this.assignedDate})
       : super(key: key);
 
   @override
@@ -27,6 +36,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
     // TODO: implement initState
     super.initState();
     _schedulesBloc = SchedulesBloc();
+    //_schedulesBloc?.getEmployee("${widget.employeeId}");
     _schedulesBloc
         ?.getUpComingShifts(widget.employeeId, widget.assignedDate)
         .then((value) {
@@ -103,18 +113,18 @@ class _ViewScheduleState extends State<ViewSchedule> {
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children:  [
                       Text(
-                        "Monday, 13 Sep",
-                        style: TextStyle(
+                        DateFormat("EEEE, dd MMM").format(DateFormat('yyyy-dd-MM').parse("${widget.assignedDate}")),
+                        style: const TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 25),
                       ),
                       SizedBox(
                         height: 16,
                       ),
                       Text(
-                        "8:00 am - 4:00 pm",
-                        style: TextStyle(
+                        "${widget.startTime} - ${widget.endTime}",
+                        style: const TextStyle(
                             fontWeight: FontWeight.w300, fontSize: 17),
                       ),
                       SizedBox(
@@ -155,10 +165,10 @@ class _ViewScheduleState extends State<ViewSchedule> {
                     height: 60,
                     width: 60,
                   )),
-                  const Expanded(
+                   Expanded(
                     flex: 2,
                     child: Text(
-                      "Robin alex",
+                      "${widget.employeeName}",
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontWeight: FontWeight.w400, fontSize: 25),

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:prime_scheduler/models/employee_response.dart';
 import 'package:prime_scheduler/models/employees.dart';
 import 'package:prime_scheduler/models/schedules.dart';
 import 'package:prime_scheduler/models/user_response.dart';
@@ -21,6 +22,12 @@ class SchedulesRepository {
     final response =
         await get("schedule/upcoming_shifts.php?employee_id=$employeeId&date=$date");
     return Schedules.fromJson(response);
+  }
+
+  Future<Employee> getEmployeeDetails(String? employeeId) async {
+    final response =
+        await get("employee/get_employee_details.php?employee_id=$employeeId");
+    return Employee.fromJson(response);
   }
 
   Future<dynamic> get(String url) async {

@@ -318,6 +318,18 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                                           .data?.data?.schedule
                                                           ?.elementAt(index)
                                                           .employeeId,
+                                                      startTime: snapshot
+                                                          .data?.data?.schedule
+                                                          ?.elementAt(index)
+                                                          .startTime,
+                                                      endTime: snapshot
+                                                          .data?.data?.schedule
+                                                          ?.elementAt(index)
+                                                          .endTime,
+                                                      employeeName: snapshot
+                                                          .data?.data?.schedule
+                                                          ?.elementAt(index)
+                                                          .employeeName,
                                                       assignedDate: snapshot
                                                           .data?.data?.schedule
                                                           ?.elementAt(index)

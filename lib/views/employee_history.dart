@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:prime_scheduler/bloc/employee_history_bloc.dart';
 import 'package:prime_scheduler/models/employees.dart';
 import 'package:prime_scheduler/models/response.dart';
@@ -10,6 +12,7 @@ import 'package:prime_scheduler/views/active_details.dart';
 
 class EmployeeHistory extends StatefulWidget {
   User? user;
+
   EmployeeHistory({Key? key, this.user}) : super(key: key);
 
   @override
@@ -17,16 +20,22 @@ class EmployeeHistory extends StatefulWidget {
 }
 
 class _EmployeeHistoryState extends State<EmployeeHistory> {
-
   EmployeeHistoryBloc? _employeeHistoryBloc;
+  int _day = DateTime.now().day;
+  int _month = DateTime.now().month;
+  String startDate = "";
+
+  int _endDay = DateTime.now().day;
+  int _endMonth = DateTime.now().month;
+  String endDate = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _employeeHistoryBloc = EmployeeHistoryBloc();
-    _employeeHistoryBloc?.getEmployees(widget.user?.id);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,271 +135,808 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                 ],
               ),
             ),
+            Text(
+              "Start Date",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+            Container(
+              margin: const EdgeInsets.only(
+                  top: 16, left: 12, right: 12, bottom: 16),
+              padding: EdgeInsets.all(24),
+              decoration: const BoxDecoration(
+                color: Color(0xffF0EFFF),
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(36),
+                    topLeft: Radius.circular(36)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final newValue = _month - 1;
+                            // if(_toHour<0){
+                            //   _toHour = 1;
+                            // }
+                            // DateUtils.getDaysInMonth(
+                            //     DateTime.now().year, newValue);
+                            _month = newValue.clamp(1, 12);
+                            _day = 1;
+                            startDate = "${DateTime.now().year}-$_month-$_day";
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          "assets/images/Group 247.svg",
+                          // color: Colors.black,
+                        ),
+                      ),
+                      //SizedBox(width: 4,),
+                      Flexible(
+                        child: Column(
+                          children: [
+                            NumberPicker(
+                              value: _month,
+                              itemHeight: 32,
+                              itemWidth: 110,
+                              minValue: 1,
+                              maxValue: 12,
+                              itemCount: 1,
+                              //zeroPad: true,
+                              axis: Axis.horizontal,
+                              // decoration: BoxDecoration(
+                              //   border: Border(
+                              //     bottom: BorderSide(
+                              //       color: Colors.black,
+                              //       width: 4,
+                              //     )
+                              //   )
+                              // ),
+                              //step: 10,
+                              haptics: true,
+                              infiniteLoop: true,
+                              selectedTextStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  // decoration: TextDecoration.underline,
+                                  // decorationThickness: 4,
+                                  // decorationColor: Color(0xffC8C8C8),
+                                  fontWeight: FontWeight.w400),
+                              // textStyle: const TextStyle(
+                              //     color: Colors.transparent,
+                              //     fontSize: 0,
+                              // ),
+                              textMapper: (text) => DateFormat.MMMM().format(
+                                  DateTime(
+                                      DateTime.now().year, int.parse(text))),
+                              onChanged: (value) {
+                                setState(() {
+                                  _month = value;
+                                  if (DateUtils.getDaysInMonth(
+                                          DateTime.now().year, _month) <
+                                      _day) {
+                                    _day = 1;
+                                  }
+                                  startDate =
+                                      "${DateTime.now().year}-$_month-$_day";
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              height: 2,
+                              width: 24,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Color(0xff59C69C),
+                                    borderRadius: BorderRadius.circular(36)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final newValue = _month + 1;
+                            _month = newValue.clamp(1, 12);
+                            _day = 1;
+                            startDate = "${DateTime.now().year}-$_month-$_day";
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          "assets/images/Group 252.svg",
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 64,
+                          width: 56,
+                          decoration: BoxDecoration(
+                              color: Color(0xff59C69C),
+                              borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, right: 8),
+                        child: NumberPicker(
+                          value: _day,
+                          itemWidth: 64,
+                          minValue: 1,
+                          maxValue: DateUtils.getDaysInMonth(
+                              DateTime.now().year, _month),
+                          //DateTime(DateTime.now().year,_month).day,
+                          itemCount: 5,
+                          // step: 10,
+                          zeroPad: true,
+                          axis: Axis.horizontal,
+                          //step: 10,
+                          haptics: true,
+                          infiniteLoop: true,
+                          selectedTextStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              // decoration: TextDecoration.underline,
+                              // decorationThickness: 4,
+                              // decorationColor: Color(0xffC8C8C8),
+                              fontWeight: FontWeight.w500),
+                          textStyle: const TextStyle(
+                            color: Color(0xff7B7B7B),
+                            fontSize: 14,
+                          ),
+                          textMapper: (text) {
+                            return DateFormat("EEE").format(DateTime(
+                                    DateTime.now().year,
+                                    _month,
+                                    int.parse(text))) +
+                                "\n\n" +
+                                text;
+                          },
+                          onChanged: (value) => setState(() {
+                            _day = value;
+                            if (DateUtils.getDaysInMonth(
+                                    DateTime.now().year, _month) <
+                                _day) {
+                              _day = DateUtils.getDaysInMonth(
+                                  DateTime.now().year, _month);
+                            }
+
+                            startDate = "${DateTime.now().year}-$_month-$_day";
+                            // _schedulesBloc?.getSchedules(widget.user?.id,
+                            //     "${DateTime.now().year}-$_month-$_day");
+                            // if (DateTime.now().month == _month &&
+                            //     DateTime.now().day == _day) {
+                            //   _schedulesBloc?.getNextSchedules(widget.user?.id,
+                            //       "${DateTime.now().year}-$_month-${_day + 1}");
+                            // }
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              "End Date",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 16, left: 12, right: 12),
+              padding: EdgeInsets.all(24),
+              decoration: const BoxDecoration(
+                color: Color(0xffF0EFFF),
+                borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(36),
+                    bottomLeft: Radius.circular(36)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final newValue = _endMonth - 1;
+                            // if(_toHour<0){
+                            //   _toHour = 1;
+                            // }
+                            // DateUtils.getDaysInMonth(
+                            //     DateTime.now().year, newValue);
+                            _endMonth = newValue.clamp(1, 12);
+                            _endDay = 1;
+                            endDate =
+                                "${DateTime.now().year}-$_endMonth-$_endDay";
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          "assets/images/Group 247.svg",
+                          // color: Colors.black,
+                        ),
+                      ),
+                      //SizedBox(width: 4,),
+                      Flexible(
+                        child: Column(
+                          children: [
+                            NumberPicker(
+                              value: _endMonth,
+                              itemHeight: 32,
+                              itemWidth: 110,
+                              minValue: 1,
+                              maxValue: 12,
+                              itemCount: 1,
+                              //zeroPad: true,
+                              axis: Axis.horizontal,
+                              // decoration: BoxDecoration(
+                              //   border: Border(
+                              //     bottom: BorderSide(
+                              //       color: Colors.black,
+                              //       width: 4,
+                              //     )
+                              //   )
+                              // ),
+                              //step: 10,
+                              haptics: true,
+                              infiniteLoop: true,
+                              selectedTextStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  // decoration: TextDecoration.underline,
+                                  // decorationThickness: 4,
+                                  // decorationColor: Color(0xffC8C8C8),
+                                  fontWeight: FontWeight.w400),
+                              // textStyle: const TextStyle(
+                              //     color: Colors.transparent,
+                              //     fontSize: 0,
+                              // ),
+                              textMapper: (text) => DateFormat.MMMM().format(
+                                  DateTime(
+                                      DateTime.now().year, int.parse(text))),
+                              onChanged: (value) {
+                                setState(() {
+                                  _endMonth = value;
+                                  if (DateUtils.getDaysInMonth(
+                                          DateTime.now().year, _endMonth) <
+                                      _endDay) {
+                                    _endDay = 1;
+                                  }
+                                  endDate =
+                                      "${DateTime.now().year}-$_endMonth-$_endDay";
+                                });
+                                if (endDate.compareTo(startDate) == 1) {
+                                  print(endDate);
+                                  print(startDate);
+
+                                  _employeeHistoryBloc
+                                      ?.getEmployees(widget.user?.id);
+                                } else {
+                                  print(endDate.compareTo(startDate));
+                                }
+                              },
+                            ),
+                            SizedBox(
+                              height: 2,
+                              width: 24,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Color(0xff59C69C),
+                                    borderRadius: BorderRadius.circular(36)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            final newValue = _endMonth + 1;
+                            _endMonth = newValue.clamp(1, 12);
+                            _endDay = 1;
+                            endDate =
+                                "${DateTime.now().year}-$_endMonth-$_endDay";
+                          });
+                        },
+                        child: SvgPicture.asset(
+                          "assets/images/Group 252.svg",
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 64,
+                          width: 56,
+                          decoration: BoxDecoration(
+                              color: Color(0xff59C69C),
+                              borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0, right: 8),
+                        child: NumberPicker(
+                          value: _endDay,
+                          itemWidth: 64,
+                          minValue: 1,
+                          maxValue: DateUtils.getDaysInMonth(
+                              DateTime.now().year, _endMonth),
+                          //DateTime(DateTime.now().year,_month).day,
+                          itemCount: 5,
+                          // step: 10,
+                          zeroPad: true,
+                          axis: Axis.horizontal,
+                          //step: 10,
+                          haptics: true,
+                          infiniteLoop: true,
+                          selectedTextStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              // decoration: TextDecoration.underline,
+                              // decorationThickness: 4,
+                              // decorationColor: Color(0xffC8C8C8),
+                              fontWeight: FontWeight.w500),
+                          textStyle: const TextStyle(
+                            color: Color(0xff7B7B7B),
+                            fontSize: 14,
+                          ),
+                          textMapper: (text) {
+                            return DateFormat("EEE").format(DateTime(
+                                    DateTime.now().year,
+                                    _endMonth,
+                                    int.parse(text))) +
+                                "\n\n" +
+                                text;
+                          },
+                          onChanged: (value) => setState(() {
+                            _endDay = value;
+                            if (DateUtils.getDaysInMonth(
+                                    DateTime.now().year, _endMonth) <
+                                _endDay) {
+                              _endDay = DateUtils.getDaysInMonth(
+                                  DateTime.now().year, _endMonth);
+                            }
+                            endDate =
+                                "${DateTime.now().year}-$_endMonth-$_endDay";
+                            print("changing");
+                            _employeeHistoryBloc?.getEmployees(widget.user?.id);
+                            // _schedulesBloc?.getSchedules(widget.user?.id,
+                            //     "${DateTime.now().year}-$_month-$_day");
+                            // if (DateTime.now().month == _month &&
+                            //     DateTime.now().day == _day) {
+                            //   _schedulesBloc?.getNextSchedules(widget.user?.id,
+                            //       "${DateTime.now().year}-$_month-${_day + 1}");
+                            // }
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 16,
+            ),
             StreamBuilder<Response<Employees>>(
-              stream: _employeeHistoryBloc?.getEmployeesStream,
-              builder: (context, snapshot) {
-
-                if(snapshot.hasData){
-                  switch(snapshot.data?.status){
-                    case Status.LOADING:
-                      return Center(child: CircularProgressIndicator());
-                    case Status.COMPLETED:
-
-                      return snapshot.data?.data?.statusCode == 400
-                          ? Center(
-                          child: Text("No employee added yet",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color:
-                                  Theme.of(context).disabledColor,
-                                  fontSize: 18.0)))
-                          :  ListView.builder(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          physics: const ScrollPhysics(),
-                          itemCount: snapshot.data?.data?.employee?.length,
-                          itemBuilder: (context, index) => GestureDetector(
-                            onTap: () {
-                              showModalBottomSheet<void>(
-                                  context: context,
-                                  backgroundColor: Colors.white,
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(36),
-                                          topRight: Radius.circular(36))),
-                                  builder: (BuildContext context) {
-                                    return SingleChildScrollView(
-                                      physics: const ScrollPhysics(),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                        children: [
-                                          Padding(
-                                            padding:  const EdgeInsets.fromLTRB(24.0,36,24,0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                              children: [
-                                                SvgPicture.asset(
-                                                  "assets/images/Group 210.svg",
-                                                  height: 60,
-                                                  width: 60,
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Align(
-                                                    alignment: Alignment.centerRight,
-                                                    child: SvgPicture.asset(
-                                                      "assets/images/Group 165.svg",
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height:
-                                            MediaQuery.of(context).size.height *
-                                                .02,
-                                          ),
-                                          Padding(
-                                            padding:  const EdgeInsets.fromLTRB(24.0,0,24,0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                              children:  [
-                                                Text(
-                                                  "${snapshot.data?.data?.employee?.elementAt(index).name}",
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.w300,
-                                                      fontSize: 20),
-                                                ),
-                                                Text(
-                                                  "Manager",
-                                                  style: TextStyle(
-                                                      color: Color(0xffB1B1B1),
-                                                      fontWeight: FontWeight.w300,
-                                                      fontSize: 12),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height:
-                                            MediaQuery.of(context).size.height *
-                                                .05,
-                                          ),
-                                          const Padding(
-                                            padding:  EdgeInsets.fromLTRB(24.0,0,24,0),
-                                            child: Text(
-                                              "Total active hours",
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                  color: Color(0xff979797),
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 15),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height:
-                                            MediaQuery.of(context).size.height *
-                                                .01,
-                                          ),
-                                          Padding(
-                                            padding:  const EdgeInsets.fromLTRB(24.0,0,24,0),
-                                            child: GestureDetector(
-                                              onTap: (){
-                                                Navigator.pop(context);
-                                                Navigator.push(
-                                                    context,
-                                                    CupertinoPageRoute(
-                                                        builder: (context) =>
-                                                        const ActiveDetails(
-                                                        )));
+                stream: _employeeHistoryBloc?.getEmployeesStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    switch (snapshot.data?.status) {
+                      case Status.LOADING:
+                        return Center(child: CircularProgressIndicator());
+                      case Status.COMPLETED:
+                        return snapshot.data?.data?.statusCode == 400
+                            ? Center(
+                                child: Text("No employee added yet",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Theme.of(context).disabledColor,
+                                        fontSize: 18.0)))
+                            : endDate.compareTo(startDate) == -1
+                                ? Center(
+                                    child: Text("End date can't be smaller",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500)),
+                                  )
+                                : ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    physics: const ScrollPhysics(),
+                                    itemCount:
+                                        snapshot.data?.data?.employee?.length,
+                                    itemBuilder:
+                                        (context, index) => GestureDetector(
+                                              onTap: () {
+                                                showModalBottomSheet<void>(
+                                                    context: context,
+                                                    backgroundColor: Colors
+                                                        .white,
+                                                    shape: const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        36),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        36))),
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return SingleChildScrollView(
+                                                        physics:
+                                                            const ScrollPhysics(),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .stretch,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .fromLTRB(
+                                                                      24.0,
+                                                                      36,
+                                                                      24,
+                                                                      0),
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  SvgPicture
+                                                                      .asset(
+                                                                    "assets/images/Group 210.svg",
+                                                                    height: 60,
+                                                                    width: 60,
+                                                                  ),
+                                                                  GestureDetector(
+                                                                    onTap: () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    },
+                                                                    child:
+                                                                        Align(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .centerRight,
+                                                                      child: SvgPicture
+                                                                          .asset(
+                                                                        "assets/images/Group 165.svg",
+                                                                        color: Colors
+                                                                            .black,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .height *
+                                                                  .02,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .fromLTRB(
+                                                                      24.0,
+                                                                      0,
+                                                                      24,
+                                                                      0),
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Text(
+                                                                    "${snapshot.data?.data?.employee?.elementAt(index).name}",
+                                                                    style: const TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w300,
+                                                                        fontSize:
+                                                                            20),
+                                                                  ),
+                                                                  Text(
+                                                                    "Manager",
+                                                                    style: TextStyle(
+                                                                        color: Color(
+                                                                            0xffB1B1B1),
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w300,
+                                                                        fontSize:
+                                                                            12),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .height *
+                                                                  .05,
+                                                            ),
+                                                            const Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .fromLTRB(
+                                                                          24.0,
+                                                                          0,
+                                                                          24,
+                                                                          0),
+                                                              child: Text(
+                                                                "Total active hours",
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .start,
+                                                                style: TextStyle(
+                                                                    color: Color(
+                                                                        0xff979797),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        15),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .height *
+                                                                  .01,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .fromLTRB(
+                                                                      24.0,
+                                                                      0,
+                                                                      24,
+                                                                      0),
+                                                              child:
+                                                                  GestureDetector(
+                                                                onTap: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      CupertinoPageRoute(
+                                                                          builder: (context) =>
+                                                                              const ActiveDetails()));
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  // height: 48,
+                                                                  padding: EdgeInsets
+                                                                      .fromLTRB(
+                                                                          16,
+                                                                          4,
+                                                                          16,
+                                                                          4),
+                                                                  decoration: const BoxDecoration(
+                                                                      color: Color(
+                                                                          0xffF0EFFF),
+                                                                      borderRadius:
+                                                                          BorderRadius.all(
+                                                                              Radius.circular(8))),
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      const Flexible(
+                                                                        child:
+                                                                            Align(
+                                                                          alignment:
+                                                                              Alignment.center,
+                                                                          child:
+                                                                              Text(
+                                                                            "02 : 40 : 10 s",
+                                                                            style: TextStyle(
+                                                                                fontSize: 29,
+                                                                                fontWeight: FontWeight.w700,
+                                                                                color: Color(0xffF23232)),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      SvgPicture
+                                                                          .asset(
+                                                                              "assets/images/Vector 51.svg"),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .height *
+                                                                  .03,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Card(
+                                                                elevation: 8,
+                                                                shape: const RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.all(
+                                                                            Radius.circular(36))),
+                                                                color: const Color(
+                                                                    0xffF5F5F5),
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Container(
+                                                                        height:
+                                                                            56,
+                                                                        width:
+                                                                            84,
+                                                                        child: SvgPicture.asset(
+                                                                            "assets/images/Vector 49.svg"),
+                                                                        padding:
+                                                                            const EdgeInsets.all(
+                                                                                14),
+                                                                        decoration:
+                                                                            const BoxDecoration(
+                                                                          color:
+                                                                              Color(0xffF06767),
+                                                                          borderRadius: BorderRadius.only(
+                                                                              topRight: Radius.circular(48.0),
+                                                                              bottomRight: Radius.circular(48.0),
+                                                                              topLeft: Radius.circular(48.0),
+                                                                              bottomLeft: Radius.circular(48.0)),
+                                                                        )),
+                                                                    //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          right:
+                                                                              24.0),
+                                                                      child: SvgPicture
+                                                                          .asset(
+                                                                        "assets/images/Group 186.svg",
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      );
+                                                    });
                                               },
                                               child: Container(
-                                                // height: 48,
-                                                padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        24, 28, 24, 28),
+                                                margin:
+                                                    const EdgeInsets.fromLTRB(
+                                                        16, 0, 0, 16),
                                                 decoration: const BoxDecoration(
-                                                    color: Color(0xffF0EFFF),
-                                                    borderRadius: BorderRadius.all(
-                                                        Radius.circular(8))),
+                                                    color: Color(0xffFFF8E4),
+                                                    border: Border(
+                                                        left: BorderSide(
+                                                            width: 5,
+                                                            color: Color(
+                                                                0xffFFB966)))),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
-                                                    const Flexible(
-                                                      child: Align(
-                                                        alignment: Alignment.center,
-                                                        child: Text(
-                                                          "02 : 40 : 10 s",
-                                                          style: TextStyle(
-                                                              fontSize: 29,
-                                                              fontWeight: FontWeight.w700,
-                                                              color: Color(0xffF23232)
-                                                          ),
+                                                    SvgPicture.asset(
+                                                        "assets/images/Group 210.svg"),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "${snapshot.data?.data?.employee?.elementAt(index).name}",
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300,
+                                                                  fontSize: 20),
                                                         ),
-                                                      ),
+                                                        const SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        RichText(
+                                                            text:
+                                                                const TextSpan(
+                                                                    children: [
+                                                              WidgetSpan(
+                                                                  alignment:
+                                                                      PlaceholderAlignment
+                                                                          .middle,
+                                                                  child:
+                                                                      CircleAvatar(
+                                                                    radius: 4,
+                                                                    backgroundColor:
+                                                                        Color(
+                                                                            0xff59C69C),
+                                                                  )),
+                                                              TextSpan(
+                                                                  text:
+                                                                      "  Manager",
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xffB1B1B1),
+                                                                      fontSize:
+                                                                          15,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w300))
+                                                            ])),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              .2,
                                                     ),
                                                     SvgPicture.asset(
-                                                        "assets/images/Vector 51.svg"),
+                                                      "assets/images/Vector 32.svg",
+                                                      color: const Color(
+                                                          0xffADADAD),
+                                                    ),
                                                   ],
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height:
-                                            MediaQuery.of(context).size.height *
-                                                .03,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Card(
-                                              elevation: 8,
-                                              shape: const RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.all(Radius.circular(36))),
-                                              color: const Color(0xffF5F5F5),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Container(
-                                                      height: 56,
-                                                      width: 84,
-                                                      child: SvgPicture.asset("assets/images/Vector 49.svg"),
-                                                      padding: const EdgeInsets.all(14),
-                                                      decoration: const BoxDecoration(
-                                                        color: Color(0xffF06767),
-                                                        borderRadius: BorderRadius.only(
-                                                            topRight: Radius.circular(48.0),
-                                                            bottomRight: Radius.circular(48.0),
-                                                            topLeft: Radius.circular(48.0),
-                                                            bottomLeft: Radius.circular(48.0)),
-                                                      )),
-                                                  //Container(height: 48,width:72, padding: EdgeInsets.all(24),decoration: const BoxDecoration(color: Color(0xffF06767),shape: BoxShape.circle),child: SvgPicture.asset("assets/images/Vector 49.svg"),),
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(right: 24.0),
-                                                    child: SvgPicture.asset(
-                                                      "assets/images/Group 186.svg",
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-                              margin: const EdgeInsets.fromLTRB(16, 0, 0, 16),
-                              decoration: const BoxDecoration(
-                                  color: Color(0xffFFF8E4),
-                                  border: Border(
-                                      left: BorderSide(
-                                          width: 5, color: Color(0xffFFB966)))),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SvgPicture.asset("assets/images/Group 210.svg"),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                       Text(
-                                        "${snapshot.data?.data?.employee?.elementAt(index).name}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: 20),
-                                      ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      RichText(
-                                          text: const TextSpan(children: [
-                                            WidgetSpan(
-                                                alignment: PlaceholderAlignment.middle,
-                                                child: CircleAvatar(
-                                                  radius: 4,
-                                                  backgroundColor: Color(0xff59C69C),
-                                                )),
-                                            TextSpan(
-                                                text: "  Manager",
-                                                style: TextStyle(
-                                                    color: Color(0xffB1B1B1),
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w300))
-                                          ])),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width * .2,
-                                  ),
-                                  SvgPicture.asset(
-                                    "assets/images/Vector 32.svg",
-                                    color: const Color(0xffADADAD),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ));
-                    case Status.ERROR:
-                      return Center(child: CircularProgressIndicator());
-                    default:
-
+                                            ));
+                      case Status.ERROR:
+                        return Center(child: CircularProgressIndicator());
+                      default:
+                    }
                   }
 
-                }
-
-                return Center(child: CircularProgressIndicator());
-              }
-            ),
+                  return Center(child: CircularProgressIndicator());
+                }),
             const Padding(
               padding: EdgeInsets.only(right: 24.0, bottom: 16),
               child: Text(

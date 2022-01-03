@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:prime_scheduler/models/employee_response.dart';
 import 'package:prime_scheduler/models/employees.dart';
 import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/models/schedules.dart';
@@ -11,6 +12,7 @@ class SchedulesBloc{
   late StreamController<Response<Schedules>> _schedulesStreamController;
   late StreamController<Response<Schedules>> _nextSchedulesStreamController;
   late StreamController<Response<Schedules>> _upComingShiftsStreamController;
+  late StreamController<Response<Employee>> _employeeStreamController;
 
   // StreamSink<Response<dynamic>> get addScheduleSink =>
   //     _addScheduleStreamController.sink;
@@ -37,25 +39,32 @@ class SchedulesBloc{
   Stream<Response<Schedules>> get upComingShiftsStream =>
       _nextSchedulesStreamController.stream;
 
+  StreamSink<Response<Employee>> get employeeSink =>
+      _employeeStreamController.sink;
+
+  Stream<Response<Employee>> get employeeStream =>
+      _employeeStreamController.stream;
+
   SchedulesBloc() {
     _repository = SchedulesRepository();
     //_addScheduleStreamController = StreamController<Response<dynamic>>();
     _schedulesStreamController = StreamController<Response<Schedules>>.broadcast();
     _nextSchedulesStreamController = StreamController<Response<Schedules>>.broadcast();
     _upComingShiftsStreamController = StreamController<Response<Schedules>>.broadcast();
+    _employeeStreamController = StreamController<Response<Employee>>.broadcast();
   }
   //
-  // Future<dynamic> addSchedule(Map body) async {
-  //   addScheduleSink.add(Response.loading(''));
-  //   try{
-  //     dynamic response = await _repository.addSchedule(body: body);
-  //     addScheduleSink.add(Response.completed(response));
-  //     return response;
-  //   }catch(e){
-  //     addScheduleSink.add(Response.error(e.toString()));
-  //     return null;
-  //   }
-  // }
+  Future<Employee?> getEmployee(String employeeId) async {
+    employeeSink.add(Response.loading(''));
+    try{
+      Employee response = await _repository.getEmployeeDetails(employeeId);
+      employeeSink.add(Response.completed(response));
+      return response;
+    }catch(e){
+      employeeSink.add(Response.error(e.toString()));
+      return null;
+    }
+  }
 
   Future<Schedules?> getSchedules(String? adminId, String date) async {
     schedulesSink.add(Response.loading(''));
@@ -99,5 +108,6 @@ class SchedulesBloc{
     _schedulesStreamController.close();
     _nextSchedulesStreamController.close();
     _upComingShiftsStreamController.close();
+    _employeeStreamController.close();
   }
 }
