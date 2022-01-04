@@ -1,33 +1,34 @@
 import 'dart:async';
 
 import 'package:prime_scheduler/models/employees.dart';
+import 'package:prime_scheduler/models/history.dart';
 import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/repositories/employee_history_repository.dart';
 class EmployeeHistoryBloc {
 
   late EmployeeHistoryRepository _repository;
-  late StreamController<Response<Employees>> _getEmployeesStreamController;
+  late StreamController<Response<History>> _getEmployeeHistoryStreamController;
 
-  StreamSink<Response<Employees>> get getEmployeesSink =>
-      _getEmployeesStreamController.sink;
+  StreamSink<Response<History>> get getEmployeeHistorySink =>
+      _getEmployeeHistoryStreamController.sink;
 
-  Stream<Response<Employees>> get getEmployeesStream =>
-      _getEmployeesStreamController.stream;
+  Stream<Response<History>> get getEmployeeHistoryStream =>
+      _getEmployeeHistoryStreamController.stream;
 
   EmployeeHistoryBloc(){
     _repository = EmployeeHistoryRepository();
-    _getEmployeesStreamController = StreamController<Response<Employees>>();
+    _getEmployeeHistoryStreamController = StreamController<Response<History>>();
   }
 
-  Future<Employees?> getEmployees(String? adminId) async {
-    getEmployeesSink.add(Response.loading(''));
+  Future<History?> getEmployeeHistory(Map<String,dynamic> map) async {
+    getEmployeeHistorySink.add(Response.loading(''));
     try{
-      dynamic response = await _repository.getEmployees(adminId);
-      getEmployeesSink.add(Response.completed(response));
+      dynamic response = await _repository.getEmployeeHistory(map);
+      getEmployeeHistorySink.add(Response.completed(response));
       return response;
     }catch(e){
       print(e.toString());
-      getEmployeesSink.add(Response.error(e.toString()));
+      getEmployeeHistorySink.add(Response.error(e.toString()));
       return null;
     }
   }

@@ -164,7 +164,8 @@ class _LogInScreenState extends State<LogInScreen> {
             ),
 
             Padding(
-              padding: const EdgeInsets.only(right: 24.0, top: 0),
+              padding:  EdgeInsets.only(
+                  right: 24.0, top: 0, left: MediaQuery.of(context).size.width*.65),
               child: GestureDetector(
                 onTap: () {
                   if (_emailController.text.isEmpty) {
@@ -303,8 +304,8 @@ class _LogInScreenState extends State<LogInScreen> {
               alignment: Alignment.center,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (c) =>  Step1()));
+                  Navigator.push(
+                      context, CupertinoPageRoute(builder: (c) => Step1()));
                 },
                 child: RichText(
                   text: const TextSpan(
@@ -368,7 +369,6 @@ class _LogInScreenState extends State<LogInScreen> {
   }
 
   Future signInWithGoogle() async {
-
     try {
       await googleSignIn.signOut();
 
@@ -383,7 +383,7 @@ class _LogInScreenState extends State<LogInScreen> {
       map['email'] = "test50@gmail.com";
       map['name'] = "test50";*/
 
-      if(googleSignInAccount==null){
+      if (googleSignInAccount == null) {
         progressDialog.hide();
         return;
       }
@@ -403,25 +403,27 @@ class _LogInScreenState extends State<LogInScreen> {
 
       print("GoogleUser::" + map.toString());
       progressDialog.show();
-      _bloc.socialSignIn(body: map).then((value){
+      _bloc.socialSignIn(body: map).then((value) {
         progressDialog.hide();
         if (value != null) {
           if (value.user?.statusCode == 200) {
             Fluttertoast.showToast(msg: "${value.user?.message}");
             if (value.user?.isAdmin == "1") {
-              if(value.user?.phone==""){
+              if (value.user?.phone == "") {
                 Navigator.push(
-                    context, CupertinoPageRoute(builder: (context) =>
-                    Step1(provider: "google", user: value.user,)
-                ));
-              }else{
+                    context,
+                    CupertinoPageRoute(
+                        builder: (context) => Step1(
+                              provider: "google",
+                              user: value.user,
+                            )));
+              } else {
                 Navigator.push(
                     context,
                     CupertinoPageRoute(
                         builder: (c) => LoggedInHomeScreen(user: value.user)));
-
               }
-              } else {
+            } else {
               //progressDialog.hide();
               Navigator.push(
                   context, CupertinoPageRoute(builder: (c) => ClockIn()));
@@ -431,7 +433,7 @@ class _LogInScreenState extends State<LogInScreen> {
             Fluttertoast.showToast(msg: "Something went wrong");
           }
         }
-      }, onError: (v){
+      }, onError: (v) {
         print("Token : here");
       }).noSuchMethod(throw UnauthorisedException());
 

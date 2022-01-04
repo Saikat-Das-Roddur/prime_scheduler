@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:prime_scheduler/bloc/employee_history_bloc.dart';
 import 'package:prime_scheduler/models/employees.dart';
+import 'package:prime_scheduler/models/history.dart';
 import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/active_details.dart';
@@ -23,19 +24,26 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
   EmployeeHistoryBloc? _employeeHistoryBloc;
   int _day = DateTime.now().day;
   int _month = DateTime.now().month;
-  String startDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  int _year = DateTime.now().year-1;
+  String startDate =
+      "${DateTime.now().year-1}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
 
   int _endDay = DateTime.now().day;
   int _endMonth = DateTime.now().month;
-  String endDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String endDate =
+      "${DateTime.now().year-1}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+
+  Map<String,dynamic> map = {};
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _employeeHistoryBloc = EmployeeHistoryBloc();
-    _employeeHistoryBloc
-        ?.getEmployees(widget.user?.id);
+    map['admin_id'] = widget.user?.id;
+    map['start_date'] = startDate;
+    map['end_date'] = endDate;
+    _employeeHistoryBloc?.getEmployeeHistory(map);
   }
 
   @override
@@ -172,7 +180,11 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                             //     DateTime.now().year, newValue);
                             _month = newValue.clamp(1, 12);
                             _day = 1;
-                            startDate = "${DateTime.now().year}-$_month-$_day";
+                            startDate =
+                                "$_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')}";
+                            //map['start_date'] = startDate;
+                            //map['end_date'] = endDate;
+                            //_employeeHistoryBloc?.getEmployeeHistory(map);
                           });
                         },
                         child: SvgPicture.asset(
@@ -227,7 +239,10 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                     _day = 1;
                                   }
                                   startDate =
-                                      "${DateTime.now().year}-$_month-$_day";
+                                      "$_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')}";
+                                  map['start_date'] = startDate;
+                                  //map['end_date'] = endDate;
+                                  _employeeHistoryBloc?.getEmployeeHistory(map);
                                 });
                               },
                             ),
@@ -249,7 +264,8 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                             final newValue = _month + 1;
                             _month = newValue.clamp(1, 12);
                             _day = 1;
-                            startDate = "${DateTime.now().year}-$_month-$_day";
+                            startDate =
+                                "$_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')}";
                           });
                         },
                         child: SvgPicture.asset(
@@ -317,13 +333,17 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                   DateTime.now().year, _month);
                             }
 
-                            startDate = "${DateTime.now().year}-$_month-$_day";
+                            startDate =
+                                "$_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')}";
+                            map['start_date'] = startDate;
+                            //map['end_date'] = endDate;
+                            _employeeHistoryBloc?.getEmployeeHistory(map);
                             // _schedulesBloc?.getSchedules(widget.user?.id,
-                            //     "${DateTime.now().year}-$_month-$_day");
+                            //     "$_year-$_month-$_day");
                             // if (DateTime.now().month == _month &&
                             //     DateTime.now().day == _day) {
                             //   _schedulesBloc?.getNextSchedules(widget.user?.id,
-                            //       "${DateTime.now().year}-$_month-${_day + 1}");
+                            //       "$_year-$_month-${_day + 1}");
                             // }
                           }),
                         ),
@@ -368,7 +388,8 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                             _endMonth = newValue.clamp(1, 12);
                             _endDay = 1;
                             endDate =
-                                "${DateTime.now().year}-$_endMonth-$_endDay";
+                                "$_year-${_endMonth.toString().padLeft(2, '0')}-${_endDay.toString().padLeft(2, '0')}";
+                            //map['start_date'] = startDate;
                           });
                         },
                         child: SvgPicture.asset(
@@ -423,14 +444,18 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                     _endDay = 1;
                                   }
                                   endDate =
-                                      "${DateTime.now().year}-$_endMonth-$_endDay";
+                                      "$_year-${_endMonth.toString().padLeft(2, '0')}-${_endDay.toString().padLeft(2, '0')}";
                                 });
                                 if (endDate.compareTo(startDate) == 1) {
                                   print(endDate);
                                   print(startDate);
 
+                                  //map['admin_id'] = widget.user?.id;
+                                  //map['start_date'] = startDate;
+                                  map['end_date'] = endDate;
+
                                   _employeeHistoryBloc
-                                      ?.getEmployees(widget.user?.id);
+                                      ?.getEmployeeHistory(map);
                                 } else {
                                   print(endDate.compareTo(startDate));
                                 }
@@ -455,7 +480,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                             _endMonth = newValue.clamp(1, 12);
                             _endDay = 1;
                             endDate =
-                                "${DateTime.now().year}-$_endMonth-$_endDay";
+                                "$_year-${_endMonth.toString().padLeft(2, '0')}-${_endDay.toString().padLeft(2, '0')}";
                           });
                         },
                         child: SvgPicture.asset(
@@ -523,15 +548,17 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                   DateTime.now().year, _endMonth);
                             }
                             endDate =
-                                "${DateTime.now().year}-$_endMonth-$_endDay";
+                                "$_year-${_endMonth.toString().padLeft(2, '0')}-${_endDay.toString().padLeft(2, '0')}";
                             print("changing");
-                            _employeeHistoryBloc?.getEmployees(widget.user?.id);
+                            map['start_date'] = startDate;
+                            map['end_date'] = endDate;
+                            _employeeHistoryBloc?.getEmployeeHistory(map);
                             // _schedulesBloc?.getSchedules(widget.user?.id,
-                            //     "${DateTime.now().year}-$_month-$_day");
+                            //     "$_year-$_month-$_day");
                             // if (DateTime.now().month == _month &&
                             //     DateTime.now().day == _day) {
                             //   _schedulesBloc?.getNextSchedules(widget.user?.id,
-                            //       "${DateTime.now().year}-$_month-${_day + 1}");
+                            //       "$_year-$_month-${_day + 1}");
                             // }
                           }),
                         ),
@@ -544,8 +571,8 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
             SizedBox(
               height: 16,
             ),
-            StreamBuilder<Response<Employees>>(
-                stream: _employeeHistoryBloc?.getEmployeesStream,
+            StreamBuilder<Response<History>>(
+                stream: _employeeHistoryBloc?.getEmployeeHistoryStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     switch (snapshot.data?.status) {
@@ -554,7 +581,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                       case Status.COMPLETED:
                         return snapshot.data?.data?.statusCode == 400
                             ? Center(
-                                child: Text("No employee added yet",
+                                child: Text("No history found",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         color: Theme.of(context).disabledColor,
@@ -572,7 +599,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                     shrinkWrap: true,
                                     physics: const ScrollPhysics(),
                                     itemCount:
-                                        snapshot.data?.data?.employee?.length,
+                                        snapshot.data?.data?.employeeHistory?.length,
                                     itemBuilder:
                                         (context, index) => GestureDetector(
                                               onTap: () {
@@ -663,7 +690,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                         .spaceBetween,
                                                                 children: [
                                                                   Text(
-                                                                    "${snapshot.data?.data?.employee?.elementAt(index).name}",
+                                                                    "${snapshot.data?.data?.employeeHistory?.elementAt(index).employee?.name}",
                                                                     style: const TextStyle(
                                                                         fontWeight:
                                                                             FontWeight
@@ -739,7 +766,10 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                       context,
                                                                       CupertinoPageRoute(
                                                                           builder: (context) =>
-                                                                              const ActiveDetails()));
+                                                                               ActiveDetails(
+                                                                                employee: snapshot.data?.data?.employeeHistory?.elementAt(index).employee,
+                                                                                attendanceList: snapshot.data?.data?.employeeHistory?.elementAt(index).attendance
+                                                                              )));
                                                                 },
                                                                 child:
                                                                     Container(
@@ -761,15 +791,15 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                         MainAxisAlignment
                                                                             .spaceBetween,
                                                                     children: [
-                                                                      const Flexible(
+                                                                       Flexible(
                                                                         child:
                                                                             Align(
                                                                           alignment:
                                                                               Alignment.center,
                                                                           child:
                                                                               Text(
-                                                                            "02 : 40 : 10 s",
-                                                                            style: TextStyle(
+                                                                            "${snapshot.data?.data?.employeeHistory?.elementAt(index).totalHours}",
+                                                                            style: const TextStyle(
                                                                                 fontSize: 29,
                                                                                 fontWeight: FontWeight.w700,
                                                                                 color: Color(0xffF23232)),
@@ -875,7 +905,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          "${snapshot.data?.data?.employee?.elementAt(index).name}",
+                                                          "${snapshot.data?.data?.employeeHistory?.elementAt(index).employee?.name}",
                                                           style:
                                                               const TextStyle(
                                                                   fontWeight:
