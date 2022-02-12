@@ -31,7 +31,8 @@ class _AllClockInOutState extends State<AllClockInOut> {
     super.initState();
     _clockInOutBloc = ClockInOutBloc();
     _clockInOutBloc?.getMonthlySchedules(
-        widget.user?.id,
+        widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId,
+        widget.user?.isAdmin == "1" ? "admin_id" : "employee_id",
         DateFormat("yyyy-MM-dd")
             .format(DateTime(DateTime.now().year, DateTime.now().month, 1)),
         DateFormat("yyyy-MM-dd").format(DateTime(
@@ -197,7 +198,8 @@ class _AllClockInOutState extends State<AllClockInOut> {
                               print(value);
                             });
                             _clockInOutBloc?.getMonthlySchedules(
-                                widget.user?.id,
+                                widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId,
+                                widget.user?.isAdmin == "1" ? "admin_id" : "employee_id",
                                 DateFormat("yyyy-MM-dd").format(
                                     DateTime(DateTime.now().year, _month, 1)),
                                 DateFormat("yyyy-MM-dd").format(DateTime(

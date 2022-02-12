@@ -545,7 +545,7 @@ class _AddScheduleState extends State<AddSchedule> {
                       child: NumberPicker(
                         value: _toHour,
                         itemHeight: 36,
-                        minValue: 0,
+                        minValue: 1,
                         maxValue: 12,
                         zeroPad: true,
                         //step: 10,
@@ -649,7 +649,7 @@ class _AddScheduleState extends State<AddSchedule> {
                           borderRadius: BorderRadius.circular(36)),
                       child: NumberPicker(
                         value: _fromHour,
-                        minValue: 0,
+                        minValue: 1,
                         maxValue: 12,
                         itemHeight: 36,
                         zeroPad: true,
@@ -780,6 +780,47 @@ class _AddScheduleState extends State<AddSchedule> {
             ),
             GestureDetector(
               onTap: () {
+                int hour, start, end;
+
+                if (_toAmPm == 0) {
+                  hour = (_toHour == 12 ? 0 : _toHour);
+                  print(hour);
+                  start = hour + _toMinute;
+                  print(start);
+                  map['start_time'] =
+                      "${hour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} am";
+                } else {
+                  hour = (_toHour == 12
+                      ? _toHour
+                      : _toHour == 0
+                          ? 12
+                          : _toHour + 12);
+                  print(hour);
+                  start = hour + _toMinute;
+                  print(start);
+                  map['start_time'] =
+                      "${hour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} pm";
+                }
+                if (_fromAmPm == 0) {
+                  int hour = (_fromHour == 12 ? 0 : _fromHour);
+                  print(hour);
+                  end = hour + _fromMinute;
+                  print(end);
+                  map['end_time'] =
+                      "${hour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
+                } else {
+                  int hour = (_fromHour == 12
+                      ? _fromHour
+                      : _fromHour == 0
+                          ? 12
+                          : _fromHour + 12);
+                  print(hour);
+                  end = hour + _fromMinute;
+                  print(end);
+                  map['end_time'] =
+                      "${hour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
+                }
+
                 if (_locationController.text.isEmpty) {
                   Fluttertoast.showToast(msg: "Location can't be empty");
                   return;
@@ -794,14 +835,25 @@ class _AddScheduleState extends State<AddSchedule> {
                   Fluttertoast.showToast(
                       msg: "Start and end time must be different");
                   return;
+                } else if (start>end) {
+                  Fluttertoast.showToast(
+                      msg: "Start time must be smaller than end time");
+                  return;
+                } else if ("$_toHour:$_toMinute ${_toAmPm == 0 ? "am" : "pm"}" ==
+                    "$_fromHour:$_fromMinute ${_fromAmPm == 0 ? "am" : "pm"}") {
+                  Fluttertoast.showToast(
+                      msg: "Start and end time must be different");
+                  return;
                 } else {
                   map['admin_id'] = "${widget.user?.id}";
                   map['location'] = _locationController.text;
                   map['terms'] = _termDuration!;
-                  map['start_time'] =
-                      "${_toHour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_toAmPm == 0 ? "am" : "pm"}";
-                  map['end_time'] =
-                      "${_fromHour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
+
+                  // map['start_time'] = DateFormat("HH:mm:ss a").format(
+                  //     DateTime.parse(
+                  //         "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')} ${_toHour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_toAmPm == 0 ? "AM" : "PM"}"));
+                  // map['end_time'] =
+                  //     "${_fromHour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
                   print(map);
 
                   addSchedule();

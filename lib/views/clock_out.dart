@@ -47,8 +47,8 @@ class _ClockOutState extends State<ClockOut> {
     // TODO: implement initState
     super.initState();
     _clockOutBloc = ClockOutBloc();
-    DateTime d1 = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${widget.inTime}");
-    DateTime d2 = DateFormat("yyyy-MM-dd hh:mm:ss").parse("${widget.outTime}");
+    DateTime d1 = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.inTime}");
+    DateTime d2 = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.outTime}");
 
     // widget.outTime = DateFormat(
     //     "yyyy-MM-dd")
@@ -747,7 +747,13 @@ class _ClockOutState extends State<ClockOut> {
                                       )),
                                   ModalRoute.withName('/loggedInHome'));
                             }else{
-
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (c) => LoggedInHomeScreen(
+                                        user: widget.user,
+                                      )),
+                                  ModalRoute.withName('/loggIn'));
                             }
                             //showClockOutDialog();
                             // Navigator.push(
@@ -791,11 +797,15 @@ class _ClockOutState extends State<ClockOut> {
 
   void clockOut() {
     Map map = Map();
-    map['employee_id'] = widget.user?.id;
+    if(widget.user?.isAdmin == "1"){
+      map['admin_id'] = widget.user?.id;
+    }else{
+      map['employee_id'] = widget.user?.employeeId;
+    }
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['completed_hours'] = completedHours;
-    map['out_time'] = //widget.outTime;
-        "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
+    map['out_time'] = //widget.outTime;//((DateTime.now().hour + 11) % 12) + 1
+        "${DateTime.now().hour.toString().padLeft(2,'0')}:${DateTime.now().minute.toString().padLeft(2,'0')}:${DateTime.now().second.toString().padLeft(2,'0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
 
     // _clockOutBloc?.clockOut(map)
     post("attendance/check_out.php", body: map);

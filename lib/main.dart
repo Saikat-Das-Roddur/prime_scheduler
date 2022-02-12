@@ -13,8 +13,8 @@ import 'package:sizer/sizer.dart';
 GoogleSignIn _googleSignIn = GoogleSignIn();
 
 main() {
-  // GestureBinding.instance?.resamplingEnabled = true;
-  //WidgetsFlutterBinding.ensureInitialized();
+  GestureBinding.instance?.resamplingEnabled = true;
+  WidgetsFlutterBinding.ensureInitialized();
   //HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }

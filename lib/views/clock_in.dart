@@ -711,12 +711,12 @@ class _ClockInState extends State<ClockIn> {
   void clockIn() async {
     progressDialog = ProgressDialog(context, isDismissible: true);
     progressDialog?.show();
-
+    //((DateTime.now().hour + 11) % 12) + 1
     Map map = Map();
     map['employee_id'] = widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['in_time'] =
-        "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
+        "${DateTime.now().hour.toString().padLeft(2,'0')}:${DateTime.now().minute.toString().padLeft(2,'0')}:${DateTime.now().second.toString().padLeft(2,'0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
     print(map);
     //await _clockInBloc?.clockIn(map);
     post("attendance/check_in.php", body: map);

@@ -42,10 +42,10 @@ class ClockInOutBloc{
     }
   }
 
-  Future<Schedules?> getMonthlySchedules(String? employeeId, String startDate, String endDate) async {
+  Future<Schedules?> getMonthlySchedules(String? employeeId,String? type, String startDate, String endDate) async {
     monthlySchedulesSink.add(Response.loading(''));
     try{
-      dynamic response = await _repository.getMonthlySchedules(employeeId, startDate, endDate);
+      dynamic response = await _repository.getMonthlySchedules(employeeId,type, startDate, endDate);
       monthlySchedulesSink.add(Response.completed(response));
       return response;
     }catch(e){

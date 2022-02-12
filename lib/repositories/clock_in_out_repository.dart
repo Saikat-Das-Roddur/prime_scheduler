@@ -24,9 +24,9 @@ class ClockInOutRepository {
   }
 
   Future<Schedules> getMonthlySchedules(
-      String? employeeId, String? startDate, String? endDate) async {
+      String? employeeId,String? type, String? startDate, String? endDate) async {
     final response = await get(
-        "schedule/get_monthly_schedule.php?employee_id=$employeeId&start_date=$startDate&end_date=$endDate");
+        "schedule/get_monthly_schedule.php?$type=$employeeId&start_date=$startDate&end_date=$endDate");
     return Schedules.fromJson(response);
   }
 

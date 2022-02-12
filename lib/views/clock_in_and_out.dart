@@ -145,6 +145,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
 
     //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
     //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
+    print(widget.endTime);
     DateTime todayEnd = DateFormat("yyyy-MM-dd HH:mm:ss").parse("$endTime");
     DateTime currentTime =
         DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTime.now()}");
