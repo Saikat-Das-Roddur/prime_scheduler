@@ -11,7 +11,13 @@ import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ClockInOutRepository {
-  Future<Schedules> getSchedules(String? employeeId, String? date) async {
+  Future<Schedules> getSchedules(String? employeeId,String? type, String? date) async {
+    final response = await get(
+        "schedule/get_employee_schedule.php?$type=$employeeId&date=$date");
+    return Schedules.fromJson(response);
+  }
+
+  Future<Schedules> getEmployeeSchedules(String? employeeId, String? date) async {
     final response = await get(
         "schedule/get_employee_schedule.php?employee_id=$employeeId&date=$date");
     return Schedules.fromJson(response);

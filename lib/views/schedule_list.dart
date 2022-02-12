@@ -37,7 +37,7 @@ class _ScheduleListsState extends State<ScheduleLists> {
     _progressDialog = ProgressDialog(context, isDismissible: false);
 
     _schedulesBloc
-        ?.getSchedules(widget.user?.id, "${DateTime.now().year}-$_month-$_day")
+        ?.getSchedules(widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)))
         .then((value) {
       setState(() {
         employee = value?.totalEmployee.toString();
@@ -45,7 +45,7 @@ class _ScheduleListsState extends State<ScheduleLists> {
     });
     if (DateTime.now().month == _month && DateTime.now().day == _day) {
       _schedulesBloc?.getNextSchedules(
-          widget.user?.id, "${DateTime.now().year}-$_month-${_day + 1}");
+          widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
     }
   }
 
@@ -140,6 +140,14 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                       _day) {
                                     _day = 1;
                                   }
+                                  _schedulesBloc?.getSchedules(widget.user?.id,
+                                      DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
+                                  if (DateTime.now().month == _month &&
+                                      DateTime.now().day == _day) {
+                                    _schedulesBloc?.getNextSchedules(widget.user?.id,
+                                        DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+                                  }
+                                  //print(DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
                                 });
                               },
                             ),
@@ -228,11 +236,11 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                   DateTime.now().year, _month);
                             }
                             _schedulesBloc?.getSchedules(widget.user?.id,
-                                "${DateTime.now().year}-$_month-$_day");
+                                DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
                             if (DateTime.now().month == _month &&
                                 DateTime.now().day == _day) {
                               _schedulesBloc?.getNextSchedules(widget.user?.id,
-                                  "${DateTime.now().year}-$_month-${_day + 1}");
+                                  DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
                             }
                           }),
                         ),
@@ -309,6 +317,7 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                 itemBuilder: (context, index) =>
                                     GestureDetector(
                                       onTap: () {
+                                        print("snapshot");
                                         Navigator.push(
                                             context,
                                             CupertinoPageRoute(
@@ -478,15 +487,23 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                                   builder: (context) =>
                                                       ViewSchedule(
                                                         employeeId: snapshot
-                                                            .data
-                                                            ?.data
-                                                            ?.schedule
+                                                            .data?.data?.schedule
                                                             ?.elementAt(index)
                                                             .employeeId,
+                                                        startTime: snapshot
+                                                            .data?.data?.schedule
+                                                            ?.elementAt(index)
+                                                            .startTime,
+                                                        endTime: snapshot
+                                                            .data?.data?.schedule
+                                                            ?.elementAt(index)
+                                                            .endTime,
+                                                        employeeName: snapshot
+                                                            .data?.data?.schedule
+                                                            ?.elementAt(index)
+                                                            .employeeName,
                                                         assignedDate: snapshot
-                                                            .data
-                                                            ?.data
-                                                            ?.schedule
+                                                            .data?.data?.schedule
                                                             ?.elementAt(index)
                                                             .assignedDate,
                                                       )));

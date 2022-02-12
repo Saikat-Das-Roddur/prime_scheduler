@@ -45,53 +45,67 @@ class _ClockInAndOutState extends State<ClockInAndOut>
     if (widget.countDownFormatter != null) {
       return widget.countDownFormatter!(duration.inSeconds) as String;
     } else {
-      String endTime =
-          "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
+      String endTime = DateFormat("yyyy-MM-dd").format(DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day)) +
+          " ${widget.endTime}";
+      //"${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
       //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
 
       //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
       //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
-      DateTime todayEnd = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime");
+      DateTime todayEnd = DateFormat("yyyy-MM-dd HH:mm:ss").parse("$endTime");
       DateTime currentTime =
-      DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
-      print((todayEnd.toString().compareTo(currentTime.toString())));
+          DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTime.now()}");
+      //print((todayEnd.toString().compareTo(currentTime.toString())));
 
-      return (todayEnd.toString().compareTo(currentTime.toString()) != -1)?formatHHMMSS(duration.inSeconds):formatHHMMSS(0);
+      return (todayEnd.toString().compareTo(currentTime.toString()) != -1)
+          ? formatHHMMSS(duration.inSeconds)
+          : formatHHMMSS(0);
     }
   }
 
   double get percentData {
     final duration = _controller.duration! * _controller.value;
     if (widget.countDownFormatter != null) {
-      print("Done");
+      //print("Done");
       return widget.countDownFormatter!(duration.inSeconds) as double;
     } else {
-      String endTime =
-          "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
+      String endTime = DateFormat("yyyy-MM-dd").format(DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day)) +
+          " ${widget.endTime}";
+      //"${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
       //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
 
       //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
       //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
-      DateTime todayEnd =
-          DateFormat("yyyy-MM-dd hh:mm:ss").parse(endTime);
+      DateTime todayEnd = DateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime);
       DateTime currentTime =
-          DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
+          DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTime.now()}");
 
       Duration dif = currentTime.difference(todayEnd);
 
+      //print("Compare ${todayEnd.toString().compareTo(currentTime.toString())}");
+      //print(todayEnd);
+      //print(currentTime);
+
       if (todayEnd.toString().compareTo(currentTime.toString()) != -1) {
-        DateTime d1 = DateFormat("hh:mm:ss").parse("${widget.assignedHours}");
+        DateTime d1 = DateFormat("HH:mm:ss").parse("${widget.assignedHours}");
         assignedHrs = (d1.hour * 3600 + d1.minute * 60 + d1.second).toDouble();
 
         remainingHrs = duration.inSeconds.toDouble();
 
         percent = 1 - (remainingHrs!.abs() / (assignedHrs!));
 
-        //print("object ${todayEnd.microsecond}");
-      }else{
+        ////print("object ${todayEnd.microsecond}");
+
+        // //print(d1.toString());
+      } else {
         percent = 1;
       }
 
+      ////print(remainingHrs);
+
+      //return 1;
       return percent! > 1
           ? 0
           : percent!; //(remainingHrs! - assignedHrs!).abs() / (assignedHrs!);//(remainingHrs! - assignedHrs!).abs() / assignedHrs!;
@@ -119,40 +133,42 @@ class _ClockInAndOutState extends State<ClockInAndOut>
     // TODO: implement initState
     super.initState();
     _clockInOutBloc = ClockInOutBloc();
-    //print(widget.inTime);
+    ////print(widget.inTime);
 
     String inTime = "${widget.inTime}";
-    String endTime =
-        "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
+    //print(widget.endTime);
+    String endTime = DateFormat("yyyy-MM-dd").format(DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day)) +
+        " ${widget.endTime}";
+    //"${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
     //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
 
     //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
     //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
-    DateTime todayEnd = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime");
+    DateTime todayEnd = DateFormat("yyyy-MM-dd HH:mm:ss").parse("$endTime");
     DateTime currentTime =
-        DateFormat("yyyy-MM-dd hh:mm:ss").parse("${DateTime.now()}");
-    print("object ${todayEnd.toString()}");
-    print("object ${currentTime.toString()}");
+        DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTime.now()}");
+
     if (todayEnd.toString().compareTo(currentTime.toString()) == -1) {
       percent = 1;
-     // print("object ${todayEnd.microsecond}");
+      // //print("object ${todayEnd.microsecond}");
     }
 
     Duration dif = todayEnd.difference(currentTime);
 
-    DateTime d1 = DateFormat("hh:mm:ss").parse(formatHHMMSS(dif.inSeconds));
+    DateTime d1 = DateFormat("HH:mm:ss").parse(formatHHMMSS(dif.inSeconds));
 
-    print(widget.assignedHours);
+    //print(widget.assignedHours);
     DateTime assigned =
-        DateFormat("hh:mm:ss").parse(formatHHMMSS(dif.inSeconds));
+        DateFormat("HH:mm:ss").parse(formatHHMMSS(dif.inSeconds));
 
-    print(assigned.toString());
+    //print(assigned.toString());
 
     assignedHrs =
         (assigned.hour * 3600 + assigned.minute * 60 + assigned.second)
             .toDouble();
 
-    print(d1.hour * 3600 + d1.minute * 60 + d1.second);
+    //print(d1.hour * 3600 + d1.minute * 60 + d1.second);
     duration = Duration(
         seconds: assigned.hour * 3600 + assigned.minute * 60 + assigned.second);
     _controller = AnimationController(
@@ -165,20 +181,16 @@ class _ClockInAndOutState extends State<ClockInAndOut>
         if (status == AnimationStatus.completed ||
             status == AnimationStatus.dismissed) {
           //widget.whenTimeExpires();
-          percent=1;
-          print("Done");
-
+          percent = 1;
+          //print("Done");
 
         }
       });
 
-    print(todayEnd);
-    print(currentTime);
-
-    print(formatHHMMSS(dif.inSeconds));
-
     _clockInOutBloc?.getSchedules(
-        widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime.now()));
+        widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId,
+        widget.user?.isAdmin == "1" ? "admin_id" : "employee_id",
+        DateFormat("yyyy-MM-dd").format(DateTime.now()));
   }
 
   @override
@@ -393,9 +405,9 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                     user: widget.user,
                                                     inTime: widget.inTime,
                                                     outTime: DateFormat(
-                                                                "yyyy-MM-dd HH:mm:ss")
-                                                            .format(DateTime
-                                                                .now()))));
+                                                            "yyyy-MM-dd HH:mm:ss")
+                                                        .format(
+                                                            DateTime.now()))));
                                       },
                                       child: const CircleAvatar(
                                         radius: 65,
@@ -484,7 +496,11 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                               : ListView.builder(
                                   shrinkWrap: true,
                                   physics: const ScrollPhysics(),
-                                  itemCount: snapshot.data!.data!.schedule!.length > 2?2:snapshot.data?.data?.schedule?.length,
+                                  itemCount:
+                                      snapshot.data!.data!.schedule!.length > 2
+                                          ? 2
+                                          : snapshot
+                                              .data?.data?.schedule?.length,
                                   padding: EdgeInsets.zero,
                                   itemBuilder: (context, index) => Padding(
                                         padding: const EdgeInsets.only(
@@ -524,14 +540,14 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                         Text(
                                                           DateFormat("yyyy-MM-dd")
                                                                       .format(DateTime
-                                                                          .now()) == snapshot
-                                                              .data
-                                                              ?.data
-                                                              ?.schedule
-                                                              ?.elementAt(
-                                                              index)
-                                                              .assignedDate
-
+                                                                          .now()) ==
+                                                                  snapshot
+                                                                      .data
+                                                                      ?.data
+                                                                      ?.schedule
+                                                                      ?.elementAt(
+                                                                          index)
+                                                                      .assignedDate
                                                               ? "Today"
                                                               : DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))) ==
                                                                       snapshot

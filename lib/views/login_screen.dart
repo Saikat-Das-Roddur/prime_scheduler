@@ -355,9 +355,10 @@ class _LogInScreenState extends State<LogInScreen> {
                   CupertinoPageRoute(
                       builder: (c) => LoggedInHomeScreen(user: value.user)));
             } else {
+              print(value.user?.employeeId);
               progressDialog.hide();
               Navigator.push(
-                  context, CupertinoPageRoute(builder: (c) => ClockIn()));
+                  context, CupertinoPageRoute(builder: (c) => ClockIn(user: value.user)));
             }
           } else {
             progressDialog.hide();
@@ -425,8 +426,9 @@ class _LogInScreenState extends State<LogInScreen> {
               }
             } else {
               //progressDialog.hide();
+              print(value.user?.pinCode);
               Navigator.push(
-                  context, CupertinoPageRoute(builder: (c) => ClockIn()));
+                  context, CupertinoPageRoute(builder: (c) => ClockIn(user: value.user,)));
             }
           } else {
             progressDialog.hide();

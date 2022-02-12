@@ -29,6 +29,7 @@ class User {
   String? password;
   String? isAdmin;
   String?  pinCode ;
+  String?  employeeId ;
   String? createdAt;
   String? updatedAt;
   String? value;
@@ -50,6 +51,7 @@ class User {
         this.password,
         this.isAdmin,
         this.pinCode,
+        this.employeeId,
         this.lineAdminId,
         this.rootAdminId,
         this.createdAt,
@@ -71,6 +73,7 @@ class User {
     password = json['password'];
     isAdmin = json['is_admin'];
     pinCode = json['pin_code'];
+    employeeId = json['employee_id'];
     lineAdminId = json['line_admin_id'];
     rootAdminId = json['root_admin_id'];
     createdAt = json['created_at'];
@@ -94,6 +97,7 @@ class User {
     data['password'] = this.password;
     data['is_admin'] = this.isAdmin;
     data['pin_code'] = this.pinCode;
+    data['employee_id'] = this.employeeId;
     data['line_admin_id'] = this.lineAdminId;
     data['root_admin_id'] = this.rootAdminId;
     data['created_at'] = this.createdAt;

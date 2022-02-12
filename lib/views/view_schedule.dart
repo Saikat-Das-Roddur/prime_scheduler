@@ -29,7 +29,7 @@ class ViewSchedule extends StatefulWidget {
 class _ViewScheduleState extends State<ViewSchedule> {
   SchedulesBloc? _schedulesBloc;
 
-  int? totalShifts = 0, exTendedLength = 2;
+  int? totalShifts = 0, exTendedLength = 0;
 
   @override
   void initState() {
@@ -43,6 +43,12 @@ class _ViewScheduleState extends State<ViewSchedule> {
       setState(() {
         if (value?.schedule != null) {
           totalShifts = value?.schedule?.length;
+          if(totalShifts! >1){
+            exTendedLength = 2;
+          }else{
+            exTendedLength = value?.schedule?.length;
+          }
+
         }
       });
     });
@@ -113,9 +119,11 @@ class _ViewScheduleState extends State<ViewSchedule> {
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children:  [
+                    children: [
                       Text(
-                        DateFormat("EEEE, dd MMM").format(DateFormat('yyyy-dd-MM').parse("${widget.assignedDate}")),
+                        DateFormat("EEEE, dd MMM").format(
+                            DateFormat('yyyy-MM-dd')
+                                .parse("${widget.assignedDate}")),
                         style: const TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 25),
                       ),
@@ -165,7 +173,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
                     height: 60,
                     width: 60,
                   )),
-                   Expanded(
+                  Expanded(
                     flex: 2,
                     child: Text(
                       "${widget.employeeName}",
@@ -200,12 +208,13 @@ class _ViewScheduleState extends State<ViewSchedule> {
             StreamBuilder<Response<Schedules>>(
                 stream: _schedulesBloc?.upComingShiftsStream,
                 builder: (context, snapshot) {
-                  print(totalShifts);
+
                   if (snapshot.hasData) {
                     switch (snapshot.data?.status) {
                       case Status.LOADING:
                         return Center(child: CircularProgressIndicator());
                       case Status.COMPLETED:
+
                         return snapshot.data?.data?.statusCode == 400
                             ? Center(
                                 child: Padding(
@@ -246,7 +255,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
                                             height: 12,
                                           ),
                                           Text(
-                                            "Cook .  Sarinda Club",
+                                            "Cook .  ${snapshot.data?.data?.schedule?.elementAt(index).location}",
                                             style: TextStyle(
                                                 color: Color(0xff717171),
                                                 fontWeight: FontWeight.w300,
@@ -263,14 +272,14 @@ class _ViewScheduleState extends State<ViewSchedule> {
                   return Center(child: CircularProgressIndicator());
                 }),
             Visibility(
-              visible: totalShifts! > 0,
+              visible: totalShifts! > 2,
               child: Padding(
                 padding: const EdgeInsets.only(right: 24.0, bottom: 24),
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
                       exTendedLength = totalShifts;
-                      totalShifts = 0;
+                      totalShifts = 1;
                     });
                   },
                   child: const Text(

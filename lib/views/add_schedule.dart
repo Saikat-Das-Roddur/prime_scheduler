@@ -54,7 +54,8 @@ class _AddScheduleState extends State<AddSchedule> {
   void initState() {
     super.initState();
     _addScheduleBloc = AddScheduleBloc();
-    map['assigned_date'] = "${DateTime.now().year}-$_month-$_day";
+    map['assigned_date'] = DateFormat("yyyy-MM-dd")
+        .format(DateTime(DateTime.now().year, _month, _day));
   }
 
   @override
@@ -186,6 +187,9 @@ class _AddScheduleState extends State<AddSchedule> {
                               onChanged: (value) {
                                 setState(() {
                                   _month = value;
+                                  map['assigned_date'] =
+                                      DateFormat("yyyy-MM-dd").format(DateTime(
+                                          DateTime.now().year, _month, _day));
                                 });
                               },
                             ),
@@ -269,9 +273,11 @@ class _AddScheduleState extends State<AddSchedule> {
                             },
                             onChanged: (value) => setState(() {
                               _day = value;
-                              map['assigned_date'] =
-                                  "${DateTime.now().year}-$_month-$_day";
-                              print("${DateTime.now().year}-$_month-$_day");
+                              map['assigned_date'] = DateFormat("yyyy-MM-dd")
+                                  .format(DateTime(
+                                      DateTime.now().year, _month, _day));
+
+                              print(map['assigned_date']);
                             }),
                           ),
                         ),
@@ -379,7 +385,6 @@ class _AddScheduleState extends State<AddSchedule> {
 
                         await post("search/search_employee.php", body: map);
                         //await post(url, body: body);
-
 
                         // _addScheduleBloc
                         //     .searchEmployees(map)
@@ -794,9 +799,9 @@ class _AddScheduleState extends State<AddSchedule> {
                   map['location'] = _locationController.text;
                   map['terms'] = _termDuration!;
                   map['start_time'] =
-                      "$_toHour:$_toMinute:${DateTime.now().second} ${_toAmPm == 0 ? "am" : "pm"}";
+                      "${_toHour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_toAmPm == 0 ? "am" : "pm"}";
                   map['end_time'] =
-                      "$_fromHour:$_fromMinute:${DateTime.now().second} ${_fromAmPm == 0 ? "am" : "pm"}";
+                      "${_fromHour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
                   print(map);
 
                   addSchedule();
@@ -927,10 +932,12 @@ class _AddScheduleState extends State<AddSchedule> {
     var responseJson;
 
     try {
-      await http.post(
+      await http
+          .post(
         Uri.parse(CustomStrings.baseUrl + url),
         body: body,
-      ).then((value) {
+      )
+          .then((value) {
         Employees e = Employees.fromJson(json.decode(value.body));
         setState(() {
           print("ggg");
@@ -948,23 +955,21 @@ class _AddScheduleState extends State<AddSchedule> {
   }
 
   void _getFromGallery() async {
-    await ImagePicker().pickImage(source: ImageSource.gallery).then((value){
+    await ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
       if (value != null) {
         setState(() {
           imageFile = File(value.path);
-          Fluttertoast.showToast(msg: "Fuck");
+          //Fluttertoast.showToast(msg: "Fuck");
         });
         print(imageFile);
       }
-    }, onError: (e){
+    }, onError: (e) {
       Fluttertoast.showToast(msg: "Error");
     });
-
   }
 
   void _getFromCamera() async {
-
-    await ImagePicker().pickImage(source: ImageSource.camera).then((value){
+    await ImagePicker().pickImage(source: ImageSource.camera).then((value) {
       if (value != null) {
         setState(() {
           imageFile = File(value.path);
@@ -973,7 +978,6 @@ class _AddScheduleState extends State<AddSchedule> {
         print(imageFile);
       }
     });
-
   }
 
   void showPopMenu() {

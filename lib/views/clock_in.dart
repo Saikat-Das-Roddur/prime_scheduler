@@ -197,6 +197,8 @@ class _ClockInState extends State<ClockIn> {
                       ? _getOtpKeyboard
                       : GestureDetector(
                           onTap: () {
+                            print(widget.user);
+                            print(pinCode);
                             if (widget.user?.pinCode.toString() == pinCode) {
                               clockIn();
                               print(
@@ -506,7 +508,8 @@ class _ClockInState extends State<ClockIn> {
     await progressDialog?.show();
     await _clockInBloc
         ?.checkUserIn(
-            widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime.now()))
+            widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId,
+            DateFormat("yyyy-MM-dd").format(DateTime.now()))
         .then((value) {
       progressDialog?.hide();
       if (value['status_code'] == 403) {
@@ -710,14 +713,13 @@ class _ClockInState extends State<ClockIn> {
     progressDialog?.show();
 
     Map map = Map();
-    map['employee_id'] = widget.user?.id;
+    map['employee_id'] = widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['in_time'] =
         "${((DateTime.now().hour + 11) % 12) + 1}:${DateTime.now().minute}:${DateTime.now().second} ${DateTime.now().hour > 11 ? "pm" : "am"}";
     print(map);
     //await _clockInBloc?.clockIn(map);
     post("attendance/check_in.php", body: map);
-
   }
 
   Future<dynamic> post(String url, {required Map body}) async {
@@ -725,7 +727,11 @@ class _ClockInState extends State<ClockIn> {
 
     try {
       await http
-          .post(Uri.parse(CustomStrings.baseUrl + url), body: body,).then((value) {
+          .post(
+        Uri.parse(CustomStrings.baseUrl + url),
+        body: body,
+      )
+          .then((value) {
         progressDialog?.hide();
         Map map = json.decode(value.body);
         if (map['status_code'] == 200) {
@@ -734,21 +740,21 @@ class _ClockInState extends State<ClockIn> {
                 context,
                 CupertinoPageRoute(
                     builder: (c) => ClockInAndOut(
-                      user: widget.user,
-                      inTime: body['assigned_date'] + " " + body['in_time'],
-                      assignedHours: map['assigned_hours'],
-                      endTime: map['schedule']['end_time'],
-                    )));
+                          user: widget.user,
+                          inTime: body['assigned_date'] + " " + body['in_time'],
+                          assignedHours: map['assigned_hours'],
+                          endTime: map['schedule']['end_time'],
+                        )));
           } else {
             Navigator.pushAndRemoveUntil(
                 context,
                 CupertinoPageRoute(
                     builder: (c) => ClockInAndOut(
-                      user: widget.user,
-                      inTime: body['assigned_date'] + " " + body['in_time'],
-                      assignedHours: map['assigned_hours'],
-                      endTime: map['schedule']['end_time'],
-                    )),
+                          user: widget.user,
+                          inTime: body['assigned_date'] + " " + body['in_time'],
+                          assignedHours: map['assigned_hours'],
+                          endTime: map['schedule']['end_time'],
+                        )),
                 ModalRoute.withName('/clockInAndOut'));
           }
         } else if (map['status_code'] == 403) {
@@ -758,6 +764,7 @@ class _ClockInState extends State<ClockIn> {
           //         builder: (c) => ClockInAndOut(
           //             user: widget.user, inTime: map['assigned_date']+" "+
           //             map['in_time'])));
+          print(map);
           Fluttertoast.showToast(msg: "You have no schedule for today");
         }
       });

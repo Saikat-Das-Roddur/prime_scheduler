@@ -25,7 +25,20 @@ class _Step1State extends State<Step1> {
   var _selectedValue;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.user!=null){
+      _nameController.text="${widget.user?.name}";
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // if(widget.user!=null){
+    // _nameController.text="${widget.user?.name}";
+    // }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -68,7 +81,7 @@ class _Step1State extends State<Step1> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
               child: TextField(
-                controller: _nameController..text=widget.user!=null?"${widget.user?.name}":"",
+                controller: _nameController,
                 textInputAction: TextInputAction.next,
                 // onSubmitted: (v) {
                 //   FocusScope.of(context).nextFocus();

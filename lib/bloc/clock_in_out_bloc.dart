@@ -29,10 +29,10 @@ class ClockInOutBloc{
     _monthlySchedulesStreamController = StreamController<Response<Schedules>>.broadcast();
   }
 
-  Future<Schedules?> getSchedules(String? employeeId, String date) async {
+  Future<Schedules?> getSchedules(String? employeeId, String? type, String date) async {
     schedulesSink.add(Response.loading(''));
     try{
-      dynamic response = await _repository.getSchedules(employeeId, date);
+      dynamic response = await _repository.getSchedules(employeeId,type, date);
       schedulesSink.add(Response.completed(response));
       return response;
     }catch(e){
