@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:prime_scheduler/bloc/announcement_bloc.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/views/profile.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 
@@ -136,6 +137,10 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                     // ...
                     // Then close the drawer
                     Navigator.pop(context);
+                    Navigator.push(
+                        context, CupertinoPageRoute(builder: (context) =>
+                        Profile(user: widget.user)
+                    ));
                   },
                   // leading: const Icon(
                   //   Icons.favorite,

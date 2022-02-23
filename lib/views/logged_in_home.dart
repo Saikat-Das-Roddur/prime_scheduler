@@ -92,25 +92,26 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24.0, 16, 0),
-              child: Card(
-                elevation: 8,
-                shadowColor: const Color(0xffF6F6F6),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(24))),
-                color: const Color(0xffF6F6F6),
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-                  child: StreamBuilder<Response<AnnouncementResponse>>(
-                      stream: _bloc?.getAnnouncementStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          switch (snapshot.data?.status) {
-                            case Status.LOADING:
-                              return Center(child: CircularProgressIndicator());
-                            case Status.COMPLETED:
-                              return Column(
+            StreamBuilder<Response<AnnouncementResponse>>(
+                stream: _bloc?.getAnnouncementStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    switch (snapshot.data?.status) {
+                      case Status.LOADING:
+                        return const Center(child: CircularProgressIndicator());
+                      case Status.COMPLETED:
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 24.0, 16, 0),
+                          child: Card(
+                            elevation: 8,
+                            shadowColor: const Color(0xffF6F6F6),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(24))),
+                            color: const Color(0xffF6F6F6),
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Row(
@@ -195,7 +196,8 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     height: 16,
                                   ),
                                   snapshot.data!.data!.announcement == null
-                                      ? const Center(child: Text("No Announcement"))
+                                      ? const Center(
+                                          child: Text("No Announcement"))
                                       : Text(
                                           "${snapshot.data!.data!.announcement!.elementAt(index).title}",
                                           style: const TextStyle(
@@ -209,32 +211,35 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                   snapshot.data!.data!.announcement == null
                                       ? const Text("")
                                       : Text(
-                                    "${snapshot.data!.data!.announcement!.elementAt(index).description}",
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    style: const TextStyle(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff858585),
-                                    ),
-                                  ),
+                                          "${snapshot.data!.data!.announcement!.elementAt(index).description}",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                          style: const TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff858585),
+                                          ),
+                                        ),
                                   const SizedBox(
                                     height: 24,
                                   ),
                                   Visibility(
-                                    visible: snapshot.data!.data!.announcement != null,
+                                    visible:
+                                        snapshot.data!.data!.announcement !=
+                                            null,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        snapshot.data!.data!.announcement==null?Text("")
-                                            :
-                                        Text(
-                                          "${snapshot.data!.data!.announcement!.elementAt(index).date}",
-                                          style: TextStyle(
-                                              color: Color(0xff787878),
-                                              fontSize: 10),
-                                        ),
+                                        snapshot.data!.data!.announcement ==
+                                                null
+                                            ? Text("")
+                                            : Text(
+                                                "${snapshot.data!.data!.announcement!.elementAt(index).date}",
+                                                style: TextStyle(
+                                                    color: Color(0xff787878),
+                                                    fontSize: 10),
+                                              ),
                                         ButtonTheme(
                                             height: 22,
                                             minWidth: 72,
@@ -254,17 +259,17 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
                                     ),
                                   )
                                 ],
-                              );
-                            case Status.ERROR:
-                              return Center(child: CircularProgressIndicator());
-                            default:
-                          }
-                        }
-                        return Center(child: CircularProgressIndicator());
-                      }),
-                ),
-              ),
-            ),
+                              ),
+                            ),
+                          ),
+                        );
+                      case Status.ERROR:
+                        return const Center(child: CircularProgressIndicator());
+                      default:
+                    }
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                }),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
               child: Card(
