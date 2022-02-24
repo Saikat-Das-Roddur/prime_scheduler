@@ -113,8 +113,8 @@ class _ProfileState extends State<Profile> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(24))),
                                   child: Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        .2,
+                                    height:
+                                        MediaQuery.of(context).size.height * .2,
                                     width: MediaQuery.of(context).size.width,
                                   ),
                                 ),
@@ -126,7 +126,7 @@ class _ProfileState extends State<Profile> {
                                   child: Row(
                                     children: [
                                       Card(
-                                        color: Colors.black,
+                                        color: Colors.transparent,
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(24))),
@@ -138,6 +138,11 @@ class _ProfileState extends State<Profile> {
                                                   .size
                                                   .width *
                                               .35,
+                                            child: SvgPicture.asset(
+                                              "assets/images/Group 193.svg",
+                                              width: MediaQuery.of(context).size.width,
+                                              height: MediaQuery.of(context).size.height,
+                                            ),
                                         ),
                                       ),
                                       Padding(
@@ -332,29 +337,30 @@ class _ProfileState extends State<Profile> {
                                               ])),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.only(top: 4.0),
+                                              padding: const EdgeInsets.only(
+                                                  top: 4.0),
                                               child: RichText(
                                                   text: TextSpan(children: [
                                                 WidgetSpan(
                                                     child: SvgPicture.asset(
                                                   "assets/images/timer.svg",
-                                                      height: 14,
-                                                      width: 8,
+                                                  height: 14,
+                                                  width: 8,
                                                 )),
                                                 WidgetSpan(
                                                     child: Padding(
-                                                      padding: const EdgeInsets.only(left: 4.0),
-                                                      child: Text("Total Hour",
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .black,
-                                                            fontSize:
-                                                            12,
-                                                            fontWeight:
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 4.0),
+                                                  child: Text(
+                                                    "Total Hour",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 12,
+                                                        fontWeight:
                                                             FontWeight.w800),
-                                                      ),
-                                                    )),
-
+                                                  ),
+                                                )),
                                               ])),
                                             )
                                           ],
@@ -390,7 +396,7 @@ class _ProfileState extends State<Profile> {
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children:  [
+                                        children: [
                                           Text(
                                             "Location",
                                             style: TextStyle(
@@ -398,8 +404,7 @@ class _ProfileState extends State<Profile> {
                                                 fontWeight: FontWeight.w400,
                                                 color: Colors.black),
                                           ),
-                                          Text(
-                                              "${widget.user?.location}"),
+                                          Text("${widget.user?.location}"),
                                         ],
                                       ),
                                     ),
@@ -447,7 +452,7 @@ class _ProfileState extends State<Profile> {
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    children:  [
+                                    children: [
                                       Text(
                                         "Email",
                                         style: TextStyle(
@@ -455,8 +460,7 @@ class _ProfileState extends State<Profile> {
                                             fontWeight: FontWeight.w400,
                                             color: Colors.black),
                                       ),
-                                      Text(
-                                          "${widget.user?.email}"),
+                                      Text("${widget.user?.email}"),
                                     ],
                                   ),
                                 ),
@@ -498,7 +502,7 @@ class _ProfileState extends State<Profile> {
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    children:  [
+                                    children: [
                                       Text(
                                         "Gender",
                                         style: TextStyle(
@@ -506,8 +510,7 @@ class _ProfileState extends State<Profile> {
                                             fontWeight: FontWeight.w400,
                                             color: Colors.black),
                                       ),
-                                      Text(
-                                          "Male"),
+                                      Text("Male"),
                                     ],
                                   ),
                                 ),
@@ -555,7 +558,7 @@ class _ProfileState extends State<Profile> {
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    children:  [
+                                    children: [
                                       Text(
                                         "Last 2 weeks",
                                         style: TextStyle(
@@ -563,112 +566,92 @@ class _ProfileState extends State<Profile> {
                                             fontWeight: FontWeight.w400,
                                             color: Colors.black),
                                       ),
-                                      Text(
-                                          "total hours"),
+                                      Text("total hours"),
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 8.0),
+                                        padding:
+                                            const EdgeInsets.only(top: 8.0),
                                         child: RichText(
                                             text: TextSpan(children: [
-                                              WidgetSpan(
-                                                  child: RichText(
-                                                    text: TextSpan(
-                                                        text: "300",
-                                                        style: TextStyle(
-                                                          color: Color(
-                                                              0xffF06767),
-                                                          fontSize: 22,
+                                          WidgetSpan(
+                                              child: RichText(
+                                            text: TextSpan(
+                                                text: "300",
+                                                style: TextStyle(
+                                                  color: Color(0xffF06767),
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                      text: "h",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
                                                           fontWeight:
-                                                          FontWeight
-                                                              .w500,
-                                                        ),
-                                                        children: [
-                                                          TextSpan(
-                                                              text: "h",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize:
-                                                                  14,
-                                                                  fontWeight:
-                                                                  FontWeight.w300))
-                                                        ]),
-                                                  )),
-                                              WidgetSpan(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8,
-                                                        right: 8),
-                                                    child: Text(":",
-                                                        style: TextStyle(
-                                                            color:
-                                                            Color(0xffF06767),
-                                                            fontSize: 22,
-                                                            fontWeight:
-                                                            FontWeight.w800)),
-                                                  )),
-                                              WidgetSpan(
-                                                  child: RichText(
-                                                    text: TextSpan(
-                                                        text: "35",
-                                                        style: TextStyle(
-                                                          color: Color(
-                                                              0xffF06767),
-                                                          fontSize: 22,
+                                                              FontWeight.w300))
+                                                ]),
+                                          )),
+                                          WidgetSpan(
+                                              child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 8, right: 8),
+                                            child: Text(":",
+                                                style: TextStyle(
+                                                    color: Color(0xffF06767),
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.w800)),
+                                          )),
+                                          WidgetSpan(
+                                              child: RichText(
+                                            text: TextSpan(
+                                                text: "35",
+                                                style: TextStyle(
+                                                  color: Color(0xffF06767),
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                      text: "m",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
                                                           fontWeight:
-                                                          FontWeight
-                                                              .w500,
-                                                        ),
-                                                        children: [
-                                                          TextSpan(
-                                                              text: "m",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize:
-                                                                  14,
-                                                                  fontWeight:
-                                                                  FontWeight.w300))
-                                                        ]),
-                                                  )),
-                                              WidgetSpan(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8,
-                                                        right: 8),
-                                                    child: Text(":",
-                                                        style: TextStyle(
-                                                            color:
-                                                            Color(0xffF06767),
-                                                            fontSize: 22,
-                                                            fontWeight:
-                                                            FontWeight.w800)),
-                                                  )),
-                                              WidgetSpan(
-                                                  child: RichText(
-                                                    text: TextSpan(
-                                                        text: "10",
-                                                        style: TextStyle(
-                                                          color: Color(
-                                                              0xffF06767),
-                                                          fontSize: 22,
+                                                              FontWeight.w300))
+                                                ]),
+                                          )),
+                                          WidgetSpan(
+                                              child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 8, right: 8),
+                                            child: Text(":",
+                                                style: TextStyle(
+                                                    color: Color(0xffF06767),
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.w800)),
+                                          )),
+                                          WidgetSpan(
+                                              child: RichText(
+                                            text: TextSpan(
+                                                text: "10",
+                                                style: TextStyle(
+                                                  color: Color(0xffF06767),
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                children: [
+                                                  TextSpan(
+                                                      text: "s",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
                                                           fontWeight:
-                                                          FontWeight
-                                                              .w500,
-                                                        ),
-                                                        children: [
-                                                          TextSpan(
-                                                              text: "s",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize:
-                                                                  14,
-                                                                  fontWeight:
-                                                                  FontWeight.w300))
-                                                        ]),
-                                                  )),
-                                            ])),
+                                                              FontWeight.w300))
+                                                ]),
+                                          )),
+                                        ])),
                                       ),
                                     ],
                                   ),
@@ -689,7 +672,6 @@ class _ProfileState extends State<Profile> {
                             ],
                           ),
                         ),
-
                       ],
                     ),
                   ),

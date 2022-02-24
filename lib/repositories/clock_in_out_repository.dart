@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:prime_scheduler/models/attendences.dart';
 import 'package:prime_scheduler/models/employees.dart';
+import 'package:prime_scheduler/models/history.dart';
 import 'package:prime_scheduler/models/schedules.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/utils/custom_exception.dart';
@@ -23,6 +25,12 @@ class ClockInOutRepository {
     return Schedules.fromJson(response);
   }
 
+  Future<Attendances> getEmployeeAttendance(String? employeeId, String? date) async {
+    final response = await get(
+        "attendance/get_attendance.php?employee_id=$employeeId&date=$date");
+    return Attendances.fromJson(response);
+  }
+
   Future<Schedules> getMonthlySchedules(
       String? employeeId,String? type, String? startDate, String? endDate) async {
     final response = await get(
@@ -34,6 +42,7 @@ class ClockInOutRepository {
     var responseJson;
     try {
       final response = await http.get(Uri.parse(CustomStrings.baseUrl + url));
+      print(url);
       print(response.body);
       responseJson = _response(response);
     } on SocketException {

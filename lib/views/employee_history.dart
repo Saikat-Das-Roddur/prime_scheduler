@@ -24,14 +24,16 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
   EmployeeHistoryBloc? _employeeHistoryBloc;
   int _day = DateTime.now().day;
   int _month = DateTime.now().month;
-  int _year = DateTime.now().year-1;
-  String startDate =
-      "${DateTime.now().year-1}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+  int _year = DateTime.now().year;
+  String startDate = DateFormat("yyyy-MM-dd").format(DateTime(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day));
+      //"${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
 
   int _endDay = DateTime.now().day;
   int _endMonth = DateTime.now().month;
-  String endDate =
-      "${DateTime.now().year-1}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+  String endDate = DateFormat("yyyy-MM-dd").format(DateTime(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day));
+      //"${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
 
   Map<String,dynamic> map = {};
 
@@ -156,12 +158,12 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
             Container(
               margin: const EdgeInsets.only(
                   top: 16, left: 12, right: 12, bottom: 16),
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.all(8),
               decoration: const BoxDecoration(
                 color: Color(0xffF0EFFF),
                 borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(36),
-                    topLeft: Radius.circular(36)),
+                    topRight: Radius.circular(16),
+                    topLeft: Radius.circular(16)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -363,12 +365,12 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
             ),
             Container(
               margin: const EdgeInsets.only(top: 16, left: 12, right: 12),
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.all(8),
               decoration: const BoxDecoration(
                 color: Color(0xffF0EFFF),
                 borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(36),
-                    bottomLeft: Radius.circular(36)),
+                    bottomRight: Radius.circular(24),
+                    bottomLeft: Radius.circular(24)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

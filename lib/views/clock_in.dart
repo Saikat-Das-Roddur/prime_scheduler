@@ -528,6 +528,9 @@ class _ClockInState extends State<ClockIn> {
                 ),
               ));
         } else {
+
+          print(value);
+          print("hare");
           Navigator.pushAndRemoveUntil(
               context,
               CupertinoPageRoute(
@@ -539,11 +542,12 @@ class _ClockInState extends State<ClockIn> {
                                 value['attendance']['in_time'],
                         assignedHours: value['attendance']['assigned_hours'],
                         endTime: value['schedule']['end_time'],
+                        location: value['schedule']['location'],
                       )),
               ModalRoute.withName('/clockInAndOut'));
         }
       } else if (value['status_code'] == 201) {
-        showClockOutDialog();
+        //showClockOutDialog();
       }
     });
   }
@@ -714,6 +718,7 @@ class _ClockInState extends State<ClockIn> {
     //((DateTime.now().hour + 11) % 12) + 1
     Map map = Map();
     map['employee_id'] = widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId;
+    map['admin_id'] = widget.user?.lineAdminId;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['in_time'] =
         "${DateTime.now().hour.toString().padLeft(2,'0')}:${DateTime.now().minute.toString().padLeft(2,'0')}:${DateTime.now().second.toString().padLeft(2,'0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
@@ -746,6 +751,7 @@ class _ClockInState extends State<ClockIn> {
                           endTime: map['schedule']['end_time'],
                         )));
           } else {
+            print(map['schedule']['location']);
             Navigator.pushAndRemoveUntil(
                 context,
                 CupertinoPageRoute(
@@ -754,6 +760,7 @@ class _ClockInState extends State<ClockIn> {
                           inTime: body['assigned_date'] + " " + body['in_time'],
                           assignedHours: map['assigned_hours'],
                           endTime: map['schedule']['end_time'],
+                          location: map['schedule']['location'],
                         )),
                 ModalRoute.withName('/clockInAndOut'));
           }

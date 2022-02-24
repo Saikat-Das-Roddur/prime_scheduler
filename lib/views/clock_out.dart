@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:prime_scheduler/bloc/clock_out_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
+import 'package:prime_scheduler/views/schedule_list.dart';
 
 import 'clock_in_and_out.dart';
 import 'logged_in_home.dart';
@@ -21,8 +23,17 @@ class ClockOut extends StatefulWidget {
   User? user;
   String? inTime;
   String? outTime;
+  String? endTime;
+  String? location;
 
-  ClockOut({Key? key, this.user, this.inTime, this.outTime}) : super(key: key);
+  ClockOut(
+      {Key? key,
+      this.user,
+      this.inTime,
+      this.endTime,
+      this.outTime,
+      this.location})
+      : super(key: key);
 
   @override
   _ClockOutState createState() => _ClockOutState();
@@ -36,7 +47,7 @@ class _ClockOutState extends State<ClockOut> {
   var _fourthDigit;
   var _fifthDigit;
   var pinCode;
-  String? completedHours;
+  String? completedHours, completedHours2;
   bool _isDigitSelected = false;
   late Size _screenSize;
   ClockOutBloc? _clockOutBloc;
@@ -49,6 +60,7 @@ class _ClockOutState extends State<ClockOut> {
     _clockOutBloc = ClockOutBloc();
     DateTime d1 = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.inTime}");
     DateTime d2 = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.outTime}");
+    DateTime d3 = DateFormat("yyyy-MM-dd HH:mm:ss").parse("${widget.endTime}");
 
     // widget.outTime = DateFormat(
     //     "yyyy-MM-dd")
@@ -58,13 +70,19 @@ class _ClockOutState extends State<ClockOut> {
     //     "${((d2.hour + 11) % 12) + 1}:${d2.minute}:${d2.second} ${d2.hour > 11 ? "pm" : "am"}";
     print(d1);
     print(d2);
-    print( widget.outTime );
+    print(widget.outTime);
 
     Duration dif = d2.difference(d1);
+    Duration dif2 = d3.difference(d1);
 
-    completedHours = formatHHMMSS(dif.inSeconds);
+    if (dif2.inSeconds < 0) {
+      completedHours = formatHHMMSS(0);
+      completedHours2 = formatHHMMSS2(0);
+    } else {
+      completedHours = formatHHMMSS(dif.inSeconds);
+      completedHours2 = formatHHMMSS2(dif.inSeconds);
+    }
     print(formatHHMMSS(dif.inSeconds));
-
   }
 
   String formatHHMMSS(int seconds) {
@@ -81,6 +99,22 @@ class _ClockOutState extends State<ClockOut> {
     // }
 
     return '$hoursStr:$minutesStr:$secondsStr';
+  }
+
+  String formatHHMMSS2(int seconds) {
+    final hours = (seconds / 3600).truncate();
+    seconds = (seconds % 3600).truncate();
+    final minutes = (seconds / 60).truncate();
+    //02 hours 40 min 10 sec
+    final hoursStr = (hours).toString().padLeft(2, '0');
+    final minutesStr = (minutes).toString().padLeft(2, '0');
+    final secondsStr = (seconds % 60).toString().padLeft(2, '0');
+
+    // if (hours == 0) {
+    //   return '$hoursStr:$minutesStr:$secondsStr';
+    // }
+
+    return '$hoursStr hours $minutesStr min $secondsStr sec';
   }
 
   @override
@@ -235,7 +269,7 @@ class _ClockOutState extends State<ClockOut> {
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children:  [
+                          children: [
                             Text(
                               "Total active hours",
                               style: TextStyle(
@@ -292,7 +326,12 @@ class _ClockOutState extends State<ClockOut> {
                         ? _getOtpKeyboard
                         : GestureDetector(
                             onTap: () {
-                              clockOut();
+                              if (widget.user?.pinCode.toString() == pinCode) {
+                                clockOut();
+                              } else {
+                                Fluttertoast.showToast(msg: "Pin mismatched");
+                              }
+
                               // Navigator.push(
                               //     context,
                               //     CupertinoPageRoute(
@@ -606,21 +645,21 @@ class _ClockOutState extends State<ClockOut> {
 
   Widget _otpKeyboardInputButton(
       {required String label, required VoidCallback onPressed}) {
-    return  Material(
+    return Material(
       color: Colors.transparent,
-      child:  InkWell(
+      child: InkWell(
         onTap: onPressed,
         borderRadius: new BorderRadius.circular(40.0),
-        child:  Container(
+        child: Container(
           height: 80.0,
           width: 80.0,
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
           ),
-          child:  Center(
-            child:  Text(
+          child: Center(
+            child: Text(
               label,
-              style:  TextStyle(
+              style: TextStyle(
                 fontSize: 30.0,
                 color: Colors.black,
               ),
@@ -681,7 +720,7 @@ class _ClockOutState extends State<ClockOut> {
                           height: MediaQuery.of(context).size.height * .03,
                         ),
                         RichText(
-                            text: const TextSpan(
+                            text: TextSpan(
                                 text: "Time: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w700,
@@ -691,7 +730,7 @@ class _ClockOutState extends State<ClockOut> {
                               WidgetSpan(
                                   alignment: PlaceholderAlignment.middle,
                                   child: Text(
-                                    "02 hours 40 min 10 sec",
+                                    "$completedHours2",
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 18,
@@ -702,7 +741,7 @@ class _ClockOutState extends State<ClockOut> {
                           height: MediaQuery.of(context).size.height * .04,
                         ),
                         RichText(
-                            text: const TextSpan(
+                            text: TextSpan(
                                 text: "Location: ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w700,
@@ -711,7 +750,7 @@ class _ClockOutState extends State<ClockOut> {
                                 children: [
                               WidgetSpan(
                                   child: Text(
-                                "Sarinda Club",
+                                "${widget.location}",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 22,
@@ -743,17 +782,17 @@ class _ClockOutState extends State<ClockOut> {
                                   context,
                                   CupertinoPageRoute(
                                       builder: (c) => LoggedInHomeScreen(
-                                        user: widget.user,
-                                      )),
+                                            user: widget.user,
+                                          )),
                                   ModalRoute.withName('/loggedInHome'));
-                            }else{
+                            } else {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   CupertinoPageRoute(
-                                      builder: (c) => LoggedInHomeScreen(
-                                        user: widget.user,
-                                      )),
-                                  ModalRoute.withName('/loggIn'));
+                                      builder: (c) => ScheduleLists(
+                                            user: widget.user,
+                                          )),
+                                  ModalRoute.withName('/schedules'));
                             }
                             //showClockOutDialog();
                             // Navigator.push(
@@ -797,15 +836,15 @@ class _ClockOutState extends State<ClockOut> {
 
   void clockOut() {
     Map map = Map();
-    if(widget.user?.isAdmin == "1"){
+    if (widget.user?.isAdmin == "1") {
       map['admin_id'] = widget.user?.id;
-    }else{
+    } else {
       map['employee_id'] = widget.user?.employeeId;
     }
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['completed_hours'] = completedHours;
     map['out_time'] = //widget.outTime;//((DateTime.now().hour + 11) % 12) + 1
-        "${DateTime.now().hour.toString().padLeft(2,'0')}:${DateTime.now().minute.toString().padLeft(2,'0')}:${DateTime.now().second.toString().padLeft(2,'0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
+        "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
 
     // _clockOutBloc?.clockOut(map)
     post("attendance/check_out.php", body: map);
@@ -816,14 +855,17 @@ class _ClockOutState extends State<ClockOut> {
 
     try {
       await http
-          .post(Uri.parse(CustomStrings.baseUrl + url), body: body,).then((value) {
+          .post(
+        Uri.parse(CustomStrings.baseUrl + url),
+        body: body,
+      )
+          .then((value) {
         Map map = json.decode(value.body);
         print(map);
         if (map['status_code'] == 200) {
           showClockOutDialog();
         }
       });
-
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }

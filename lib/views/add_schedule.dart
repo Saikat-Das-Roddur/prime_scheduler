@@ -785,8 +785,7 @@ class _AddScheduleState extends State<AddSchedule> {
                 if (_toAmPm == 0) {
                   hour = (_toHour == 12 ? 0 : _toHour);
                   print(hour);
-                  start = hour + _toMinute;
-                  print(start);
+                  start = hour;
                   map['start_time'] =
                       "${hour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} am";
                 } else {
@@ -796,26 +795,24 @@ class _AddScheduleState extends State<AddSchedule> {
                           ? 12
                           : _toHour + 12);
                   print(hour);
-                  start = hour + _toMinute;
+                  start = hour;
                   print(start);
                   map['start_time'] =
                       "${hour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} pm";
                 }
                 if (_fromAmPm == 0) {
-                  int hour = (_fromHour == 12 ? 0 : _fromHour);
-                  print(hour);
-                  end = hour + _fromMinute;
-                  print(end);
+                  hour = (_fromHour == 12 ? 0 : _fromHour);
+                  end = hour;
                   map['end_time'] =
                       "${hour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
                 } else {
-                  int hour = (_fromHour == 12
+                  hour = (_fromHour == 12
                       ? _fromHour
                       : _fromHour == 0
                           ? 12
                           : _fromHour + 12);
                   print(hour);
-                  end = hour + _fromMinute;
+                  end = hour;
                   print(end);
                   map['end_time'] =
                       "${hour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
@@ -845,16 +842,21 @@ class _AddScheduleState extends State<AddSchedule> {
                       msg: "Start and end time must be different");
                   return;
                 } else {
+                  String hourDiff = (start - end).abs().toString().padLeft(2,'0');
+                  String minDiff = (_fromMinute - _toMinute).abs().toString().padLeft(2,'0');
+
                   map['admin_id'] = "${widget.user?.id}";
                   map['location'] = _locationController.text;
                   map['terms'] = _termDuration!;
+                  map['assigned_hours'] = "$hourDiff:$minDiff:00";
+
 
                   // map['start_time'] = DateFormat("HH:mm:ss a").format(
                   //     DateTime.parse(
                   //         "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')} ${_toHour.toString().padLeft(2, '0')}:${_toMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_toAmPm == 0 ? "AM" : "PM"}"));
                   // map['end_time'] =
                   //     "${_fromHour.toString().padLeft(2, '0')}:${_fromMinute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${_fromAmPm == 0 ? "am" : "pm"}";
-                  print(map);
+                  //print(assigned_hours);
 
                   addSchedule();
                   //postWithImage(url, file, body: body)

@@ -6,6 +6,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:prime_scheduler/bloc/clock_in_out_bloc.dart';
+import 'package:prime_scheduler/models/attendences.dart';
+import 'package:prime_scheduler/models/history.dart';
 import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/models/schedules.dart';
 import 'package:prime_scheduler/models/user_response.dart';
@@ -19,13 +21,14 @@ class ClockInAndOut extends StatefulWidget {
   String? inTime;
   String? assignedHours;
   String? endTime;
+  String? location;
   int? secondsRemaining;
   Function? whenTimeExpires;
   Function? countDownFormatter;
   TextStyle? countDownTimerStyle;
 
   ClockInAndOut(
-      {Key? key, this.user, this.inTime, this.endTime, this.assignedHours})
+      {Key? key, this.user, this.inTime, this.endTime, this.location, this.assignedHours})
       : super(key: key);
 
   @override
@@ -38,6 +41,8 @@ class _ClockInAndOutState extends State<ClockInAndOut>
   ClockInOutBloc? _clockInOutBloc;
   late final AnimationController _controller;
   late final Duration duration;
+  int hrs=0;
+  String? endT;
   double? assignedHrs, remainingHrs, percent = 0;
 
   String get timerDisplayString {
@@ -56,7 +61,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
       DateTime todayEnd = DateFormat("yyyy-MM-dd HH:mm:ss").parse("$endTime");
       DateTime currentTime =
           DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTime.now()}");
-      //print((todayEnd.toString().compareTo(currentTime.toString())));
+      print(endTime);
 
       return (todayEnd.toString().compareTo(currentTime.toString()) != -1)
           ? formatHHMMSS(duration.inSeconds)
@@ -117,9 +122,9 @@ class _ClockInAndOutState extends State<ClockInAndOut>
     seconds = (seconds % 3600).truncate();
     final minutes = (seconds / 60).truncate();
 
-    final hoursStr = (hours).toString().padLeft(2, '0');
-    final minutesStr = (minutes).toString().padLeft(2, '0');
-    final secondsStr = (seconds % 60).toString().padLeft(2, '0');
+    final hoursStr = ((hours).abs()).toString().padLeft(2, '0');
+    final minutesStr = ((minutes).abs()).toString().padLeft(2, '0');
+    final secondsStr = ((seconds).abs() % 60).toString().padLeft(2, '0');
 
     // if (hours == 0) {
     //   return '$hoursStr:$minutesStr:$secondsStr';
@@ -140,12 +145,11 @@ class _ClockInAndOutState extends State<ClockInAndOut>
     String endTime = DateFormat("yyyy-MM-dd").format(DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day)) +
         " ${widget.endTime}";
-    //"${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${widget.endTime}";
-    //widget.inTime = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
-
-    //DateTime today = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$endTime}");
-    //DateTime todayIn = DateFormat("yyyy-MM-dd hh:mm:ss").parse("$inTime}");
-    print(widget.endTime);
+    print("endTime");
+    endT = endTime;
+    print(endT);
+    print("inTime");
+    print(widget.inTime);
     DateTime todayEnd = DateFormat("yyyy-MM-dd HH:mm:ss").parse("$endTime");
     DateTime currentTime =
         DateFormat("yyyy-MM-dd HH:mm:ss").parse("${DateTime.now()}");
@@ -157,7 +161,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
 
     Duration dif = todayEnd.difference(currentTime);
 
-    DateTime d1 = DateFormat("HH:mm:ss").parse(formatHHMMSS(dif.inSeconds));
+    //DateTime d1 = DateFormat("HH:mm:ss").parse(formatHHMMSS(dif.inSeconds));
 
     //print(widget.assignedHours);
     DateTime assigned =
@@ -169,6 +173,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
         (assigned.hour * 3600 + assigned.minute * 60 + assigned.second)
             .toDouble();
 
+    hrs = assigned.hour;
     //print(d1.hour * 3600 + d1.minute * 60 + d1.second);
     duration = Duration(
         seconds: assigned.hour * 3600 + assigned.minute * 60 + assigned.second);
@@ -188,9 +193,8 @@ class _ClockInAndOutState extends State<ClockInAndOut>
         }
       });
 
-    _clockInOutBloc?.getSchedules(
+    _clockInOutBloc?.getAttendances(
         widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId,
-        widget.user?.isAdmin == "1" ? "admin_id" : "employee_id",
         DateFormat("yyyy-MM-dd").format(DateTime.now()));
   }
 
@@ -404,7 +408,9 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                             CupertinoPageRoute(
                                                 builder: (c) => ClockOut(
                                                     user: widget.user,
+                                                    location: widget.location,
                                                     inTime: widget.inTime,
+                                                    endTime: endT,
                                                     outTime: DateFormat(
                                                             "yyyy-MM-dd HH:mm:ss")
                                                         .format(
@@ -442,7 +448,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   textBaseline: TextBaseline.alphabetic,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children:  [
                     Text(
                       "Total Hours:",
                       style: TextStyle(
@@ -453,7 +459,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                     ),
                     Flexible(
                       child: Text(
-                        "14 HRS (2h 30m OT)",
+                        "$hrs HRS (2h 30m OT)",
                         textAlign: TextAlign.end,
                         style: TextStyle(
                           color: Color(0xffF06767),
@@ -478,8 +484,8 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                       fontWeight: FontWeight.w400),
                 ),
               ),
-              StreamBuilder<Response<Schedules>>(
-                  stream: _clockInOutBloc?.schedulesStream,
+              StreamBuilder<Response<Attendances>>(
+                  stream: _clockInOutBloc?.attendancesStream,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       switch (snapshot.data?.status) {
@@ -498,10 +504,10 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                   shrinkWrap: true,
                                   physics: const ScrollPhysics(),
                                   itemCount:
-                                      snapshot.data!.data!.schedule!.length > 2
+                                      snapshot.data!.data!.attendances!.length > 2
                                           ? 2
                                           : snapshot
-                                              .data?.data?.schedule?.length,
+                                              .data?.data?.attendances?.length,
                                   padding: EdgeInsets.zero,
                                   itemBuilder: (context, index) => Padding(
                                         padding: const EdgeInsets.only(
@@ -545,7 +551,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                                   snapshot
                                                                       .data
                                                                       ?.data
-                                                                      ?.schedule
+                                                                      ?.attendances
                                                                       ?.elementAt(
                                                                           index)
                                                                       .assignedDate
@@ -554,7 +560,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                                       snapshot
                                                                           .data
                                                                           ?.data
-                                                                          ?.schedule
+                                                                          ?.attendances
                                                                           ?.elementAt(
                                                                               index)
                                                                           .assignedDate
@@ -562,7 +568,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                                   : DateFormat(
                                                                           "dd MMM")
                                                                       .format(DateTime.parse(
-                                                                          "${snapshot.data?.data?.schedule?.elementAt(index).assignedDate}")),
+                                                                          "${snapshot.data?.data?.attendances?.elementAt(index).assignedDate}")),
                                                           style: TextStyle(
                                                               fontSize: DateFormat(
                                                                               "yyyy-MM-dd")
@@ -572,7 +578,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                                       snapshot
                                                                           .data
                                                                           ?.data
-                                                                          ?.schedule
+                                                                          ?.attendances
                                                                           ?.elementAt(
                                                                               index)
                                                                           .assignedDate
@@ -588,7 +594,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                         Text(
                                                           DateFormat("EEE").format(
                                                               DateTime.parse(
-                                                                  "${snapshot.data?.data?.schedule?.elementAt(index).assignedDate}")),
+                                                                  "${snapshot.data?.data?.attendances?.elementAt(index).assignedDate}")),
                                                           style: const TextStyle(
                                                               fontSize: 14,
                                                               fontWeight:
@@ -617,7 +623,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                       height: 16,
                                                     ),
                                                     Text(
-                                                      "${snapshot.data?.data?.schedule?.elementAt(index).startTime}",
+                                                      "${snapshot.data?.data?.attendances?.elementAt(index).inTime}",
                                                       style: TextStyle(
                                                           fontSize: 12,
                                                           color: index == 0
@@ -649,7 +655,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                     Text(
                                                       index == 0
                                                           ? ""
-                                                          : "${snapshot.data?.data?.schedule?.elementAt(index).endTime}",
+                                                          : "${snapshot.data?.data?.attendances?.elementAt(index).outTime}",
                                                       style: TextStyle(
                                                           fontSize: 12,
                                                           fontWeight:
