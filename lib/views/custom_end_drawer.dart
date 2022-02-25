@@ -101,7 +101,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
                 Navigator.of(context).pop();
               }),
           _createDrawerItem(
-            icon: Icons.account_box,
+            icon: Icons.logout,
             text: 'Log Out',
             onTap: () {
               preferences.clear();
