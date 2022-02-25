@@ -5,6 +5,7 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:prime_scheduler/bloc/schedules_bloc.dart';
 import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/models/schedules.dart';
+import 'package:prime_scheduler/models/user_response.dart';
 
 class ViewSchedule extends StatefulWidget {
   String? employeeId;
@@ -12,10 +13,12 @@ class ViewSchedule extends StatefulWidget {
   String? employeeName;
   String? startTime;
   String? endTime;
+  User? user;
 
   ViewSchedule(
       {Key? key,
       this.employeeId,
+      this.user,
       this.endTime,
       this.startTime,
       this.employeeName,
@@ -139,7 +142,7 @@ class _ViewScheduleState extends State<ViewSchedule> {
                         height: 4,
                       ),
                       Text(
-                        "Manager",
+                        widget.user?.isAdmin=="1"?"Manager":"Employee",
                         style: TextStyle(
                             color: Color(0xff9C9C9C),
                             fontWeight: FontWeight.w300,

@@ -379,6 +379,7 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                             CupertinoPageRoute(
                                                 builder: (context) =>
                                                     ViewSchedule(
+                                                      user: widget.user,
                                                       employeeId: snapshot
                                                           .data?.data?.schedule
                                                           ?.elementAt(index)
