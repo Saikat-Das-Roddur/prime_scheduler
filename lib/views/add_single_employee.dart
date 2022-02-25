@@ -385,6 +385,12 @@ class _AddSingleEmployeeState extends State<AddSingleEmployee> {
                   map['line_admin_id'] = widget.user?.id;
                   map['root_admin_id'] =
                       widget.user?.rootAdminId ?? widget.user?.id;
+                  map['company_phone'] = widget.user?.companyPhone;
+                  map['location'] = widget.user?.location;
+                  map['category'] = "Employee";
+                  map['company_name'] = widget.user?.companyName;
+                  map['company_email'] = widget.user?.companyEmail;
+
                   //widget.map['is_admin'] = 0;
                   print(map);
                   addEmployee(map);

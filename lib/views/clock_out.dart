@@ -122,7 +122,7 @@ class _ClockOutState extends State<ClockOut> {
     _screenSize = MediaQuery.of(context).size;
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: CustomEndDrawer(),
+      endDrawer: CustomEndDrawer(user: widget.user,),
       body: SingleChildScrollView(
         child: Column(
           children: [

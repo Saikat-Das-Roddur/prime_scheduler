@@ -25,27 +25,36 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
   int _day = DateTime.now().day;
   int _month = DateTime.now().month;
   int _year = DateTime.now().year;
-  String startDate = DateFormat("yyyy-MM-dd").format(DateTime(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day));
-      //"${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+  String startDate = DateFormat("yyyy-MM-dd").format(
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day));
+
+  //"${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
 
   int _endDay = DateTime.now().day;
   int _endMonth = DateTime.now().month;
-  String endDate = DateFormat("yyyy-MM-dd").format(DateTime(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day));
-      //"${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+  String endDate = DateFormat("yyyy-MM-dd").format(
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day));
 
-  Map<String,dynamic> map = {};
+  //"${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+
+  Map<String, dynamic> map = {};
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _employeeHistoryBloc = EmployeeHistoryBloc();
-    map['admin_id'] = widget.user?.id;
-    map['start_date'] = startDate;
-    map['end_date'] = endDate;
-    _employeeHistoryBloc?.getEmployeeHistory(map);
+    if (widget.user?.isAdmin == "1") {
+      map['admin_id'] = widget.user?.id;
+      map['start_date'] = startDate;
+      map['end_date'] = endDate;
+      _employeeHistoryBloc?.getEmployeesHistory(map);
+    } else {
+      map['employee_id'] = widget.user?.employeeId;
+      map['start_date'] = startDate;
+      map['end_date'] = endDate;
+      _employeeHistoryBloc?.getEmployeesHistory(map);
+    }
   }
 
   @override
@@ -244,7 +253,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                       "$_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')}";
                                   map['start_date'] = startDate;
                                   //map['end_date'] = endDate;
-                                  _employeeHistoryBloc?.getEmployeeHistory(map);
+                                  _employeeHistoryBloc?.getEmployeesHistory(map);
                                 });
                               },
                             ),
@@ -339,7 +348,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                 "$_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')}";
                             map['start_date'] = startDate;
                             //map['end_date'] = endDate;
-                            _employeeHistoryBloc?.getEmployeeHistory(map);
+                            _employeeHistoryBloc?.getEmployeesHistory(map);
                             // _schedulesBloc?.getSchedules(widget.user?.id,
                             //     "$_year-$_month-$_day");
                             // if (DateTime.now().month == _month &&
@@ -456,8 +465,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                   //map['start_date'] = startDate;
                                   map['end_date'] = endDate;
 
-                                  _employeeHistoryBloc
-                                      ?.getEmployeeHistory(map);
+                                  _employeeHistoryBloc?.getEmployeesHistory(map);
                                 } else {
                                   print(endDate.compareTo(startDate));
                                 }
@@ -554,7 +562,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                             print("changing");
                             map['start_date'] = startDate;
                             map['end_date'] = endDate;
-                            _employeeHistoryBloc?.getEmployeeHistory(map);
+                            _employeeHistoryBloc?.getEmployeesHistory(map);
                             // _schedulesBloc?.getSchedules(widget.user?.id,
                             //     "$_year-$_month-$_day");
                             // if (DateTime.now().month == _month &&
@@ -574,7 +582,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
               height: 16,
             ),
             StreamBuilder<Response<History>>(
-                stream: _employeeHistoryBloc?.getEmployeeHistoryStream,
+                stream: _employeeHistoryBloc?.getEmployeesHistoryStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     switch (snapshot.data?.status) {
@@ -600,8 +608,8 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                     padding: EdgeInsets.zero,
                                     shrinkWrap: true,
                                     physics: const ScrollPhysics(),
-                                    itemCount:
-                                        snapshot.data?.data?.employeeHistory?.length,
+                                    itemCount: snapshot
+                                        .data?.data?.employeeHistory?.length,
                                     itemBuilder:
                                         (context, index) => GestureDetector(
                                               onTap: () {
@@ -701,7 +709,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                             20),
                                                                   ),
                                                                   Text(
-                                                                    "Manager",
+                                                                    widget.user?.isAdmin=="1"?"Manager":"Employee",
                                                                     style: TextStyle(
                                                                         color: Color(
                                                                             0xffB1B1B1),
@@ -767,11 +775,10 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                   Navigator.push(
                                                                       context,
                                                                       CupertinoPageRoute(
-                                                                          builder: (context) =>
-                                                                               ActiveDetails(
-                                                                                employee: snapshot.data?.data?.employeeHistory?.elementAt(index).employee,
-                                                                                attendanceList: snapshot.data?.data?.employeeHistory?.elementAt(index).attendance
-                                                                              )));
+                                                                          builder: (context) => ActiveDetails(
+                                                                            user: widget.user,
+                                                                              employee: snapshot.data?.data?.employeeHistory?.elementAt(index).employee,
+                                                                              attendanceList: snapshot.data?.data?.employeeHistory?.elementAt(index).attendance)));
                                                                 },
                                                                 child:
                                                                     Container(
@@ -793,7 +800,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                         MainAxisAlignment
                                                                             .spaceBetween,
                                                                     children: [
-                                                                       Flexible(
+                                                                      Flexible(
                                                                         child:
                                                                             Align(
                                                                           alignment:

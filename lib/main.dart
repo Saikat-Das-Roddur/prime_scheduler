@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:prime_scheduler/views/clock_in.dart';
 import 'package:prime_scheduler/views/clock_in_and_out.dart';
 import 'package:prime_scheduler/views/home.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:prime_scheduler/views/schedule_list.dart';
+import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 import 'package:prime_scheduler/views/splash_screen.dart';
+import 'package:prime_scheduler/views/welcome_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -17,7 +21,7 @@ main() {
   GestureBinding.instance?.resamplingEnabled = true;
   WidgetsFlutterBinding.ensureInitialized();
   //HttpOverrides.global = MyHttpOverrides();
-  runApp(const MyApp());
+  runApp(const PrimeScheduler());
 }
 
 // class MyHttpOverrides extends HttpOverrides {
@@ -29,10 +33,14 @@ main() {
 //   }
 // }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class PrimeScheduler extends StatefulWidget {
+  const PrimeScheduler({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  _PrimeSchedulerState createState() => _PrimeSchedulerState();
+}
+
+class _PrimeSchedulerState extends State<PrimeScheduler> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,14 +48,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/home',
+      initialRoute: '/welcome',
       routes: {
-        // '/splash': (context) => const SplashScreen(),
+        //'/splash': (context) => const SplashScreen(),
+        '/welcome': (context) => const WelcomeScreen(),
         '/home': (context) => const Home(),
         '/loggedInHome': (context) => LoggedInHomeScreen(),
         '/loggIn': (context) => LogInScreen(),
         '/clockInAndOut': (context) => ClockInAndOut(),
         '/schedules': (context) => ScheduleLists(),
+        '/clockIn': (context) => ClockIn(),
+        '/scheduleWelcomeScreen': (context) => ScheduleWelcomeScreen(),
 
         // '/splash': (context) => const SplashScreen(),
         // '/splash': (context) => const SplashScreen(),
@@ -77,6 +88,8 @@ class MyApp extends StatelessWidget {
     // );
   }
 }
+
+
 //
 //
 // class MyHomePage extends StatefulWidget {

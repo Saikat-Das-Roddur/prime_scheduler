@@ -14,6 +14,7 @@ import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/clock_in_and_out.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
+import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 import 'add_single_employee.dart';
@@ -508,7 +509,9 @@ class _ClockInState extends State<ClockIn> {
     await progressDialog?.show();
     await _clockInBloc
         ?.checkUserIn(
-            widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId,
+            widget.user?.isAdmin == "1"
+                ? widget.user?.id
+                : widget.user?.employeeId,
             DateFormat("yyyy-MM-dd").format(DateTime.now()))
         .then((value) {
       progressDialog?.hide();
@@ -528,7 +531,6 @@ class _ClockInState extends State<ClockIn> {
                 ),
               ));
         } else {
-
           print(value);
           print("hare");
           Navigator.pushAndRemoveUntil(
@@ -717,11 +719,12 @@ class _ClockInState extends State<ClockIn> {
     progressDialog?.show();
     //((DateTime.now().hour + 11) % 12) + 1
     Map map = Map();
-    map['employee_id'] = widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId;
+    map['employee_id'] =
+        widget.user?.isAdmin == "1" ? widget.user?.id : widget.user?.employeeId;
     map['admin_id'] = widget.user?.lineAdminId;
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['in_time'] =
-        "${DateTime.now().hour.toString().padLeft(2,'0')}:${DateTime.now().minute.toString().padLeft(2,'0')}:${DateTime.now().second.toString().padLeft(2,'0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
+        "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
     print(map);
     //await _clockInBloc?.clockIn(map);
     post("attendance/check_in.php", body: map);
@@ -765,14 +768,59 @@ class _ClockInState extends State<ClockIn> {
                 ModalRoute.withName('/clockInAndOut'));
           }
         } else if (map['status_code'] == 403) {
-          // Navigator.push(
-          //     context,
-          //     CupertinoPageRoute(
-          //         builder: (c) => ClockInAndOut(
-          //             user: widget.user, inTime: map['assigned_date']+" "+
-          //             map['in_time'])));
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('You have no schedule for today. View schedules?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (c) => ScheduleWelcomeScreen(
+                              user: widget.user,
+                            )),
+                        ModalRoute.withName('/scheduleWelcomeScreen'));
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ),
+          );
+          //Fluttertoast.showToast(msg: "You have no schedule for today");
+        } else if (map['status_code'] == 400) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('You checked out already. View schedules?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (c) => ScheduleWelcomeScreen(
+                              user: widget.user,
+                            )),
+                        ModalRoute.withName('/scheduleWelcomeScreen'));
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            ),
+          );
+
           print(map);
-          Fluttertoast.showToast(msg: "You have no schedule for today");
+          //Fluttertoast.showToast(msg: "You checked out already");
         }
       });
       print(CustomStrings.baseUrl + url);

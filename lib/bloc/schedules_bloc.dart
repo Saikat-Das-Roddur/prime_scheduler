@@ -10,6 +10,7 @@ class SchedulesBloc{
   late SchedulesRepository _repository;
   //late StreamController<Response<dynamic>> _addScheduleStreamController;
   late StreamController<Response<Schedules>> _schedulesStreamController;
+  late StreamController<Response<Schedules>> _schedulesEmployeeStreamController;
   late StreamController<Response<Schedules>> _nextSchedulesStreamController;
   late StreamController<Response<Schedules>> _upComingShiftsStreamController;
   late StreamController<Response<Employee>> _employeeStreamController;
@@ -24,6 +25,12 @@ class SchedulesBloc{
       _schedulesStreamController.sink;
 
   Stream<Response<Schedules>> get schedulesStream =>
+      _schedulesStreamController.stream;
+
+  StreamSink<Response<Schedules>> get schedulesEmployeeSink =>
+      _schedulesStreamController.sink;
+
+  Stream<Response<Schedules>> get schedulesEmployeeStream =>
       _schedulesStreamController.stream;
 
 
@@ -79,10 +86,36 @@ class SchedulesBloc{
     }
   }
 
+  Future<Schedules?> getEmployeeSchedules(String? Id, String date) async {
+    schedulesSink.add(Response.loading(''));
+    try{
+      dynamic response = await _repository.getEmployeeSchedules(Id, date);
+      schedulesSink.add(Response.completed(response));
+      return response;
+    }catch(e){
+      print(e.toString());
+      schedulesSink.add(Response.error(e.toString()));
+      return null;
+    }
+  }
+
   Future<Schedules?> getNextSchedules(String? adminId, String date) async {
     nextSchedulesSink.add(Response.loading(''));
     try{
       dynamic response = await _repository.getSchedules(adminId, date);
+      nextSchedulesSink.add(Response.completed(response));
+      return response;
+    }catch(e){
+      print(e.toString());
+      nextSchedulesSink.add(Response.error(e.toString()));
+      return null;
+    }
+  }
+
+  Future<Schedules?> getNextEmployeeSchedules(String? adminId, String date) async {
+    nextSchedulesSink.add(Response.loading(''));
+    try{
+      dynamic response = await _repository.getEmployeeSchedules(adminId, date);
       nextSchedulesSink.add(Response.completed(response));
       return response;
     }catch(e){

@@ -36,17 +36,30 @@ class _ScheduleListsState extends State<ScheduleLists> {
     _schedulesBloc = SchedulesBloc();
     _progressDialog = ProgressDialog(context, isDismissible: false);
 
-    _schedulesBloc
-        ?.getSchedules(widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)))
-        .then((value) {
-      setState(() {
-        employee = value?.totalEmployee.toString();
+    if(widget.user?.isAdmin == "1"){
+      _schedulesBloc
+          ?.getSchedules(widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)))
+          .then((value) {
+        setState(() {
+          employee = value?.totalEmployee.toString();
+        });
       });
-    });
-    if (DateTime.now().month == _month && DateTime.now().day == _day) {
-      _schedulesBloc?.getNextSchedules(
-          widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+    }else{
+      _schedulesBloc
+          ?.getEmployeeSchedules(widget.user?.employeeId, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
     }
+
+    if (DateTime.now().month == _month && DateTime.now().day == _day) {
+      if(widget.user?.isAdmin == "1"){
+        _schedulesBloc?.getNextSchedules(
+            widget.user?.id, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+      }else{
+        _schedulesBloc?.getNextEmployeeSchedules(
+            widget.user?.employeeId, DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+      }
+        }
   }
 
   @override
@@ -140,13 +153,35 @@ class _ScheduleListsState extends State<ScheduleLists> {
                                       _day) {
                                     _day = 1;
                                   }
-                                  _schedulesBloc?.getSchedules(widget.user?.id,
-                                      DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
+
+                                  if(widget.user?.isAdmin == "1"){
+                                    _schedulesBloc
+                                        ?.getSchedules(widget.user?.id,
+                                        DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
+                                  }else{
+                                    _schedulesBloc
+                                        ?.getEmployeeSchedules(widget.user?.employeeId,
+                                        DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
+                                  }
                                   if (DateTime.now().month == _month &&
                                       DateTime.now().day == _day) {
-                                    _schedulesBloc?.getNextSchedules(widget.user?.id,
-                                        DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+                                    if (DateTime.now().month == _month && DateTime.now().day == _day) {
+                                      if(widget.user?.isAdmin == "1"){
+                                        _schedulesBloc?.getNextSchedules(
+                                            widget.user?.id,
+                                            DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+                                      }else{
+                                        _schedulesBloc?.getNextEmployeeSchedules(
+                                            widget.user?.employeeId,
+                                            DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+                                      }
+                                    }
                                   }
+
+
                                   //print(DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
                                 });
                               },
@@ -235,12 +270,33 @@ class _ScheduleListsState extends State<ScheduleLists> {
                               _day = DateUtils.getDaysInMonth(
                                   DateTime.now().year, _month);
                             }
-                            _schedulesBloc?.getSchedules(widget.user?.id,
-                                DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
+
+
+                            if(widget.user?.isAdmin == "1"){
+                              _schedulesBloc
+                                  ?.getSchedules(widget.user?.id,
+                                  DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
+                            }else{
+                              _schedulesBloc
+                                  ?.getEmployeeSchedules(widget.user?.employeeId,
+                                  DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day)));
+                            }
                             if (DateTime.now().month == _month &&
                                 DateTime.now().day == _day) {
-                              _schedulesBloc?.getNextSchedules(widget.user?.id,
-                                  DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+                              if (DateTime.now().month == _month && DateTime.now().day == _day) {
+                                if(widget.user?.isAdmin == "1"){
+                                  _schedulesBloc?.getNextSchedules(
+                                      widget.user?.id,
+                                      DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+                                }else{
+                                  _schedulesBloc?.getNextEmployeeSchedules(
+                                      widget.user?.employeeId,
+                                      DateFormat("yyyy-MM-dd").format(DateTime(DateTime.now().year,_month,_day+1)));
+
+                                }
+                              }
                             }
                           }),
                         ),

@@ -16,6 +16,11 @@ class EmployeeHistoryRepository{
   //   return Employees.fromJson(response);
   // }
 
+  Future<History> getEmployeesHistory(Map<String,dynamic> map) async {
+    final response = await get("employee/get_employees_history.php${Uri(queryParameters: map)}");
+    return History.fromJson(response);
+  }
+
   Future<History> getEmployeeHistory(Map<String,dynamic> map) async {
     final response = await get("employee/get_employee_history.php${Uri(queryParameters: map)}");
     return History.fromJson(response);

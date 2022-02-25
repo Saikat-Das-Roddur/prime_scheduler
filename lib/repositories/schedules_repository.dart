@@ -18,6 +18,12 @@ class SchedulesRepository {
     return Schedules.fromJson(response);
   }
 
+  Future<Schedules> getEmployeeSchedules(String? id, String date) async {
+    final response =
+    await get("schedule/get_employee_schedule.php?employee_id=$id&date=$date");
+    return Schedules.fromJson(response);
+  }
+
   Future<Schedules> upcomingShifts(String? employeeId, String? date) async {
     final response =
         await get("schedule/upcoming_shifts.php?employee_id=$employeeId&date=$date");

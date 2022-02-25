@@ -256,7 +256,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
             ),
       child: Scaffold(
         key: _scaffoldKey,
-        endDrawer: CustomEndDrawer(),
+        endDrawer: CustomEndDrawer(user: widget.user,),
         backgroundColor: Colors.white,
         //const Color(0xffE5E5E5),
         body: SingleChildScrollView(

@@ -46,7 +46,7 @@ class _AllClockInOutState extends State<AllClockInOut> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: CustomEndDrawer(),
+      endDrawer: CustomEndDrawer(user: widget.user,),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
         child: Card(

@@ -10,6 +10,7 @@ import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/views/clock_in.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'registration_step_1.dart';
 
@@ -27,6 +28,7 @@ class _LogInScreenState extends State<LogInScreen> {
       isValidPassword = false;
 
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  late SharedPreferences preferences;
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -40,11 +42,16 @@ class _LogInScreenState extends State<LogInScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    initSharedPref();
     _bloc = LogInBloc();
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Got a new connectivity status!
       progressDialog.hide();
     });
+  }
+
+  initSharedPref() async{
+    preferences = await SharedPreferences.getInstance();
   }
 
   @override
@@ -348,14 +355,22 @@ class _LogInScreenState extends State<LogInScreen> {
         progressDialog.hide();
         if (value != null) {
           if (value.user?.statusCode == 200) {
+            preferences.setBool("logged_in", true);
+            preferences.setString("is_admin", "${value.user?.isAdmin}");
+            //preferences.set("is_admin", "${value.user?.isAdmin}");
+
+            print(preferences.getBool("logged_in"));
             Fluttertoast.showToast(msg: "${value.user?.message}");
             if (value.user?.isAdmin == "1") {
+
+              preferences.setString("admin_id", "${value.user?.id}");
               Navigator.push(
                   context,
                   CupertinoPageRoute(
                       builder: (c) => LoggedInHomeScreen(user: value.user)));
             } else {
               print(value.user?.employeeId);
+              preferences.setString("employee_id", "${value.user?.employeeId}");
               progressDialog.hide();
               Navigator.push(
                   context, CupertinoPageRoute(builder: (c) => ClockIn(user: value.user)));
@@ -419,6 +434,9 @@ class _LogInScreenState extends State<LogInScreen> {
                               user: value.user,
                             )));
               } else {
+                //preferences =  SharedPreferences.getInstance() as SharedPreferences;
+                preferences.setBool("logged_in", true);
+                preferences.setString("is_admin", "${value.user?.isAdmin}");
                 Navigator.push(
                     context,
                     CupertinoPageRoute(

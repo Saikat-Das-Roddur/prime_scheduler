@@ -5,10 +5,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:prime_scheduler/views/registration_step_1.dart';
 import 'package:prime_scheduler/views/welcome_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,3 +136,4 @@ class Home extends StatelessWidget {
     );
   }
 }
+

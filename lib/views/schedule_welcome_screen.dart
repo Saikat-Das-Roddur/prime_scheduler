@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/views/active_details.dart';
+import 'package:prime_scheduler/views/active_details_employee.dart';
 import 'package:prime_scheduler/views/add_schedule.dart';
+import 'package:prime_scheduler/views/employee_history.dart';
 import 'package:prime_scheduler/views/schedule_list.dart';
 import 'package:prime_scheduler/views/view_schedule.dart';
 
@@ -87,9 +90,12 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                     SizedBox(height: MediaQuery.of(context).size.height*.08,),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        user!.isAdmin=="1"?Navigator.push(
                             context, CupertinoPageRoute(builder: (context) =>
                          AddSchedule(user: user)
+                        )):Navigator.push(
+                            context, CupertinoPageRoute(builder: (context) =>
+                            ActiveDetailsUser(user: user)
                         ));
                       },
                       child: Padding(
@@ -104,9 +110,9 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                                   topRight: Radius.circular(24),
                                   bottomLeft: Radius.circular(14),
                                   bottomRight: Radius.circular(14))),
-                          child: const Align(
+                          child:  Align(
                             child: Text(
-                              "Add Schedule",
+                              user!.isAdmin=="1"?"Add Schedule":"Activity Details",
                               style: TextStyle(fontSize:18, fontWeight: FontWeight.w500, color: Colors.white),
                             ),
                             alignment: Alignment.center,

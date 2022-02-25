@@ -4,6 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 
+import 'custom_end_drawer.dart';
+
 class Profile extends StatefulWidget {
   User? user;
 
@@ -19,7 +21,9 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Color(0xffF06767),
+        endDrawer: CustomEndDrawer(user: widget.user),
         body: SingleChildScrollView(
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
