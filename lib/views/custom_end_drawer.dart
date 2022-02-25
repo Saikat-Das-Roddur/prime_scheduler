@@ -61,10 +61,12 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
               text: 'Home',
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    CupertinoPageRoute(builder: (c) => LoggedInHomeScreen(user: widget.user,)),
-                    ModalRoute.withName('/loggedInHome'));
+                if(widget.user?.isAdmin=="1"){
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      CupertinoPageRoute(builder: (c) => LoggedInHomeScreen(user: widget.user,)),
+                      ModalRoute.withName('/loggedInHome'));
+                }
               }
 
               //     Navigator.push(
@@ -77,7 +79,10 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
               text: 'Add Announcement',
               onTap: () {
                 Navigator.pop(context);
-                showAnnouncementDialog();
+
+                if(widget.user?.isAdmin=="1"){
+                  showAnnouncementDialog();
+                }
               }),
           _createDrawerItem(
               icon: Icons.account_circle,

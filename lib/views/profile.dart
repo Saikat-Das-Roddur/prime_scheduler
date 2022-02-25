@@ -97,7 +97,7 @@ class _ProfileState extends State<Profile> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          height: MediaQuery.of(context).size.height * .28,
+                          height: MediaQuery.of(context).size.height * .35,
                           margin: EdgeInsets.only(top: 48),
                           decoration: const BoxDecoration(
                               borderRadius: BorderRadius.only(
@@ -118,7 +118,7 @@ class _ProfileState extends State<Profile> {
                                           Radius.circular(24))),
                                   child: Container(
                                     height:
-                                        MediaQuery.of(context).size.height * .2,
+                                        MediaQuery.of(context).size.height * .25,
                                     width: MediaQuery.of(context).size.width,
                                   ),
                                 ),
@@ -167,7 +167,7 @@ class _ProfileState extends State<Profile> {
                                                   color: Colors.black),
                                             )),
                                             Text(
-                                              "Employee",
+                                              widget.user?.isAdmin=="1"?"Manager":"Employee",
                                               style: TextStyle(
                                                   color: Color(0xff9E9E9E),
                                                   fontSize: 14,
