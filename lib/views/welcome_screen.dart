@@ -43,30 +43,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       progressDialog.show();
       if (preferences.getString("is_admin") == "1") {
         String? id = preferences.getString("admin_id");
-        progressDialog.hide();
+        //progressDialog.hide();
         _bloc.signInAdmin(id!).then((value) => {
               if (value?.user?.statusCode == 200)
                 {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (c) => LoggedInHomeScreen(
-                                user: value?.user,
-                              )),
-                      ModalRoute.withName('/loggedInHome'))
+                  progressDialog
+                      .hide()
+                      .whenComplete(() => Navigator.pushAndRemoveUntil(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (c) => LoggedInHomeScreen(
+                                    user: value?.user,
+                                  )),
+                          ModalRoute.withName('/loggedInHome')))
                 }
             });
       } else {
-        progressDialog.hide();
+        //progressDialog.hide();
         String? id = preferences.getString("employee_id");
         _bloc.signInEmployee(id!).then((value) => {
               if (value?.user?.statusCode == 200)
                 {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (c) => ClockIn(user: value?.user)),
-                      ModalRoute.withName('/clockIn'))
+                  progressDialog.hide().whenComplete(() =>
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (c) => ClockIn(user: value?.user)),
+                          ModalRoute.withName('/clockIn')))
                 }
             });
       }

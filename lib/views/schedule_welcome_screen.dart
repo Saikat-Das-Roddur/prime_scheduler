@@ -15,50 +15,119 @@ import 'package:prime_scheduler/views/schedule_list.dart';
 import 'package:prime_scheduler/views/view_schedule.dart';
 
 import 'add_single_employee.dart';
+import 'custom_end_drawer.dart';
 
-class ScheduleWelcomeScreen extends StatelessWidget {
+class ScheduleWelcomeScreen extends StatefulWidget {
   User? user;
   ScheduleWelcomeScreen({Key? key,this.user}) : super(key: key);
 
+
+  @override
+  _ScheduleWelcomeScreenState createState() => _ScheduleWelcomeScreenState();
+}
+
+class _ScheduleWelcomeScreenState extends State<ScheduleWelcomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: CustomEndDrawer(user: widget.user, selectedIndex: 0,),
       backgroundColor: Color(0xffF06767),//Colors.white,
       body: SingleChildScrollView(
         child: SizedBox(
           //height: MediaQuery.of(context).size.height,
           child: Column(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
                 //height: MediaQuery.of(context).size.height*.5,
                 color: Color(0xffF06767),//const Color(0xffF1F1F1),
                 child: Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: GestureDetector(
-                        onTap: () {
-                          if(user?.isAdmin=="1") {
-                            Navigator.pop(context);
-                          }else{
-                            if (Platform.isAndroid) {
-                              SystemNavigator.pop();
-                            } else if (Platform.isIOS) {
-                              exit(0);
-                            }
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 56.0,left: 24),
-                          child: SvgPicture.asset(
-                            "assets/images/Vector 31.svg",
-                            color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 48.0, 24, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: GestureDetector(
+                                onTap: () {
+                                        if(widget.user?.isAdmin=="1") {
+                                          Navigator.pop(context);
+                                        }else{
+                                          if (Platform.isAndroid) {
+                                            SystemNavigator.pop();
+                                          } else if (Platform.isIOS) {
+                                            exit(0);
+                                          }
+                                        }
+                                },
+                                child: SvgPicture.asset(
+                                  "assets/images/Vector 31.svg",
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          const Flexible(
+                              flex: 3,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Team Schedule",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 22),
+                                ),
+                              )),
+                          Flexible(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _scaffoldKey.currentState?.openEndDrawer();
+                                  },
+                                  child: SvgPicture.asset(
+                                    "assets/images/Group 176.svg",
+                                    color: const Color(0xffffffff),
+                                  ),
+                                ),
+                              )),
+                        ],
                       ),
                     ),
+                    // Align(
+                    //   alignment: Alignment.centerLeft,
+                    //   child: GestureDetector(
+                    //     onTap: () {
+                    //       if(user?.isAdmin=="1") {
+                    //         Navigator.pop(context);
+                    //       }else{
+                    //         if (Platform.isAndroid) {
+                    //           SystemNavigator.pop();
+                    //         } else if (Platform.isIOS) {
+                    //           exit(0);
+                    //         }
+                    //       }
+                    //     },
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.only(top: 56.0,left: 24),
+                    //       child: SvgPicture.asset(
+                    //         "assets/images/Vector 31.svg",
+                    //         color: Colors.white,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
                       padding: const EdgeInsets.only(left: 24.0, top: 48),
                       child: SvgPicture.asset("assets/images/Group 216.svg", width: MediaQuery.of(context).size.width,),
@@ -66,7 +135,7 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-               //const Spacer(),
+              //const Spacer(),
 
               //const SizedBox(height: 24,),
 
@@ -103,12 +172,12 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                     SizedBox(height: MediaQuery.of(context).size.height*.08,),
                     GestureDetector(
                       onTap: () {
-                        user!.isAdmin=="1"?Navigator.push(
+                        widget.user!.isAdmin=="1"?Navigator.push(
                             context, CupertinoPageRoute(builder: (context) =>
-                         AddSchedule(user: user)
+                            AddSchedule(user: widget.user)
                         )):Navigator.push(
                             context, CupertinoPageRoute(builder: (context) =>
-                            ActiveDetailsUser(user: user)
+                            ActiveDetailsUser(user: widget.user)
                         ));
                       },
                       child: Padding(
@@ -125,7 +194,7 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                                   bottomRight: Radius.circular(14))),
                           child:  Align(
                             child: Text(
-                              user!.isAdmin=="1"?"Add Schedule":"Activity Details",
+                              widget.user!.isAdmin=="1"?"Add Schedule":"Activity Details",
                               style: TextStyle(fontSize:18, fontWeight: FontWeight.w500, color: Colors.white),
                             ),
                             alignment: Alignment.center,
@@ -143,7 +212,7 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                             context, CupertinoPageRoute(builder: (context) =>
-                         ScheduleLists(user: user)
+                            ScheduleLists(user: widget.user)
                         ));
                       },
                       child: Padding(
@@ -180,3 +249,5 @@ class ScheduleWelcomeScreen extends StatelessWidget {
     );
   }
 }
+
+

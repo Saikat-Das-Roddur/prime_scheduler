@@ -8,13 +8,15 @@ import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:prime_scheduler/views/login_screen.dart';
 import 'package:prime_scheduler/views/profile.dart';
+import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomEndDrawer extends StatefulWidget {
   User? user;
+  int? selectedIndex;
 
-  CustomEndDrawer({Key? key, this.user}) : super(key: key);
+  CustomEndDrawer({Key? key, this.user, this.selectedIndex}) : super(key: key);
 
   @override
   _CustomEndDrawerState createState() => _CustomEndDrawerState();
@@ -28,6 +30,7 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
   AnnouncementBloc? _bloc;
   ProgressDialog? progressDialog;
   late SharedPreferences preferences;
+  //int selectedIndex = 0;
 
   @override
   void initState() {
@@ -59,13 +62,28 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
           _createDrawerItem(
               icon: Icons.home,
               text: 'Home',
+              isSelected: widget.selectedIndex == 0,
               onTap: () {
+                setState(() {
+                  widget.selectedIndex = 0;
+                });
                 Navigator.of(context).pop();
-                if(widget.user?.isAdmin=="1"){
+                if (widget.user?.isAdmin == "1") {
                   Navigator.pushAndRemoveUntil(
                       context,
-                      CupertinoPageRoute(builder: (c) => LoggedInHomeScreen(user: widget.user,)),
+                      CupertinoPageRoute(
+                          builder: (c) => LoggedInHomeScreen(
+                                user: widget.user,
+                              )),
                       ModalRoute.withName('/loggedInHome'));
+                } else {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (c) => ScheduleWelcomeScreen(
+                                user: widget.user,
+                              )),
+                      ModalRoute.withName('/scheduleWelcomeScreen'));
                 }
               }
 
@@ -77,38 +95,63 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
           _createDrawerItem(
               icon: Icons.announcement,
               text: 'Add Announcement',
+              isSelected: widget.selectedIndex == 1,
               onTap: () {
+                setState(() {
+                  widget.selectedIndex = 1;
+                });
                 Navigator.pop(context);
 
-                if(widget.user?.isAdmin=="1"){
+                if (widget.user?.isAdmin == "1") {
                   showAnnouncementDialog();
                 }
               }),
           _createDrawerItem(
               icon: Icons.account_circle,
               text: 'Profile',
+              isSelected: widget.selectedIndex == 2,
               onTap: () {
+                setState(() {
+                  widget.selectedIndex = 2;
+                });
                 Navigator.of(context).pop();
                 Navigator.pushAndRemoveUntil(
                     context,
-                    CupertinoPageRoute(builder: (c) => Profile(user: widget.user,)),
+                    CupertinoPageRoute(
+                        builder: (c) => Profile(
+                              user: widget.user,
+                            )),
                     ModalRoute.withName('/profile'));
               }),
           Divider(),
           _createDrawerItem(
               icon: Icons.update,
               text: 'Update Profile',
-              onTap: () => Navigator.pop(context)),
+              isSelected: widget.selectedIndex == 3,
+              onTap: () {
+                setState(() {
+                  widget.selectedIndex = 3;
+                });
+                Navigator.pop(context);
+              }),
           _createDrawerItem(
               icon: Icons.password_rounded,
+              isSelected: widget.selectedIndex == 4,
               text: 'Change Password',
               onTap: () {
+                setState(() {
+                  widget.selectedIndex = 4;
+                });
                 Navigator.of(context).pop();
               }),
           _createDrawerItem(
             icon: Icons.logout,
             text: 'Log Out',
+            isSelected: widget.selectedIndex == 5,
             onTap: () {
+              setState(() {
+                widget.selectedIndex = 5;
+              });
               preferences.clear();
               Navigator.pushAndRemoveUntil(
                   context,
@@ -336,18 +379,33 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
   }
 
   Widget _createDrawerItem(
-      {IconData? icon, String? text, GestureTapCallback? onTap}) {
-    return ListTile(
-      title: Row(
-        children: <Widget>[
-          Icon(icon),
-          Padding(
-            padding: EdgeInsets.only(left: 8.0),
-            child: Text(text!),
-          )
-        ],
+      {IconData? icon,
+      String? text,
+      GestureTapCallback? onTap,
+      bool? isSelected}) {
+    return Ink(
+      color: isSelected! ? Color(0x33f06767) : Colors.transparent,
+      child: ListTile(
+        selected: true,
+        hoverColor: Colors.white,
+        title: Row(
+          children: <Widget>[
+            Icon(
+              icon,
+              color: isSelected ? Color(0xffF06767) : Colors.black,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: Text(
+                text!,
+                style: TextStyle(
+                    color: isSelected ? Color(0xffF06767) : Colors.black),
+              ),
+            )
+          ],
+        ),
+        onTap: onTap,
       ),
-      onTap: onTap,
     );
   }
 

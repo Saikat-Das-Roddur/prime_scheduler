@@ -63,7 +63,7 @@ class _LoggedInHomeScreenState extends State<LoggedInHomeScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.white,
-        endDrawer: CustomEndDrawer(user: widget.user),
+        endDrawer: CustomEndDrawer(user: widget.user, selectedIndex: 0,),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

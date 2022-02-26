@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 
 import 'custom_end_drawer.dart';
+import 'logged_in_home.dart';
 
 class Profile extends StatefulWidget {
   User? user;
@@ -17,13 +19,44 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List? list;
+
+  List formatHHMMSS(int? seconds) {
+
+    List list = [];
+
+    final hours = (seconds! / 3600).truncate();
+    seconds = (seconds % 3600).truncate();
+    final minutes = (seconds / 60).truncate();
+
+    final hoursStr = ((hours).abs()).toString().padLeft(2, '0');
+    final minutesStr = ((minutes).abs()).toString().padLeft(2, '0');
+    final secondsStr = ((seconds).abs() % 60).toString().padLeft(2, '0');
+
+    // if (hours == 0) {
+    //   return '$hoursStr:$minutesStr:$secondsStr';
+    // }
+
+    list.add(hoursStr);
+    list.add(minutesStr);
+    list.add(secondsStr);
+
+    return list;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    list =  formatHHMMSS(int.parse("${widget.user?.workingSeconds}"));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
         backgroundColor: Color(0xffF06767),
-        endDrawer: CustomEndDrawer(user: widget.user),
+        endDrawer: CustomEndDrawer(user: widget.user, selectedIndex: 2,),
         body: SingleChildScrollView(
 
           child: Column(
@@ -43,7 +76,20 @@ class _ProfileState extends State<Profile> {
                           alignment: Alignment.centerLeft,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              if(widget.user?.isAdmin=="1") {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (c) => LoggedInHomeScreen(
+                                          user: widget.user,
+                                        )),
+                                    ModalRoute.withName('/loggedInHome'));
+                              }else{
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    CupertinoPageRoute(builder: (c) => ScheduleWelcomeScreen(user: widget.user,)),
+                                    ModalRoute.withName('/scheduleWelcomeScreen'));
+                              }
                             },
                             child: SvgPicture.asset(
                               "assets/images/Vector 31.svg",
@@ -83,7 +129,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 Stack(children: [
                   Container(
-                    height: MediaQuery.of(context).size.height,
+                    height: MediaQuery.of(context).size.height*.7,
                     margin: EdgeInsets.only(top: 180),
                     decoration: const BoxDecoration(
                         color: Colors.white,
@@ -201,7 +247,7 @@ class _ProfileState extends State<Profile> {
                                                                         8))),
                                                         child: RichText(
                                                           text: TextSpan(
-                                                              text: "300",
+                                                              text: "${list?.elementAt(0)}",
                                                               style: TextStyle(
                                                                 color: Color(
                                                                     0xffF06767),
@@ -259,7 +305,7 @@ class _ProfileState extends State<Profile> {
                                                                         8))),
                                                         child: RichText(
                                                           text: TextSpan(
-                                                              text: "35",
+                                                              text: "${list?.elementAt(1)}",
                                                               style: TextStyle(
                                                                 color: Color(
                                                                     0xffF06767),
@@ -317,7 +363,7 @@ class _ProfileState extends State<Profile> {
                                                                         8))),
                                                         child: RichText(
                                                           text: TextSpan(
-                                                              text: "10",
+                                                              text: "${list?.elementAt(2)}",
                                                               style: TextStyle(
                                                                 color: Color(
                                                                     0xffF06767),
@@ -579,7 +625,7 @@ class _ProfileState extends State<Profile> {
                                           WidgetSpan(
                                               child: RichText(
                                             text: TextSpan(
-                                                text: "300",
+                                                text: "${list?.elementAt(0)}",
                                                 style: TextStyle(
                                                   color: Color(0xffF06767),
                                                   fontSize: 22,
@@ -609,7 +655,7 @@ class _ProfileState extends State<Profile> {
                                           WidgetSpan(
                                               child: RichText(
                                             text: TextSpan(
-                                                text: "35",
+                                                text: "${list?.elementAt(1)}",
                                                 style: TextStyle(
                                                   color: Color(0xffF06767),
                                                   fontSize: 22,
@@ -639,7 +685,7 @@ class _ProfileState extends State<Profile> {
                                           WidgetSpan(
                                               child: RichText(
                                             text: TextSpan(
-                                                text: "10",
+                                                text: "${list?.elementAt(2)}",
                                                 style: TextStyle(
                                                   color: Color(0xffF06767),
                                                   fontSize: 22,

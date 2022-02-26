@@ -34,6 +34,7 @@ class User {
   String? updatedAt;
   String? value;
   int? statusCode;
+  String? workingSeconds;
   String? message;
   String? lineAdminId;
   String? rootAdminId;
@@ -58,6 +59,7 @@ class User {
         this.updatedAt,
         this.value,
         this.statusCode,
+        this.workingSeconds,
         this.message});
 
   User.fromJson(Map<String, dynamic> json) {
@@ -80,6 +82,7 @@ class User {
     updatedAt = json['updated_at'];
     value = json['value'];
     statusCode = json['status_code'];
+    workingSeconds = json['working_seconds'];
     message = json['message'];
   }
 
@@ -104,6 +107,7 @@ class User {
     data['updated_at'] = this.updatedAt;
     data['value'] = this.value;
     data['status_code'] = this.statusCode;
+    data['working_seconds'] = this.workingSeconds;
     data['message'] = this.message;
     return data;
   }

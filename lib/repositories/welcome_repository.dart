@@ -21,9 +21,13 @@ class WelcomeRepository{
 
   Future<dynamic> get(String url) async {
     var responseJson;
+
     try {
       final response = await http.get(Uri.parse(CustomStrings.baseUrl + url));
+
       responseJson = _response(response);
+      print(responseJson);
+
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }
