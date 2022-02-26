@@ -25,6 +25,7 @@ class _ProfileState extends State<Profile> {
         backgroundColor: Color(0xffF06767),
         endDrawer: CustomEndDrawer(user: widget.user),
         body: SingleChildScrollView(
+
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -82,7 +83,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 Stack(children: [
                   Container(
-                    height: MediaQuery.of(context).size.height * .7,
+                    height: MediaQuery.of(context).size.height,
                     margin: EdgeInsets.only(top: 180),
                     decoration: const BoxDecoration(
                         color: Colors.white,
@@ -97,7 +98,7 @@ class _ProfileState extends State<Profile> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          height: MediaQuery.of(context).size.height * .35,
+                          height: 220,
                           margin: EdgeInsets.only(top: 48),
                           decoration: const BoxDecoration(
                               borderRadius: BorderRadius.only(
@@ -117,8 +118,7 @@ class _ProfileState extends State<Profile> {
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(24))),
                                   child: Container(
-                                    height:
-                                        MediaQuery.of(context).size.height * .25,
+                                    height: 150,
                                     width: MediaQuery.of(context).size.width,
                                   ),
                                 ),

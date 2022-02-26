@@ -285,7 +285,7 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: GestureDetector(
-                                onTap: () {
+                                onTap: () async{
                                   if (widget.user?.isAdmin == "1") {
                                     Navigator.pushAndRemoveUntil(
                                         context,
@@ -294,6 +294,23 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                   user: widget.user,
                                                 )),
                                         ModalRoute.withName('/loggedInHome'));
+                                  }else{
+                                    await showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                      title: const Text('Do you want to exit?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(false),
+                                          child: const Text('No'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(true),
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
                                   }
                                 },
                                 child: SvgPicture.asset(
@@ -652,10 +669,10 @@ class _ClockInAndOutState extends State<ClockInAndOut>
                                                     SizedBox(
                                                       height: 16,
                                                     ),
-                                                    Text(
-                                                      index == 0
-                                                          ? ""
-                                                          : "${snapshot.data?.data?.attendances?.elementAt(index).outTime}",
+                                                    Text( "${snapshot.data?.data?.attendances?.elementAt(index).outTime}",
+                                                      // index == 0
+                                                      //     ? "${snapshot.data?.data?.attendances?.elementAt(index).outTime}"
+                                                      //     : "${snapshot.data?.data?.attendances?.elementAt(index).outTime}",
                                                       style: TextStyle(
                                                           fontSize: 12,
                                                           fontWeight:

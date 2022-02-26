@@ -89,10 +89,10 @@ class _CustomEndDrawerState extends State<CustomEndDrawer> {
               text: 'Profile',
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.push(
+                Navigator.pushAndRemoveUntil(
                     context,
-                    CupertinoPageRoute(
-                        builder: (context) => Profile(user: widget.user)));
+                    CupertinoPageRoute(builder: (c) => Profile(user: widget.user,)),
+                    ModalRoute.withName('/profile'));
               }),
           Divider(),
           _createDrawerItem(

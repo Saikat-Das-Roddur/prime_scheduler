@@ -8,6 +8,7 @@ import 'package:prime_scheduler/views/clock_in_and_out.dart';
 import 'package:prime_scheduler/views/home.dart';
 import 'package:prime_scheduler/views/logged_in_home.dart';
 import 'package:prime_scheduler/views/login_screen.dart';
+import 'package:prime_scheduler/views/profile.dart';
 import 'package:prime_scheduler/views/schedule_list.dart';
 import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 import 'package:prime_scheduler/views/splash_screen.dart';
@@ -58,6 +59,7 @@ class _PrimeSchedulerState extends State<PrimeScheduler> {
         '/clockInAndOut': (context) => ClockInAndOut(),
         '/schedules': (context) => ScheduleLists(),
         '/clockIn': (context) => ClockIn(),
+        '/profile': (context) => Profile(),
         '/scheduleWelcomeScreen': (context) => ScheduleWelcomeScreen(),
 
         // '/splash': (context) => const SplashScreen(),

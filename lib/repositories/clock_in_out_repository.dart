@@ -38,6 +38,13 @@ class ClockInOutRepository {
     return Schedules.fromJson(response);
   }
 
+  Future<Attendances> getMonthlyAttendance(
+      String? employeeId,String? startDate, String? endDate) async {
+    final response = await get(
+        "attendance/get_monthly_attendances.php?employee_id=$employeeId&start_date=$startDate&end_date=$endDate");
+    return Attendances.fromJson(response);
+  }
+
   Future<dynamic> get(String url) async {
     var responseJson;
     try {

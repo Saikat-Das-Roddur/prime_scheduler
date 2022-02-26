@@ -14,6 +14,7 @@ class ClockInOutBloc{
   late StreamController<Response<Schedules>> _schedulesStreamController;
   late StreamController<Response<Attendances>> _attendanceStreamController;
   late StreamController<Response<Schedules>> _monthlySchedulesStreamController;
+  late StreamController<Response<Attendances>> _monthlyAttendanceStreamController;
   StreamSink<Response<Schedules>> get schedulesSink =>
       _schedulesStreamController.sink;
 
@@ -26,6 +27,12 @@ class ClockInOutBloc{
   Stream<Response<Schedules>> get monthlySchedulesStream =>
       _monthlySchedulesStreamController.stream;
 
+  StreamSink<Response<Attendances>> get monthlyAttendanceSink =>
+      _monthlyAttendanceStreamController.sink;
+
+  Stream<Response<Attendances>> get monthlyAttendanceStream =>
+      _monthlyAttendanceStreamController.stream;
+
   StreamSink<Response<Attendances>> get attendancesSink =>
       _attendanceStreamController.sink;
 
@@ -37,6 +44,7 @@ class ClockInOutBloc{
     _schedulesStreamController = StreamController<Response<Schedules>>.broadcast();
     _attendanceStreamController = StreamController<Response<Attendances>>.broadcast();
     _monthlySchedulesStreamController = StreamController<Response<Schedules>>.broadcast();
+    _monthlyAttendanceStreamController = StreamController<Response<Attendances>>.broadcast();
   }
 
   Future<Schedules?> getSchedules(String? employeeId, String? type, String date) async {
@@ -74,6 +82,19 @@ class ClockInOutBloc{
     }catch(e){
       print(e.toString());
       monthlySchedulesSink.add(Response.error(e.toString()));
+      return null;
+    }
+  }
+
+  Future<Attendances?> getMonthlyAttendances(String? employeeId, String startDate, String endDate) async {
+    monthlyAttendanceSink.add(Response.loading(''));
+    try{
+      dynamic response = await _repository.getMonthlyAttendance(employeeId, startDate, endDate);
+      monthlyAttendanceSink.add(Response.completed(response));
+      return response;
+    }catch(e){
+      print(e.toString());
+      monthlyAttendanceSink.add(Response.error(e.toString()));
       return null;
     }
   }

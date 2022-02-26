@@ -1,5 +1,10 @@
+
+
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:prime_scheduler/models/user_response.dart';
 import 'package:prime_scheduler/views/active_details.dart';
@@ -35,7 +40,15 @@ class ScheduleWelcomeScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          if(user?.isAdmin=="1") {
+                            Navigator.pop(context);
+                          }else{
+                            if (Platform.isAndroid) {
+                              SystemNavigator.pop();
+                            } else if (Platform.isIOS) {
+                              exit(0);
+                            }
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(top: 56.0,left: 24),

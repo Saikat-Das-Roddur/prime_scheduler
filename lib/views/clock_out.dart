@@ -15,6 +15,7 @@ import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:prime_scheduler/views/schedule_list.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 import 'clock_in_and_out.dart';
 import 'logged_in_home.dart';
@@ -47,10 +48,11 @@ class _ClockOutState extends State<ClockOut> {
   var _fourthDigit;
   var _fifthDigit;
   var pinCode;
-  String? completedHours, completedHours2;
+  String? completedHours, completedHours2, inSeconds;
   bool _isDigitSelected = false;
   late Size _screenSize;
   ClockOutBloc? _clockOutBloc;
+  late ProgressDialog pd;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -76,9 +78,11 @@ class _ClockOutState extends State<ClockOut> {
     Duration dif2 = d3.difference(d1);
 
     if (dif2.inSeconds < 0) {
+      inSeconds = "${dif2.inSeconds}";
       completedHours = formatHHMMSS(0);
       completedHours2 = formatHHMMSS2(0);
     } else {
+      inSeconds = "${dif.inSeconds}";
       completedHours = formatHHMMSS(dif.inSeconds);
       completedHours2 = formatHHMMSS2(dif.inSeconds);
     }
@@ -120,6 +124,7 @@ class _ClockOutState extends State<ClockOut> {
   @override
   Widget build(BuildContext context) {
     _screenSize = MediaQuery.of(context).size;
+    pd = ProgressDialog(context, isDismissible: false);
     return Scaffold(
       key: _scaffoldKey,
       endDrawer: CustomEndDrawer(user: widget.user,),
@@ -843,6 +848,7 @@ class _ClockOutState extends State<ClockOut> {
     }
     map['assigned_date'] = DateFormat("yyyy-MM-dd").format(DateTime.now());
     map['completed_hours'] = completedHours;
+    map['in_seconds'] = inSeconds;
     map['out_time'] = //widget.outTime;//((DateTime.now().hour + 11) % 12) + 1
         "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')} ${DateTime.now().hour > 11 ? "pm" : "am"}";
 
@@ -852,7 +858,7 @@ class _ClockOutState extends State<ClockOut> {
 
   Future<dynamic> post(String url, {required Map body}) async {
     var responseJson;
-
+    pd.show();
     try {
       await http
           .post(
@@ -863,7 +869,8 @@ class _ClockOutState extends State<ClockOut> {
         Map map = json.decode(value.body);
         print(map);
         if (map['status_code'] == 200) {
-          showClockOutDialog();
+          pd.hide().whenComplete(() => showClockOutDialog());
+          //showClockOutDialog();
         }
       });
     } on SocketException {

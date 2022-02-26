@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -93,7 +94,15 @@ class _ClockInState extends State<ClockIn> {
                             alignment: Alignment.centerLeft,
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pop(context);
+                                if(widget.user?.isAdmin=="1") {
+                                  Navigator.pop(context);
+                                }else{
+                                  if (Platform.isAndroid) {
+                                    SystemNavigator.pop();
+                                  } else if (Platform.isIOS) {
+                                    exit(0);
+                                  }
+                                }
                               },
                               child: SvgPicture.asset(
                                 "assets/images/Vector 31.svg",
