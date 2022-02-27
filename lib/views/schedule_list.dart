@@ -71,7 +71,7 @@ class _ScheduleListsState extends State<ScheduleLists> {
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
@@ -342,8 +342,11 @@ class _ScheduleListsState extends State<ScheduleLists> {
             ),
             Padding(
               padding: EdgeInsets.all(12),
-              child: Text(
-                  "${DateTime.now().month == _month && DateTime.now().day == _day ? "Today, " : ""}${DateFormat("E, dd MMM, yyyy").format(DateTime(DateTime.now().year, _month, _day))}"),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                    "${DateTime.now().month == _month && DateTime.now().day == _day ? "Today, " : ""}${DateFormat("E, dd MMM, yyyy").format(DateTime(DateTime.now().year, _month, _day))}"),
+              ),
             ),
             StreamBuilder<Response<Schedules>>(
                 stream: _schedulesBloc?.schedulesStream,
@@ -506,8 +509,11 @@ class _ScheduleListsState extends State<ScheduleLists> {
                   DateTime.now().month == _month && DateTime.now().day == _day,
               child: Padding(
                 padding: EdgeInsets.all(12),
-                child: Text(
-                    "Tomorrow,  ${DateFormat("E, dd MMM, yyyy").format(DateTime.now().add(const Duration(days: 1)))}"),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                      "Tomorrow,  ${DateFormat("E, dd MMM, yyyy").format(DateTime.now().add(const Duration(days: 1)))}"),
+                ),
               ),
             ),
             Visibility(

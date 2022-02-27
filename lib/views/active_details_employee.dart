@@ -1,6 +1,8 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:prime_scheduler/bloc/active_details_bloc.dart';
 import 'package:prime_scheduler/models/attendences.dart';
@@ -25,13 +27,26 @@ class ActiveDetailsUser extends StatefulWidget {
 class _ActiveDetailsState extends State<ActiveDetailsUser> {
   late ActiveDetailsBloc _bloc;
   late ProgressDialog dialog;
+  ConnectivityResult? connectivityResult;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    initConnection();
     _bloc = ActiveDetailsBloc();
-    _bloc.getAttendance(widget.user?.employeeId);
+
+    //_bloc.getAttendance(widget.user?.employeeId);
+  }
+
+  initConnection() async{
+    var connectivityResult = await(Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      // I am connected to a mobile network.
+      dialog.hide().whenComplete(() => Fluttertoast.showToast(msg: "No Internet connection"));
+    }else{
+      _bloc.getAttendance(widget.user?.employeeId).then((value) => dialog.hide().whenComplete(() => null));
+    }
   }
 
   @override

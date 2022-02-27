@@ -15,6 +15,7 @@ import 'package:prime_scheduler/utils/custom_exception.dart';
 import 'package:prime_scheduler/utils/custom_strings.dart';
 import 'package:prime_scheduler/views/custom_end_drawer.dart';
 import 'package:prime_scheduler/views/schedule_list.dart';
+import 'package:prime_scheduler/views/schedule_welcome_screen.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 import 'clock_in_and_out.dart';
@@ -794,10 +795,10 @@ class _ClockOutState extends State<ClockOut> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   CupertinoPageRoute(
-                                      builder: (c) => ScheduleLists(
+                                      builder: (c) => ScheduleWelcomeScreen(
                                             user: widget.user,
                                           )),
-                                  ModalRoute.withName('/schedules'));
+                                  ModalRoute.withName('/scheduleWelcomeScreen'));
                             }
                             //showClockOutDialog();
                             // Navigator.push(

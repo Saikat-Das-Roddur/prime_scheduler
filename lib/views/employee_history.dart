@@ -942,7 +942,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                   )),
                                                               TextSpan(
                                                                   text:
-                                                                      "  Manager",
+                                                                      "  Employee",
                                                                   style: TextStyle(
                                                                       color: Color(
                                                                           0xffB1B1B1),
