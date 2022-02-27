@@ -1,17 +1,23 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:prime_scheduler/bloc/active_details_bloc.dart';
+import 'package:prime_scheduler/models/attendences.dart';
 import 'package:prime_scheduler/models/employee_response.dart';
 import 'package:prime_scheduler/models/history.dart';
+import 'package:prime_scheduler/models/response.dart';
 import 'package:prime_scheduler/models/user_response.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class ActiveDetails extends StatefulWidget {
   User? user;
   Employee? employee;
-  List<Attendance>? attendanceList;
+  //List<Attendance>? attendanceList;
 
-  ActiveDetails({Key? key,this.user, this.employee, this.attendanceList})
+  ActiveDetails({Key? key,this.user, this.employee})
       : super(key: key);
 
   @override
@@ -19,8 +25,31 @@ class ActiveDetails extends StatefulWidget {
 }
 
 class _ActiveDetailsState extends State<ActiveDetails> {
+
+  ActiveDetailsBloc? _bloc;
+  late ProgressDialog dialog;
+  ConnectivityResult? connectivityResult;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initConnection();
+    _bloc = ActiveDetailsBloc();
+  }
+
+  initConnection() async{
+    var connectivityResult = await(Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      // I am connected to a mobile network.
+      dialog.hide().whenComplete(() => Fluttertoast.showToast(msg: "No Internet connection"));
+    }else{
+      _bloc?.getAttendance(widget.employee?.id).then((value) => dialog.hide().whenComplete(() => null));
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    dialog = ProgressDialog(context);
     return Scaffold(
       backgroundColor: Colors.white,
       // const Color(0xffE5E5E5),
@@ -48,17 +77,17 @@ class _ActiveDetailsState extends State<ActiveDetails> {
                     ),
                   ),
                   const Flexible(
-                      //flex: 3,
+                    //flex: 3,
                       child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Active Details",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 22),
-                    ),
-                  )),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Active Details",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 22),
+                        ),
+                      )),
                   // Flexible(
                   //     flex: 1,
                   //     child: Align(
@@ -85,9 +114,9 @@ class _ActiveDetailsState extends State<ActiveDetails> {
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children:  [
+                    children: [
                       Text(
-                        "${DateFormat("EEE, dd MMM").format(DateTime.now())}",
+                        DateFormat("EEEE, dd MMM").format(DateTime.now()),
                         style: TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 25),
                       ),
@@ -103,7 +132,7 @@ class _ActiveDetailsState extends State<ActiveDetails> {
                         height: 4,
                       ),
                       Text(
-                        "Employee",
+                        "Eployee",
                         style: TextStyle(
                             color: Color(0xff9C9C9C),
                             fontWeight: FontWeight.w300,
@@ -133,17 +162,17 @@ class _ActiveDetailsState extends State<ActiveDetails> {
                 children: [
                   Flexible(
                       child: SvgPicture.asset(
-                    "assets/images/Group 210.svg",
-                    height: 60,
-                    width: 60,
-                  )),
+                        "assets/images/Group 210.svg",
+                        height: 60,
+                        width: 60,
+                      )),
                   Expanded(
                     flex: 2,
                     child: Text(
                       "${widget.employee?.name}",
                       textAlign: TextAlign.center,
                       style:
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: 25),
+                      TextStyle(fontWeight: FontWeight.w400, fontSize: 25),
                     ),
                   )
                 ],
@@ -169,143 +198,207 @@ class _ActiveDetailsState extends State<ActiveDetails> {
             const SizedBox(
               height: 4,
             ),
-            ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const ScrollPhysics(),
-                itemCount: widget.attendanceList?.length,
-                itemBuilder: (context, index) => Container(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-                      margin: const EdgeInsets.only(top: 8),
-                      decoration: const BoxDecoration(
-                          color: Color(0xffFFF8E4),
-                          border: Border(
-                              left: BorderSide(
-                                  width: 5, color: Color(0xffFFB966)))),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                DateFormat("EEE, dd MMM").format(
-                                    DateFormat("yyyy-MM-dd").parse(
-                                        "${widget.attendanceList?.elementAt(index).assignedDate}")),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w300, fontSize: 20),
-                              ),
-                              RichText(
-                                  text: TextSpan(
-                                      text: "Total",
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 20),
-                                      children: [
-                                    TextSpan(
-                                        text: widget.attendanceList!
-                                                        .elementAt(index)
-                                                        .completedHours !=
-                                                    null &&
-                                                widget.attendanceList!
-                                                        .elementAt(index)
-                                                        .completedHours !=
-                                                    ""
-                                            ? " ${widget.attendanceList?.elementAt(index).completedHours} "
-                                            : " 0 ",
-                                        style: const TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 20)),
-                                    TextSpan(
-                                      text: "HOURS",
-                                    )
-                                  ])),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                           Text(
-                            "${widget.user?.companyName}",
-                            style: TextStyle(
-                                color: Color(0xff717171),
-                                fontWeight: FontWeight.w300,
-                                fontSize: 16),
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: Container(
-                                  // height: 48,
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 6, 8, 6),
-                                  decoration: const BoxDecoration(
-                                      color: Color(0xff59C69C),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(16))),
-                                  child: Row(
+            StreamBuilder<Response<Attendances>>(
+                stream: _bloc?.getAttendanceStream,
+                builder: (c, s) {
+                  if (s.hasData) {
+                    switch (s.data?.status) {
+                      case Status.LOADING:
+                        return Center(child: CircularProgressIndicator());
+                      case Status.COMPLETED:
+                        return s.data?.data?.statusCode == 400
+                            ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(28.0),
+                              child: Text("No schedule assigned",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Theme.of(context).disabledColor,
+                                      fontSize: 18.0)),
+                            ))
+                            : ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: const ScrollPhysics(),
+                            itemCount: s.data?.data?.attendances?.length,
+                            itemBuilder: (context, index) => Container(
+                              padding: const EdgeInsets.fromLTRB(
+                                  24, 16, 24, 16),
+                              margin: const EdgeInsets.only(top: 8),
+                              decoration: const BoxDecoration(
+                                  color: Color(0xffFFF8E4),
+                                  border: Border(
+                                      left: BorderSide(
+                                          width: 5,
+                                          color: Color(0xffFFB966)))),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.stretch,
+                                children: [
+                                  Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
+                                    //crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
-                                        "Check in",
+                                      Text(
+                                        DateFormat("EEE, dd MMM").format(
+                                            DateFormat("yyyy-MM-dd").parse(
+                                                "${s.data?.data?.attendances?.elementAt(index).assignedDate}")),
                                         style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w300),
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 20),
                                       ),
-                                      Text(
-                                          "${widget.attendanceList?.elementAt(index).inTime}",
-                                          //"${widget.attendanceList?.elementAt(index).inTime?.substring(widget.attendanceList!.elementAt(index).inTime!.length - 3, widget.attendanceList!.elementAt(index).inTime!.length)}",
-                                          style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w300)),
+                                      RichText(
+                                          text: TextSpan(
+                                              text: "Total",
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight:
+                                                  FontWeight.w300,
+                                                  fontSize: 20),
+                                              children: [
+                                                TextSpan(
+                                                    text: s.data?.data
+                                                        ?.attendances
+                                                        ?.elementAt(
+                                                        index)
+                                                        .completedHours !=
+                                                        null &&
+                                                        s.data?.data
+                                                            ?.attendances
+                                                            ?.elementAt(
+                                                            index)
+                                                            .completedHours !=
+                                                            ""
+                                                        ? " ${s.data?.data?.attendances?.elementAt(index).completedHours} "
+                                                        : " 0 ",
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                        FontWeight.w500,
+                                                        fontSize: 20)),
+                                                TextSpan(
+                                                  text: "HOURS",
+                                                )
+                                              ])),
                                     ],
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 48),
-                              Flexible(
-                                child: Container(
-                                  // height: 48,
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 6, 8, 6),
-                                  decoration: const BoxDecoration(
-                                      color: Color(0xffF06767),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(16))),
-                                  child: Row(
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  Text(
+                                    "${widget.employee?.location}",
+                                    style: TextStyle(
+                                        color: Color(0xff717171),
+                                        fontWeight: FontWeight.w300,
+                                        fontSize: 16),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.center,
                                     children: [
-                                      const Text("Check out",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w300)),
-                                      Text(
-                                          "${widget.attendanceList?.elementAt(index).outTime}",
-                                          //"${widget.attendanceList?.elementAt(index).outTime?.substring(widget.attendanceList!.elementAt(index).outTime!.length - 3, widget.attendanceList!.elementAt(index).outTime!.length)}",
-                                          style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w300)),
+                                      Flexible(
+                                        child: Container(
+                                          // height: 48,
+                                          padding:
+                                          const EdgeInsets.fromLTRB(
+                                              8, 6, 8, 6),
+                                          decoration:
+                                          const BoxDecoration(
+                                              color:
+                                              Color(0xff59C69C),
+                                              borderRadius:
+                                              BorderRadius.all(
+                                                  Radius
+                                                      .circular(
+                                                      16))),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              const Text(
+                                                "Check in",
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                    FontWeight
+                                                        .w300),
+                                              ),
+                                              Text(
+                                                  "${s.data?.data?.attendances?.elementAt(index).inTime} "
+                                                  //"${s.data?.data?.attendances?.elementAt(index).outTime?.substring(s.data?.data?.attendances?.elementAt(index).outTime!.length ?? -3, s.data?.data?.attendances?.elementAt(index).outTime!.length)}",
+                                                      "${s.data?.data?.attendances?.elementAt(index).inTime?.substring(s.data?.data?.attendances?.elementAt(index).inTime!.length ?? -3, s.data?.data?.attendances?.elementAt(index).inTime!.length)}",
+                                                  style: TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                      FontWeight
+                                                          .w300)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 48),
+                                      Flexible(
+                                        child: Container(
+                                          // height: 48,
+                                          padding:
+                                          const EdgeInsets.fromLTRB(
+                                              8, 6, 8, 6),
+                                          decoration:
+                                          const BoxDecoration(
+                                              color:
+                                              Color(0xffF06767),
+                                              borderRadius:
+                                              BorderRadius.all(
+                                                  Radius
+                                                      .circular(
+                                                      16))),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                            children: [
+                                              const Text("Check out",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color:
+                                                      Colors.white,
+                                                      fontWeight:
+                                                      FontWeight
+                                                          .w300)),
+                                              RichText(
+                                                  text: TextSpan(
+                                                      text:
+                                                      "${s.data?.data?.attendances?.elementAt(index).outTime}",
+                                                      //"${s.data?.data?.attendances?.elementAt(index).outTime?.substring(s.data?.data?.attendances?.elementAt(index).outTime!.length ?? -3, s.data?.data?.attendances?.elementAt(index).outTime!.length)}",
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                          FontWeight
+                                                              .w300)))
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
+                            ));
+                      case Status.ERROR:
+                        return Center(child: CircularProgressIndicator());
+                      default:
+                    }
+                  }
+                  return Center(child: CircularProgressIndicator());
+                }),
             const Padding(
               padding: EdgeInsets.only(right: 24.0, bottom: 24),
               child: Text(

@@ -57,6 +57,28 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
     }
   }
 
+  String formatHHMMSS(int? seconds) {
+    List list = [];
+
+    final hours = (seconds! / 3600).truncate();
+    seconds = (seconds % 3600).truncate();
+    final minutes = (seconds / 60).truncate();
+
+    final hoursStr = ((hours).abs()).toString().padLeft(2, '0');
+    final minutesStr = ((minutes).abs()).toString().padLeft(2, '0');
+    final secondsStr = ((seconds).abs() % 60).toString().padLeft(2, '0');
+
+    // if (hours == 0) {
+    //   return '$hoursStr:$minutesStr:$secondsStr';
+    // }
+
+    list.add(hoursStr);
+    list.add(minutesStr);
+    list.add(secondsStr);
+
+    return "$hoursStr:$minutesStr:${secondsStr}s";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -253,7 +275,8 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                       "$_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')}";
                                   map['start_date'] = startDate;
                                   //map['end_date'] = endDate;
-                                  _employeeHistoryBloc?.getEmployeesHistory(map);
+                                  _employeeHistoryBloc
+                                      ?.getEmployeesHistory(map);
                                 });
                               },
                             ),
@@ -465,7 +488,8 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                   //map['start_date'] = startDate;
                                   map['end_date'] = endDate;
 
-                                  _employeeHistoryBloc?.getEmployeesHistory(map);
+                                  _employeeHistoryBloc
+                                      ?.getEmployeesHistory(map);
                                 } else {
                                   print(endDate.compareTo(startDate));
                                 }
@@ -709,7 +733,10 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                             20),
                                                                   ),
                                                                   Text(
-                                                                    widget.user?.isAdmin=="1"?"Manager":"Employee",
+                                                                    widget.user?.employeeId ==
+                                                                            "0"
+                                                                        ? "Manager"
+                                                                        : "Employee",
                                                                     style: TextStyle(
                                                                         color: Color(
                                                                             0xffB1B1B1),
@@ -776,9 +803,10 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                       context,
                                                                       CupertinoPageRoute(
                                                                           builder: (context) => ActiveDetails(
-                                                                            user: widget.user,
-                                                                              employee: snapshot.data?.data?.employeeHistory?.elementAt(index).employee,
-                                                                              attendanceList: snapshot.data?.data?.employeeHistory?.elementAt(index).attendance)));
+                                                                                //user: widget.user,
+                                                                                employee: snapshot.data?.data?.employeeHistory?.elementAt(index).employee,
+                                                                                //attendanceList: snapshot.data?.data?.employeeHistory?.elementAt(index).attendance
+                                                                              )));
                                                                 },
                                                                 child:
                                                                     Container(
@@ -807,7 +835,7 @@ class _EmployeeHistoryState extends State<EmployeeHistory> {
                                                                               Alignment.center,
                                                                           child:
                                                                               Text(
-                                                                            "${snapshot.data?.data?.employeeHistory?.elementAt(index).totalHours}",
+                                                                            formatHHMMSS(int.parse("${snapshot.data?.data?.employeeHistory?.elementAt(index).totalHours}")),
                                                                             style: const TextStyle(
                                                                                 fontSize: 29,
                                                                                 fontWeight: FontWeight.w700,

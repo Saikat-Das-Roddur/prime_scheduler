@@ -28,29 +28,32 @@ class History {
 }
 
 class EmployeeHistory {
-  List<Attendance>? attendance;
-  String? totalHours;
+  // List<Attendance>? attendance;
+   String? totalHours;
   Employee? employee;
 
-  EmployeeHistory({this.attendance, this.totalHours});
+  EmployeeHistory(
+       {
+     this.totalHours}
+      );
 
   EmployeeHistory.fromJson(Map<String, dynamic> json) {
-    if (json['attendance'] != null) {
-      attendance = <Attendance>[];
-      json['attendance'].forEach((v) {
-        attendance!.add(new Attendance.fromJson(v));
-      });
-    }
-    totalHours = json['total_hours'];
+    // if (json['attendance'] != null) {
+    //   attendance = <Attendance>[];
+    //   json['attendance'].forEach((v) {
+    //     attendance!.add(new Attendance.fromJson(v));
+    //   });
+    // }
+     totalHours = json['total_hours'];
     employee = Employee.fromJson(json['employee']);
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.attendance != null) {
-      data['attendance'] = this.attendance!.map((v) => v.toJson()).toList();
-    }
-    data['total_hours'] = this.totalHours;
+     final Map<String, dynamic> data = new Map<String, dynamic>();
+    // if (this.attendance != null) {
+    //   data['attendance'] = this.attendance!.map((v) => v.toJson()).toList();
+    // }
+     data['total_hours'] = this.totalHours;
     data['employee'] = this.employee;
     return data;
   }
